@@ -1,0 +1,704 @@
+<template>
+  <!-- Dialog para cambiar un producto base -->
+  <Dialog v-model:visible="showChangeDialog" :closable="false" :modal="true" class="p-3 change-dialog">
+    <template #header>
+      <h3>Elige una alternativa para {{ productBaseToChange.producto_descripcion }}</h3>
+    </template>
+
+    <div v-if="productBaseToChange" class="change-dialog-content">
+      <div class="change-option shadow-4 p-2" v-for="option in productBaseToChange.lista_productoCambio"
+        :key="option.producto_cambio_id" @click="selectAlternative(option)">
+        <img class="change-option-img" :src="`https://img.restpe.com/${option.producto_urlimagen}`" alt="" />
+        <p><strong>{{ option.producto_descripcion }}</strong></p>
+      </div>
+
+      <Button @click="showChangeDialog = false;" severity="danger" icon="pi pi-times" class="close-change-dialog-btn" />
+    </div>
+  </Dialog>
+
+  <!-- Dialog principal para mostrar un producto -->
+  <Dialog :closable="false" :close="reset()" v-model:visible="store.visibles.currentProduct" :style="{ width: '40rem' }"
+    :header="`${store.currentProduct.productogeneral_descripcion}`" :modal="true" class="container product-dialog">
+    <!-- Botón para cerrar el diálogo principal -->
+    <Button class="add-cart-button" @click="store.setVisible('currentProduct', false)" severity="danger"
+      icon="pi pi-times"></Button>
+
+    <template #header>
+      <div class="header-container">
+        <h3>
+          {{ store.currentProduct.productogeneral_descripcion }}
+        </h3>
+        <h3>
+          {{
+            formatoPesosColombianos(
+              store.currentProduct.productogeneral_precio ||
+              store.currentProduct.lista_presentacion[0].producto_precio
+            )
+          }}
+        </h3>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="footer-container">
+        <Button class="add-cart-footer-btn" @click="addToCart(store.currentProduct)" label="Agregar al carrito"
+          icon="pi pi-shopping-cart" />
+      </div>
+    </template>
+
+    <!-- Contenido del diálogo principal -->
+    <div class="dialog-main-content">
+      <img class="product-image" :src="`https://img.restpe.com/${store.currentProduct.productogeneral_urlimagen}`"
+        alt="" />
+
+      <div>
+        <h3 class="text description">DESCRIPCION</h3>
+        <p>
+          {{ store.currentProduct.productogeneral_descripcionweb?.toLowerCase() }}
+        </p>
+
+        <!-- Agrupadores de modificadores -->
+        <div v-for="i in store.currentProduct.lista_agrupadores" :key="i.modificador_id">
+          <h3><strong>{{ i.modificador_nombre }}</strong></h3>
+
+          <div>
+            <div class="modificador-row" v-for="modificador in i.listaModificadores"
+              :key="modificador.modificadorseleccion_id">
+              <Checkbox class="my-1 modificador-checkbox" @change="() => handleAdditionChange(modificador, i)" binary
+                v-model="checkedAdition[modificador.modificadorseleccion_nombre]" />
+
+              <div class="modificador-row-content">
+                <span class="text-sm adicion modificador-nombre">
+                  {{ modificador.modificadorseleccion_nombre }}
+                </span>
+
+                <div class="modificador-price-quantity">
+                  <span v-if="modificador.modificadorseleccion_precio > 0" class="pl-2 py-1 text-sm modificador-price">
+                    <b v-if="selectedAdditions[modificador.modificadorseleccion_id]?.quantity > 0">
+                      {{
+                        formatoPesosColombianos(
+                          modificador.modificadorseleccion_precio *
+                          parseInt(
+                            selectedAdditions[modificador.modificadorseleccion_id]?.quantity
+                          )
+                        )
+                      }}
+                    </b>
+                    <b v-else>
+                      {{ formatoPesosColombianos(modificador.modificadorseleccion_precio) }}
+                    </b>
+                  </span>
+
+                  <div class="modificador-quantity-btns" style="">
+                    <Button v-if="
+                      checkedAdition[modificador.modificadorseleccion_nombre] &&
+                      modificador.modificadorseleccion_precio > 0 &&
+                      i.modificador_esmultiple > 0
+                    " @click="decrement(modificador)" class="quantity-btn" severity="danger" icon="pi pi-minus" />
+                    <InputText v-if="
+                      checkedAdition[modificador.modificadorseleccion_nombre] &&
+                      modificador.modificadorseleccion_precio > 0 &&
+                      i.modificador_esmultiple > 0
+                    " :modelValue="selectedAdditions[modificador.modificadorseleccion_id]?.quantity || 1" readonly
+                      class="quantity-input p-0 text-center" />
+                    <Button v-if="
+                      checkedAdition[modificador.modificadorseleccion_nombre] &&
+                      modificador.modificadorseleccion_precio > 0 &&
+                      i.modificador_esmultiple > 0
+                    " @click="increment(modificador)" class="quantity-btn" severity="danger" icon="pi pi-plus" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Productos base (INCLUYE) -->
+        <h3 v-if="store.currentProduct?.lista_productobase?.length > 0" class="includes-title">
+          <strong>INCLUYE</strong>
+        </h3>
+
+        <div class="product-base-grid">
+          <div class="product-base-item" v-for="product_base in store.currentProduct.lista_productobase"
+            :key="product_base.producto_id">
+            <div class="product-base-item-header">
+              <h3 class="m-0 p-0 text-2xl product-base-qty">
+                {{ Math.round(product_base.productocombo_cantidad) }} x
+              </h3>
+              <img class="product-base-img" :src="`https://img.restpe.com/${product_base.producto_urlimagen}`" alt="" />
+              <h3 class="m-0 p-0 product-base-desc">
+                {{ product_base.producto_descripcion }}
+              </h3>
+            </div>
+
+            <div class="product-base-change-btn-wrapper">
+              <Button class="product-base-change-btn" style="" label="Cambiar" v-if="
+                product_base.lista_productoCambio &&
+                product_base.lista_productoCambio.length > 0
+              " @click="changeProduct(product_base)" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección inferior cuando la pantalla es grande -->
+      <div v-if="!isSmallScreen" class="col-12 md:col-6 add-car pt-5 dialog-bottom-fade">
+      </div>
+    </div>
+  </Dialog>
+</template>
+
+<script setup>
+import { onMounted, onBeforeUnmount, watch } from 'vue';
+import Checkbox from 'primevue/checkbox';
+import { InputText } from 'primevue';
+import { ref, computed } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { formatoPesosColombianos } from '@/service/utils/formatoPesos';
+import router from '@/router/index.js';
+import { useRoute } from 'vue-router';
+import { usecartStore } from '@/store/shoping_cart';
+import { Dialog } from 'primevue';
+import { Button } from 'primevue';
+
+const store = usecartStore();
+const route = useRoute();
+
+const productBaseToChange = ref(null);
+const showChangeDialog = ref(false);
+
+/**
+ * Lógica para cambiar un producto base por otro alternativo.
+ */
+const selectAlternative = (option) => {
+  const currentProduct = {
+    producto_cambio_id: productBaseToChange.value.producto_id,
+    producto_descripcion: productBaseToChange.value.producto_descripcion,
+    producto_precio: productBaseToChange.value.producto_precio,
+    producto_urlimagen: productBaseToChange.value.producto_urlimagen,
+  };
+
+  const optionIndex = productBaseToChange.value.lista_productoCambio.findIndex(
+    (item) => item.producto_cambio_id === option.producto_cambio_id
+  );
+
+  // Reemplaza la opción seleccionada con el producto actual
+  if (optionIndex !== -1) {
+    productBaseToChange.value.lista_productoCambio.splice(optionIndex, 1, currentProduct);
+  }
+
+  // Actualiza productBaseToChange con la opción seleccionada
+  productBaseToChange.value.producto_id = option.producto_id;
+  productBaseToChange.value.producto_descripcion = option.producto_descripcion;
+  productBaseToChange.value.producto_precio = option.producto_precio;
+  productBaseToChange.value.producto_urlimagen = option.producto_urlimagen;
+
+  showChangeDialog.value = false;
+  recalculateTotalPrice();
+};
+
+/**
+ * Recalcula el precio total del producto actual (producto general + productos base).
+ */
+const recalculateTotalPrice = () => {
+  let totalPrice = 0;
+
+  // Sumar precios de los productos base
+  store.currentProduct.lista_productobase.forEach((product) => {
+    totalPrice +=
+      parseFloat(product.producto_precio) * parseInt(product.productocombo_cantidad);
+  });
+
+  // Agregar precio del producto general si corresponde
+  if (store.currentProduct.productogeneral_precio) {
+    totalPrice += parseFloat(store.currentProduct.productogeneral_precio);
+  }
+
+  // Actualizar en el store (puedes almacenar en `currentProduct.totalPrice` u otro lugar)
+  store.currentProduct.totalPrice = totalPrice;
+};
+
+/**
+ * Función para abrir el diálogo de cambio de producto base.
+ */
+const changeProduct = (product_base) => {
+  productBaseToChange.value = product_base;
+  showChangeDialog.value = true;
+};
+
+/**
+ * Control de adiciones.
+ */
+const selectedAdditions = ref({});
+const checkedAdition = ref({});
+
+const handleAdditionChange = (item, group) => {
+  if (checkedAdition.value?.[item?.modificadorseleccion_nombre]) {
+    const new_item = {
+      id: item.modificadorseleccion_id,
+      name: item.modificadorseleccion_nombre,
+      price: item.modificadorseleccion_precio,
+      group: group.modificador_nombre,
+      group_id: group.modificador_id,
+      multiple: group.modificador_esmultiple,
+      parent_id:
+        store.currentProduct.producto_id ||
+        store.currentProduct.lista_presentacion[0].producto_id,
+    };
+
+    selectedAdditions.value[new_item.id] = {
+      ...new_item,
+      quantity: item.quantity || 1,
+    };
+  } else {
+    delete selectedAdditions.value[item.modificadorseleccion_id];
+  }
+};
+
+const increment = (item) => {
+  if (checkedAdition.value?.[item?.modificadorseleccion_nombre]) {
+    selectedAdditions.value[item.modificadorseleccion_id].quantity++;
+  }
+};
+
+const decrement = (item) => {
+  if (
+    selectedAdditions.value[item.modificadorseleccion_id].quantity > 1 &&
+    selectedAdditions.value[item.modificadorseleccion_id]
+  ) {
+    selectedAdditions.value[item.modificadorseleccion_id].quantity--;
+  }
+};
+
+/**
+ * Agregar el producto (y sus adiciones) al carrito.
+ */
+const addToCart = (product) => {
+  alert('hola');
+  const additionsArray = Object.values(selectedAdditions.value);
+
+  store.addProductToCart(product);
+
+  additionsArray.forEach((adition) => {
+    store.addAdditionToCart(adition);
+  });
+
+  selectedAdditions.value = {}; // Reseteamos las adiciones
+  store.setVisible('currentProduct', false);
+};
+
+/**
+ * Reset al cerrar el diálogo.
+ */
+const see = ref(false);
+const seeLeftHand = ref(false);
+const seeRightHand = ref(false);
+const reset = () => {
+  see.value = seeLeftHand.value = seeRightHand.value = false;
+};
+
+watch(
+  () => store.visibles.currentProduct,
+  (newval) => {
+    if (newval) {
+      return;
+    }
+    const new_route = `/${route.params.menu_name}/${route.params.category_id}`;
+    if (route.path != '/') {
+      router.push(new_route);
+    }
+  }
+);
+
+/**
+ * Control de adiciones v2 (?)
+ */
+const adicionales = ref([]);
+
+watch(
+  () => store.visibles.addAdditionToCart,
+  async (new_val) => {
+    if (!new_val) {
+      selectedAdditions.value = {};
+      adicionales.value = [];
+    } else {
+      // Lógica cuando se abre el panel de adiciones, si la hay
+    }
+  },
+  { deep: true }
+);
+
+/**
+ * Detección de tamaño de pantalla
+ */
+const screenWidth = ref(window.innerWidth);
+
+const updateScreenWidth = () => {
+  screenWidth.value = window.innerWidth;
+};
+window.addEventListener('resize', updateScreenWidth);
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateScreenWidth);
+});
+
+const isSmallScreen = computed(() => screenWidth.value < 768);
+
+/**
+ * onMounted inicial
+ */
+onMounted(() => {
+  setTimeout(() => {
+    if (route.params.product_id) {
+      store.currentProduct = store.menu.data.find(
+        (p) => p.productogeneral_id == route.params.product_id
+      );
+      store.visibles.currentProduct = true;
+    }
+  }, 1000);
+});
+
+const toast = useToast();
+</script>
+
+<style scoped>
+/* Diálogo para cambiar un producto base */
+.change-dialog {
+  background-color: white;
+  width: max-content;
+  max-width: 20rem;
+  max-height: 30rem;
+  border-radius: 1rem;
+}
+
+/* Contenedor principal del contenido del diálogo de cambio */
+.change-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Opciones de cambio */
+.change-option {
+  cursor: pointer;
+  background-color: white;
+  color: black;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Imagen de cada opción */
+.change-option-img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* Botón para cerrar el diálogo de cambio */
+.close-change-dialog-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  position: absolute;
+  right: -1rem;
+  top: -1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99;
+}
+
+/* Diálogo principal (producto) */
+.product-dialog {
+  max-width: 91vw;
+}
+
+/* Botón flotante para cerrar el diálogo principal */
+.add-cart-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  position: absolute;
+  right: -1rem;
+  top: -1rem;
+  border-radius: 50%;
+  z-index: 99;
+}
+
+/* Contenedor del header del diálogo */
+.header-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  background-color: rgb(255, 255, 255);
+  z-index: 99;
+  top: 0rem;
+  left: 0;
+  height: min-content;
+}
+
+/* Contenedor del footer del diálogo */
+.footer-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* Botón en el footer para añadir al carrito */
+.add-cart-footer-btn {
+  min-width: max-content;
+  pointer-events: all;
+  background-color: black;
+  color: white;
+  width: auto;
+  border: none;
+  padding: 0.5rem 3rem;
+  font-weight: bold;
+}
+
+/* Contenido principal del diálogo */
+.dialog-main-content {
+  position: relative;
+  background-color: white;
+  border-radius: 1rem;
+  padding: 0;
+  padding-bottom: 0;
+}
+
+/* Imagen del producto */
+.product-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 0.5rem;
+  background-color: rgb(255, 255, 255);
+  object-fit: cover;
+}
+
+/* Título "DESCRIPCION" */
+.description {
+  font-weight: bold;
+  color: black;
+  padding: 0.2rem 0;
+}
+
+/* Fila de modificador (checkbox + label + precio + botones) */
+.modificador-row {
+  display: flex;
+  gap: 1rem;
+  padding: 0.3rem;
+  align-items: center;
+}
+
+/* Checkbox de modificador */
+.modificador-checkbox {
+  outline: 2px solid var(--p-primary-color);
+  border-radius: 0.2rem;
+}
+
+/* Contenido de la fila (nombre y precio/cantidad a la derecha) */
+.modificador-row-content {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+/* Nombre del modificador */
+.modificador-nombre {
+  text-transform: lowercase;
+}
+
+/* Contenedor del precio y de los botones de cantidad */
+.modificador-price-quantity {
+  min-width: max-content;
+  display: flex;
+  align-items: center;
+}
+
+/* Precio */
+.modificador-price {
+  display: flex;
+  align-items: center;
+}
+
+/* Botones + / - */
+.modificador-quantity-btns {
+  min-width: max-content;
+  display: flex;
+  /* margin-left: 1rem; */
+}
+
+/* Botón genérico de + / - */
+.quantity-btn {
+  width: 2rem;
+  height: 1.5rem;
+  border: none;
+}
+
+/* Input de cantidad */
+.quantity-input {
+  width: 2rem;
+  border: none;
+  height: 1.5rem;
+}
+
+/* Sección de “INCLUYE” */
+.includes-title {
+  padding: 1rem 0;
+}
+
+/* Grid de productos base */
+.product-base-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(1, 1fr);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Cada ítem de producto base */
+.product-base-item {
+  border: 2px solid var(--p-primary-color);
+  display: flex;
+  border-radius: 0.5rem;
+  background-color: #fff;
+  flex-direction: column;
+  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+/* Encabezado del producto base */
+.product-base-item-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  position: relative;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+/* Cantidad (Ej.: “2 x”) */
+.product-base-qty {
+  max-width: 100%;
+  min-width: max-content;
+}
+
+/* Imagen del producto base */
+.product-base-img {
+  width: 4rem;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+/* Descripción del producto base */
+.product-base-desc {
+  max-width: 100%;
+}
+
+/* Contenedor para el botón “Cambiar” */
+.product-base-change-btn-wrapper {
+  display: flex;
+  justify-content: end;
+  width: 100%;
+}
+
+/* Botón “Cambiar” del producto base */
+.product-base-change-btn {
+  background-color: black;
+  max-width: min-content;
+  border: none;
+  color: white;
+  /* Si deseas que el texto sea blanco */
+}
+
+/* Sección inferior para pantallas grandes */
+.dialog-bottom-fade {
+  pointer-events: none;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0) 0%,
+      rgb(255, 255, 255) 80%);
+  height: 5rem;
+  bottom: 0rem;
+  right: 0;
+}
+
+/* Animaciones y transiciones */
+.cargado {
+  opacity: 0;
+  animation: fadeIn 0.1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInLeftHand {
+  from {
+    opacity: 0;
+    transform: translateX(-1000px);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.cargado-left-hand {
+  opacity: 0;
+  animation: fadeInLeftHand 0.1s ease-out forwards;
+}
+
+@keyframes fadeInRightHand {
+  from {
+    opacity: 0;
+    transform: translateX(1000px);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.cargado-right-hand {
+  opacity: 0;
+  animation: fadeInRightHand 0.1s ease-out forwards;
+}
+
+/* Scrollbars ocultos en WebKit */
+*::-webkit-scrollbar {
+  overflow-y: auto;
+  display: none;
+}
+
+/* Adaptación de fuentes para pantallas pequeñas */
+@media (width < 700px) {
+  * {
+    font-size: 12.5px;
+  }
+}
+
+/* Ajuste de capitalización para la clase “adicion” */
+.adicion::first-letter {
+  text-transform: uppercase;
+}
+
+/* Para texto en mayúsculas */
+.mayuscula {
+  text-transform: uppercase;
+}
+</style>
