@@ -131,8 +131,8 @@ import siteDialogSonando from '@/components/Dialogs/siteDialogSonando.vue'
 // =======================================================================
 // NOTA: Ajusta estas URLs según tu configuración de backend y dominio.
 // =======================================================================
-const API_BASE = 'http://localhost:8000' // o tu URL real (por ej. 'https://backend-musica.salchimonster.com')
-const WS_BASE = 'ws://localhost:8000/ws' // o 'wss://backend-musica.salchimonster.com/ws' en producción
+const API_BASE = 'https://backend-musica.salchimonster.com' // o tu URL real (por ej. 'https://backend-musica.salchimonster.com')
+const WS_BASE = 'wss://backend-musica.salchimonster.com/ws' // o 'wss://backend-musica.salchimonster.com/ws' en producción
 // =======================================================================
 
 // Store de sitios (sedes)
