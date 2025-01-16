@@ -1,9 +1,10 @@
 <script setup>
-import { Button } from 'primevue';
-import { InputText } from 'primevue';
-import Layout from './Layout/Layout.vue';
+
 import VistaProducto from './components/Dialogs/VistaProducto.vue';
 import Toast from 'primevue/toast';
+import { InputText } from 'primevue';
+import siteDialog from './components/Dialogs/siteDialog.vue';
+import SiteDialogSonando from './components/Dialogs/siteDialogSonando.vue';
 
 </script>
 
@@ -12,5 +13,8 @@ import Toast from 'primevue/toast';
     <Toast></Toast>
     <router-view></router-view>
     <vista-producto></vista-producto>
+    <!-- <InputText></InputText> -->
+    <siteDialog></siteDialog>
+    <!-- <SiteDialogSonando></SiteDialogSonando> -->
   </div>
 </template>

@@ -17,7 +17,7 @@
         <div class="franchise-inner">
             <!-- Sección imágenes (izquierda) -->
             <div class="sedes">
-                <img v-for="i in [29, 3, 9, 1, 4]" :key="`left-sede-${i}`" class="sede-img"
+                <img v-for="i in [29, 3, 9, 1, 4, 8]" :key="`left-sede-${i}`" class="sede-img"
                     :src="`https://backend.salchimonster.com/read-product-image/600/site-${i}`" alt="Sede Izquierda" />
             </div>
 
@@ -52,13 +52,14 @@
 
                 <form @submit.prevent="enviarFormulario" class="form-grid">
                     <p class="my-2">Nombre Completo:</p>
-                    <InputText v-model="formulario.nombre" placeholder="Ingrese su nombre completo" />
+                    <InputText class="select" v-model="formulario.nombre" placeholder="Ingrese su nombre completo" />
 
                     <p class="my-2">Teléfono:</p>
-                    <InputText v-model="formulario.telefono" placeholder="Ingrese su número de teléfono" />
+                    <InputText class="select" v-model="formulario.telefono"
+                        placeholder="Ingrese su número de teléfono" />
 
                     <p class="my-2">Correo electrónico:</p>
-                    <InputText v-model="formulario.email" placeholder="Correo electrónico" />
+                    <InputText class="select" v-model="formulario.email" placeholder="Correo electrónico" />
 
                     <p class="my-2">
                         ¿Por qué quieres una franquicia de Salchimonster?
@@ -66,30 +67,30 @@
                     <Textarea rows="5" class="textarea-razon" v-model="formulario.razon" placeholder="Cuéntanos..." />
 
                     <p class="my-2">Capacidad de Inversión:</p>
-                    <Dropdown optionValue="value" :options="opcionesInversion" optionLabel="label"
+                    <Select class="select" optionValue="value" :options="opcionesInversion" optionLabel="label"
                         v-model="formulario.inversion" placeholder="Seleccione un rango" />
 
                     <p class="my-2">Zona de Interés:</p>
-                    <Dropdown optionValue="value" :options="zonas" optionLabel="label" v-model="formulario.zona"
-                        placeholder="Seleccione una zona" />
+                    <Select class="select" optionValue="value" :options="zonas" optionLabel="label"
+                        v-model="formulario.zona" placeholder="Seleccione una zona" />
 
                     <p class="my-2">¿En qué ciudad se ubicará la franquicia?</p>
-                    <InputText v-model="formulario.ciudad" placeholder="Ciudad" />
+                    <InputText class="select" v-model="formulario.ciudad" placeholder="Ciudad" />
 
                     <p class="my-2">
                         ¿Haces parte del sector gastronómico?
                     </p>
-                    <Dropdown optionValue="value" optionLabel="label" :options="opcionesBooleanas"
+                    <Select class="select" optionValue="value" optionLabel="label" :options="opcionesBooleanas"
                         v-model="formulario.sectorGastronomico" placeholder="Seleccione una opción" />
 
                     <p class="my-2">
                         ¿Participarás en la operación de la franquicia?
                     </p>
-                    <Dropdown optionValue="value" optionLabel="label" :options="opcionesBooleanas"
+                    <Select class="select" optionValue="value" optionLabel="label" :options="opcionesBooleanas"
                         v-model="formulario.operacionFranquicia" placeholder="Seleccione una opción" />
 
                     <p class="my-2">Confirma la fuente de tus ingresos:</p>
-                    <Dropdown optionValue="value" optionLabel="label" :options="opcionesFuenteIngresos"
+                    <Select class="select" optionValue="value" optionLabel="label" :options="opcionesFuenteIngresos"
                         v-model="formulario.fuenteIngresos" placeholder="Seleccione una opción" />
 
                     <!-- Botón de envío -->
@@ -99,7 +100,7 @@
 
             <!-- Sección imágenes (derecha) -->
             <div class="sedes">
-                <img v-for="i in [2, 11, 30, 10, 7]" :key="`right-sede-${i}`" class="sede-img"
+                <img v-for="i in [2, 11, 30, 10, 7, 6]" :key="`right-sede-${i}`" class="sede-img"
                     :src="`https://backend.salchimonster.com/read-product-image/600/site-${i}`" alt="Sede Derecha" />
             </div>
         </div>
@@ -113,7 +114,7 @@ import { URI } from "@/service/conection";
 import { InputText } from "primevue";
 import { Button } from "primevue";
 import { Textarea } from "primevue";
-import { Dropdown } from "primevue";
+import { Select } from "primevue";
 import { Dialog } from "primevue";
 
 const visibleDialog = ref(false);
@@ -291,8 +292,9 @@ const enviarFormulario = async () => {
     width: 100%;
     max-width: 1366px;
     margin: auto;
+    align-items: center;
     display: flex;
-    padding: 3rem 0;
+    padding: 1rem 0;
     gap: 1rem;
 }
 
@@ -318,12 +320,14 @@ const enviarFormulario = async () => {
     border-radius: 0.5rem;
     padding: 1.5rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: .5rem;
 }
 
 /* Texto introductorio */
 .intro-text p {
     margin-bottom: 0.5rem;
     text-align: justify;
+    width: 100%class="select";
 }
 
 /* ====== Formulario ====== */
@@ -338,6 +342,12 @@ const enviarFormulario = async () => {
 /* Textarea de razón */
 .textarea-razon {
     resize: none;
+    width: 100%;
+}
+
+
+.select {
+    width: 100%;
 }
 
 /* Botón de envío */
@@ -349,19 +359,26 @@ const enviarFormulario = async () => {
 }
 
 /* ====== Responsividad ====== */
-@media (max-width: 580px) {
+@media (max-width: 1100px) {
     .form-grid {
         grid-template-columns: repeat(1, 1fr);
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: start;
+        /* background-color: red; */
+
     }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1100px) {
     .sedes {
         display: none;
     }
 
     .form-container {
         width: 100%;
+        /* margin: 0 1rem; */
     }
 }
 </style>

@@ -95,50 +95,7 @@
                 </div>
             </div>
 
-            <!-- Botones de navegación y acciones -->
-            <router-link to="/" v-if="route.path.includes('cart')">
-                <Button outlined icon="pi pi-shopping-cart" label="Seguir comprando"
-                    class="mt-4 button-common button-transparent button-fullwidth button-bold"
-                    severity="danger"></Button>
-            </router-link>
 
-            <router-link to="/cart" v-else-if="route.path != '/reservas'">
-                <Button outlined icon="pi pi-arrow-left" label="Volver al carrito"
-                    class="mt-4 button-common button-transparent button-fullwidth button-bold"
-                    severity="danger"></Button>
-            </router-link>
-
-            <Tag v-if="siteStore.status == 'cerrado' && route.path != '/reservas'" class="mt-2 tag-fullheight"
-                severity="danger">
-                Este Restaurante esta cerrado
-            </Tag>
-
-            <!-- Botón “Pedir” -->
-            <router-link to="/pay" v-if="route.path.includes('cart') && siteStore.status != 'cerrado'">
-                <Button iconPos="right" icon="pi pi-arrow-right" label="Pedir"
-                    class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
-                    severity="help"></Button>
-            </router-link>
-
-            <!-- Botón “Finalizar pedido” al reservar -->
-            <router-link to="/pay" v-else-if="route.path.includes('reservas')">
-                <Button @click="() => {
-                    orderService.sendOrderReserva()
-                    sending = true
-                }" iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
-                    class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
-                    severity="help"></Button>
-            </router-link>
-
-            <!-- Botón “Finalizar pedido” si el restaurante no está cerrado -->
-            <router-link to="/pay" v-else-if="siteStore.status != 'cerrado'">
-                <Button @click="() => {
-                    orderService.sendOrder()
-                    sending = true
-                }" iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
-                    class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
-                    severity="help"></Button>
-            </router-link>
         </div>
     </div>
 </template>
@@ -264,7 +221,6 @@ watch(
 /* Botones y clases genéricas */
 .button-common {
     outline: none;
-    margin: .5rem 0;
 }
 
 .button-no-outline {

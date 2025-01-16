@@ -1,5 +1,5 @@
 <template>
-    <div class="sticky-header">
+    <div class="">
         <div class="container">
             <p class="title">Consultar estado de mi pedido</p>
             <div class="input-container">
@@ -18,8 +18,6 @@
 
 
     </div>
-    <!-- <MenuSection></MenuSection> -->
-
 </template>
 
 <script setup>
@@ -86,7 +84,7 @@ const obtenerHoraFormateadaAMPM = (fecha) => {
     /* background-color: white; */
     position: sticky;
     top: 3rem;
-    z-index: 999;
+    z-index: -1;
 }
 
 .container {
@@ -115,7 +113,7 @@ const obtenerHoraFormateadaAMPM = (fecha) => {
     flex: 1;
     padding: 0.5rem;
     /* border: 1px solid; */
-    box-shadow: 0 0 10px #00000030;
+    /* box-shadow: 0 0 10px #00000030; */
     width: 3rem
 }
 

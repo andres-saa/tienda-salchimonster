@@ -4,12 +4,11 @@ import axios from "axios";
 
 
 
-
-export const useSitesStore = defineStore('site', {
+export const useSitesStore = defineStore('sites-salchimonster', {
    
     persist: {
        
-                key: 'site', 
+                key: 'sites-salchimonster', 
                 storage: localStorage,
                 paths:[
                     'location'
@@ -23,10 +22,15 @@ export const useSitesStore = defineStore('site', {
             location: {
                 site:{},
                 neigborhood:{},
-                siteReservas:{}
+                siteReservas:{},
+               
+            },
+            sonando: {
+
             },
             visibles: {
-                currentSite: false
+                currentSite: false,
+                sonandoCurrentSite:false
             },
             current_delivery:0,
             webSocket: null,

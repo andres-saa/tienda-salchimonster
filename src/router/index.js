@@ -34,6 +34,12 @@ const router = createRouter({
               name: 'Carta',
               component: () => import('@/views/Carta.vue'),
             },
+
+            {
+              path: '/colaboraciones',
+              name: 'colaboraciones',
+              component: () => import('@/views/Colaboraciones.vue'),
+            },
             {
               path: '/rastrear-pedido',
               name: 'rastrear-pedido',
@@ -60,6 +66,16 @@ const router = createRouter({
               path: '/pqrs-user',
               name: 'pqrs-user',
               component: () => import('@/views/Pqr.vue'),
+            },
+            {
+              path: '/pay',
+              name: 'pay',
+              component: () => import('@/views/Pay.vue'),
+            },
+            {
+              path: '/gracias',
+              name: 'gracias',
+              component: () => import('@/views/Gracias.vue'),
             },
           ],
         },

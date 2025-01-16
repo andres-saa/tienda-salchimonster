@@ -99,7 +99,7 @@ const changeBanner = (dir) => {
 img {
   width: 100%;
   min-width: 100%;
-  aspect-ratio: 16/6;
+  aspect-ratio: 16/7;
   object-fit: cover;
 }
 

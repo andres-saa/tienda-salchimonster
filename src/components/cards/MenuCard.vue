@@ -1,8 +1,10 @@
 <template>
     <div class="container shadow-3 col-12 product-card" @click="open(props.product)">
         <div class="imagen">
-            <img loading="lazy" class="imagen-producto"
-                :src="`https://img.restpe.com/${props.product.productogeneral_urlimagen}`" alt="" />
+            <!-- Imagen con lazy loading personalizado -->
+            <img ref="productImage" class="imagen-producto lazy"
+                :data-src="`https://img.restpe.com/${props.product.productogeneral_urlimagen}`"
+                src="https://www.salchimonster.com/images/characters/line/1.png" alt="Descripción del producto" />
         </div>
 
         <div class="texto">
@@ -14,12 +16,12 @@
             <div class="texto-content">
                 <!-- Fila de arriba (vacía en este ejemplo, la puedes eliminar si no la usas) -->
                 <div class="flex-row-center-space-between">
-                    <!-- Ejemplo: puedes mostrar algo aquí si lo deseas -->
+                    <!-- Puedes agregar contenido aquí si lo deseas -->
                 </div>
 
                 <!-- Descripción -->
                 <span class="max-width-100">
-                    {{ truncatedDescription.replace(/,\s*/g, ', ') }}
+                    {{ truncatedDescription }}
                 </span>
 
                 <!-- Fila de acciones (corazón y precio) -->
@@ -50,30 +52,28 @@
 
 <script setup>
 import { formatoPesosColombianos } from '@/service/utils/formatoPesos';
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { usecartStore } from '@/store/shoping_cart';
 import { Button } from 'primevue';
 
+// Acceso al store del carrito
 const store = usecartStore();
 
-const highResLoaded = ref({});
-const loaded = ref(false);
+// Referencia a la imagen del producto
+const productImage = ref(null);
 
+// Función para añadir el producto al carrito
 const addToCart = (productToAdd) => {
-    // Evitamos que el evento haga click en el @click del contenedor principal
-    // usando @click.stop en el Button
     store.addProductToCart(productToAdd);
 };
 
-const see = () => {
-    loaded.value = true;
-};
-
+// Función para abrir la vista del producto
 const open = (product) => {
     store.setCurrentProduct(product);
     store.setVisible('currentProduct', true);
 };
 
+// Definición de las props que recibe el componente
 const props = defineProps({
     product: {
         type: Object,
@@ -85,33 +85,58 @@ const props = defineProps({
     },
 });
 
-onMounted(() => {
-    highResLoaded.value = {};
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    loaded.value[img.dataset.index] = true; // Marca como cargado
-                    observer.unobserve(img); // Detiene la observación una vez cargada la imagen
-                }
-            });
-        },
-        { threshold: 0.1 }
-    );
-
-    document.querySelectorAll('img.lazy').forEach((img, index) => {
-        img.dataset.index = index; // Asigna un índice a cada imagen para controlar su estado
-        observer.observe(img);
-    });
-});
-
+// Computed property para truncar la descripción
 const truncatedDescription = computed(() => {
     const description = props.product?.productogeneral_descripcionweb || '';
     return description.length > 100
         ? description.substring(0, 100) + '...'
         : description || '...';
+});
+
+// Referencia al observador
+let observer = null;
+
+// Función para cargar la imagen cuando entra en el viewport
+const loadImage = (img) => {
+    const src = img.dataset.src;
+    if (src) {
+        img.src = src;
+        img.classList.remove('lazy');
+        img.classList.add('cargado'); // Añade clase para animación
+    }
+};
+
+onMounted(() => {
+    if ('IntersectionObserver' in window) {
+        // Inicializa el observador
+        observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadImage(entry.target);
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, {
+            rootMargin: '0px 0px 50px 0px', // Opcional: carga un poco antes de que entre al viewport
+            threshold: 0.01
+        });
+
+        // Observa la imagen del producto
+        if (productImage.value) {
+            observer.observe(productImage.value);
+        }
+    } else {
+        // Fallback: carga la imagen de inmediato si no se soporta IntersectionObserver
+        if (productImage.value) {
+            loadImage(productImage.value);
+        }
+    }
+});
+
+onBeforeUnmount(() => {
+    if (observer && productImage.value) {
+        observer.unobserve(productImage.value);
+    }
 });
 </script>
 
@@ -138,9 +163,18 @@ const truncatedDescription = computed(() => {
     width: 100%;
     aspect-ratio: 1 / 1;
     background-color: #fff;
-    object-fit: cover;
+    object-fit: contain;
+
     /* o 'contain' según tu preferencia */
     border-radius: 0.5rem;
+    transition: opacity 0.5s ease-in-out, filter 0.3s ease-out;
+    opacity: 0;
+    filter: blur(10px);
+}
+
+.imagen-producto.cargado {
+    opacity: 1;
+    filter: blur(0);
 }
 
 /* Contenedor “texto” */
@@ -219,7 +253,7 @@ const truncatedDescription = computed(() => {
 }
 
 /* Ajustes responsivos */
-@media (width < 900px) {
+@media (max-width: 900px) {
 
     span,
     h3 {
@@ -280,7 +314,7 @@ const truncatedDescription = computed(() => {
 }
 
 .cargado {
-    opacity: 0;
+    opacity: 1;
     animation: fadeIn 0.1s ease-out forwards;
 }
 </style>

@@ -97,8 +97,8 @@ const getCities = async () => {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
-    max-width: 1300px;
-    margin: 2rem auto;
+    /* max-width: 1300px; */
+    margin: 0rem auto;
     padding: 1rem;
 }
 
@@ -128,7 +128,7 @@ const getCities = async () => {
 .main-container {
     background-color: var(--p-primary-color);
     position: relative;
-    padding: 3rem 0;
+    padding: 0;
 }
 
 /* Detalles superpuestos */

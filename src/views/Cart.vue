@@ -93,11 +93,14 @@
                         </div>
                     </div>
                 </div>
+
                 <resumen class="md:col-6 shadow-6"></resumen>
             </div>
         </div>
 
-        <div v-else class="cart-empty-container col-12">
+        <div v-else class="cart-empty-container ">
+
+            <img style="border-radius: 0;width: 100%;" src="/public/images/empty-cart.jpg" alt="">
         </div>
     </div>
 </template>
@@ -359,6 +362,13 @@ getAditional();
     height: 2rem;
 }
 
+@media (width < 900px) {
+    .cart-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+}
+
 /* Cada ítem adicional */
 .cart-additions-item {
     display: flex;
@@ -419,6 +429,12 @@ getAditional();
     display: flex;
     justify-content: center;
     align-items: center;
+    border-radius: 0;
+    height: calc(100vh - 8rem);
+    width: 100%;
+    padding: 1rem;
+    max-width: 50rem;
+    margin: auto;
 }
 
 /* ------ Estilos ya existentes ------ */
@@ -563,6 +579,7 @@ button:hover {
         overflow-y: auto;
         border-radius: 2rem;
     }
+
 }
 
 ::-webkit-scrollbar {
