@@ -77,7 +77,7 @@ const preparar_orden = () => {
     };
   });
 
-  console.log(order_products);
+  // console.log(order_products);
 
   const order_aditionals = cart.cart.additions.map((a) => {
     return {

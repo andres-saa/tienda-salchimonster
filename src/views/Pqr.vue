@@ -110,7 +110,7 @@
             </div>
 
             <div class="form-input" v-if="selectedType">
-                <h3 class="field">Dirección (opcional)</h3>
+                <h3 class="field">Dirección</h3>
                 <InputText v-model="userAddress" class="input-full" placeholder="Escriba su dirección"></InputText>
             </div>
 
@@ -172,10 +172,12 @@ const handleSubmit = async () => {
         return;
     }
 
-    if (selectedType.value != 8 && (!userName.value || !userPhone.value)) {
-        alert('Por favor, complete los campos obligatorios (nombre y teléfono).');
+    if (selectedType.value != 8 && (!userName.value || !userPhone.value || !userAddress.value)) {
+        alert('Por favor, complete los campos obligatorios (nombre, teléfono y direccion).');
         return;
     }
+
+
 
     if (!selecteSite.value) {
         alert('Por favor, seleccione la sede.');

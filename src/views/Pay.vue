@@ -3,7 +3,18 @@
         <!-- <validate></validate> -->
 
         <p class="title">FINALIZAR COMPRA</p>
+
+
+        <div style="margin: auto;max-width: 800px;">
+            <div class="title " style="  margin: 3rem .5rem">
+                <Tag severity="success " class="advertice"> El tiempo promedio de entrega es de 60 a 75 minutos, porvaor
+                    tengalo en cuenta
+                    antes de ordenar</Tag>
+            </div>
+        </div>
         <div class="form-grid">
+
+
 
             <div class="form-column">
 
@@ -51,6 +62,7 @@ import { usecartStore } from '@/store/shoping_cart';
 import { useSitesStore } from '@/store/site';
 import { useUserStore } from '@/store/user'
 import { Textarea } from 'primevue';
+import { Tag } from 'primevue';
 import { InputText } from 'primevue';
 import { InputNumber } from 'primevue';
 import { InputMask } from 'primevue';
@@ -104,6 +116,32 @@ watch(() => user.user.payment_method_option, (new_val) => {
     margin: 2rem 0;
     /* my-8 */
     font-weight: bold;
+}
+
+
+
+.advertice {
+    animation: anim_status_tag 2s infinite ease;
+    color: black;
+    padding: 1rem;
+    font-weight: 400;
+    font-size: 1.1rem;
+}
+
+
+@keyframes anim_status_tag {
+    20% {
+        background-color: rgb(0, 255, 110);
+    }
+
+    50% {
+        background-color: rgb(0, 255, 204);
+        transform: scale(1.02);
+    }
+
+    80% {
+        background-color: rgb(0, 255, 140);
+    }
 }
 
 /* Grid del Formulario y Resumen */

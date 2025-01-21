@@ -8,6 +8,23 @@
 <script setup>
 import AppTopbar from './AppTopbar.vue';
 // import Home from './Home.vue';
+import { watch } from 'vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute()
+
+watch(() => route.path, () => {
+  scrollToTop();
+  // alert('ho')
+});
+
+const scrollToTop = () => {
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+};
+
+
 </script>
 
 <style scoped>

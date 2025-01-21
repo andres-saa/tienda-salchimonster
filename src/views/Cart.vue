@@ -13,7 +13,7 @@
 
 
                         <img class="cart-product-img p-1"
-                            :src="`https://img.restpe.com/${product.product.productogeneral_urlimagen}`" alt="" />
+                            :src="`${URI}/get-image?image_url=${product.product.productogeneral_urlimagen}`" alt="" />
 
                         <Button class="cart-delete-product-button ml-2"
                             @click="store.removeProductFromCart(product.product.productogeneral_id)" icon="pi pi-trash"
@@ -106,7 +106,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, onBeforeMount } from 'vue';
 import resumen from './resumen.vue';
 import { usecartStore } from '@/store/shoping_cart';
 import { formatoPesosColombianos } from '@/service/utils/formatoPesos';
@@ -114,12 +114,21 @@ import { useSitesStore } from '@/store/site';
 import { orderService } from '@/service/order/orderService';
 import { useUserStore } from '@/store/user';
 import { Button } from 'primevue';
+import { URI } from '@/service/conection';
 
 const store = usecartStore()
 const siteStore = useSitesStore()
 const selectedAdditions = ref({})
 const agrupados = ref({})
 const user = useUserStore()
+
+
+onBeforeMount(() => {
+
+    if (!siteStore.location.site?.site_id) {
+        siteStore.visibles.currentSite = true
+    }
+})
 
 const update = () => {
     agrupados.value = store.cart.additions.reduce((acumulador, elemento) => {
@@ -199,10 +208,10 @@ onMounted(async () => {
 
 const getAditional = () => {
     const ids = store.cart.products.map((p) => p.product.producto_id);
-    console.log(ids);
+    // console.log(ids);
 
     const menu = store.menu.data.map((p) => p.lista_agrupadores);
-    console.log(menu);
+    // console.log(menu);
 };
 
 getAditional();

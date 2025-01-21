@@ -1,7 +1,7 @@
 <template>
     <div class="image-gallery">
         <img v-for="i in [1, 2, 3, 4, 5, 6, 7, 8, 9]" style="margin: 0; padding: 0;"
-            src="https://www.menumaker.es/menu/wp-content/uploads/2023/07/R7bQdfdFpksoW7CLM-730x350.jpg.webp"
+            :src="`/images/menu/menucito${i}.jpeg`"
             :class="{ 'horizontal-image': !isMobile, 'vertical-image': isMobile }" alt="Menucito" />
     </div>
 </template>

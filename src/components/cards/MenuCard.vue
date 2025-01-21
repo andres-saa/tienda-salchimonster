@@ -3,8 +3,8 @@
         <div class="imagen">
             <!-- Imagen con lazy loading personalizado -->
             <img ref="productImage" class="imagen-producto lazy"
-                :data-src="`https://img.restpe.com/${props.product.productogeneral_urlimagen}`"
-                src="https://www.salchimonster.com/images/characters/line/1.png" alt="Descripción del producto" />
+                :data-src="`${URI}/get-image?image_url=${props.product.productogeneral_urlimagen}`"
+                src="https://media.tenor.com/IfbOs_yh89AAAAAM/loading-buffering.gif" alt="Descripción del producto" />
         </div>
 
         <div class="texto">
@@ -45,8 +45,8 @@
         </div>
 
         <!-- Botón flotante para añadir al carrito -->
-        <Button class="add-to-cart-button" @click.stop="addToCart(props.product)" severity="danger" rounded
-            icon="pi pi-plus text-xl fw-100" />
+        <Button class="add-to-cart-button" @click.stop="addToCart(props.product)" severity="danger" rounded> <i
+                class="pi pi-plus text-xl fw-100" style="font-weight: bold;"></i> </Button>
     </div>
 </template>
 
@@ -55,6 +55,10 @@ import { formatoPesosColombianos } from '@/service/utils/formatoPesos';
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { usecartStore } from '@/store/shoping_cart';
 import { Button } from 'primevue';
+import { useRoute } from 'vue-router';
+import router from '@/router';
+import { URI } from '@/service/conection';
+const route = useRoute()
 
 // Acceso al store del carrito
 const store = usecartStore();
@@ -69,6 +73,13 @@ const addToCart = (productToAdd) => {
 
 // Función para abrir la vista del producto
 const open = (product) => {
+    router.push({
+        path: route.path, // Mantiene la misma ruta
+        query: {
+            ...route.query,    // Preserva los parámetros de consulta existentes
+            producto: store.getProductId(product)      // Agrega o actualiza el parámetro 'producto'
+        }
+    })
     store.setCurrentProduct(product);
     store.setVisible('currentProduct', true);
 };
@@ -163,7 +174,7 @@ onBeforeUnmount(() => {
     width: 100%;
     aspect-ratio: 1 / 1;
     background-color: #fff;
-    object-fit: contain;
+    object-fit: cover;
 
     /* o 'contain' según tu preferencia */
     border-radius: 0.5rem;
@@ -220,6 +231,7 @@ onBeforeUnmount(() => {
 /* Botón flotante (absolute) para añadir al carrito */
 .add-to-cart-button {
     position: absolute;
+    aspect-ratio: 1 / 1;
     right: -1rem;
     top: -1rem;
 }

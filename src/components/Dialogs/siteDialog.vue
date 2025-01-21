@@ -1,6 +1,6 @@
 <template>
-    <Dialog style="width: 30rem;" v-model:visible="store.visibles.currentSite" header="Selección de sede" :modal="true"
-        class="dialog">
+    <Dialog style="width: 30rem;max-width: 96%;" v-model:visible="store.visibles.currentSite" header="Selección de sede"
+        :modal="true" class="dialog">
         <div class="dialog-content">
             <b class="dialog-title">
                 <!-- {{ store.location }} -->

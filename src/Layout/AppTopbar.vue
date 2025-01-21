@@ -1,6 +1,15 @@
 <template>
+  <div style="display: flex;justify-content: end; padding: 0rem 1rem ;gap: 0rem; width: 100%;background-color: black">
+    <a :href="i.href" v-for="i in socialLinks">
+      <Button size="small" class="social-btn" style="color: white;" text> <i style="color: white;font-weight: bold;"
+          :class="i.icon">
+        </i>
+      </Button>
+    </a>
+
+  </div>
   <div class="container" :class="barraClase">
-    <!-- Sección del Logo -->
+
     <div class="section-logo section">
       <div class="section-logo--buttons">
         <img style="cursor: pointer;" @click="router.push('/')" :class="route.fullPath == '/menu' ? 'logo2' : 'logo'"
@@ -12,9 +21,11 @@
 
         <div class="site-info-status">
           <span class="city-name">{{ siteStore.location?.city?.city_name }}</span>
-          <Tag class="status-tag">Abierto</Tag>
+          <Tag v-if="siteStore.status?.status == 'open'" class="status-tag">Abierto</Tag>
+          <Tag v-else-if="siteStore.status?.status" class="closed-tag">Cerrado</Tag>
+          <Tag v-else="siteStore.status?.status" class="closed-tag">Seleccionar sede</Tag>
         </div>
-        <div class="site-info-name">
+        <div class="site-info-name" v-if="siteStore.location?.site?.site_id">
           <span class="city-name"> Sede - {{ siteStore.location?.site.site_name }}</span>
         </div>
       </div>
@@ -48,8 +59,8 @@
         </Button>
       </RouterLink> -->
 
-      <Button text @click="toggleMobileMenu">
-        <b><i class="pi pi-bars"></i></b>
+      <Button id="bars" text @click="toggleMobileMenu">
+        <b style="pointer-events: none;"><i class="pi pi-bars"></i></b>
       </Button>
     </div>
 
@@ -59,8 +70,8 @@
 
 
     <!-- Menú Móvil (Opcional) -->
-    <div style=" transition: all ease 0s;" :style="mobileMenuVisible ? 'right :0rem' : 'right:-15rem'"
-      class="mobile-menu">
+    <div id="mobileMenuVisible" style=" transition: all ease 0s;"
+      :style="mobileMenuVisible ? 'right :0rem' : 'right:-15rem'" class="mobile-menu">
       <RouterLink v-for="button in buttons" :to="button.to" :key="button.name">
         <Button v-random-hover-color="{ opacity: .9 }" :icon="button.icon"
           style="color: white;width: 100%;justify-content: start; margin: .5rem 0;" class="button-nav"
@@ -71,23 +82,58 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { Button, Tag } from 'primevue';
 import router from '@/router';
 import { useSitesStore } from '@/store/site';
+import { fetchService } from '@/service/utils/fetchService';
+import { URI } from '@/service/conection';
 
 
 
+import { usecartStore } from '@/store/shoping_cart';
+
+const cart = usecartStore()
 
 const siteStore = useSitesStore()
 
-// Obtener la ruta actual
+
 const route = useRoute();
+
+onMounted(async () => {
+  const site_id = siteStore.location.site?.site_id
+  const pe_id = siteStore.location.site?.pe_site_id || 1
+  const status = await fetchService.get(`${URI}/site/${site_id}/status`)
+  if (status) {
+    siteStore.status = status
+  }
+  // cart.menu = await fetchService.get(`${URI}/get-product-integration/6149/${pe_id}/status`)
+})
+
+const socialLinks = [
+  {
+    icon: 'pi pi-facebook',
+    href: 'https://www.facebook.com/salchimonsterr'
+  },
+  {
+    icon: 'pi pi-instagram',
+    href: 'https://www.instagram.com/salchimonsterr/'
+  },
+  {
+    icon: 'pi pi-whatsapp',
+    href: 'https://wa.link/5mq1t0'
+  },
+  {
+    icon: 'pi pi-youtube',
+    href: 'hhttps://www.youtube.com/@Salchimonster/videos'
+  }
+];
+
 
 // Definir los botones de navegación
 const buttons = [
-  { name: 'Menu', to: '/', icon: 'fa-solid fa-bars' },
+  { name: 'Domicilios', to: '/', icon: 'fa-solid fa-bars' },
   { name: 'Sedes', to: '/sedes', icon: 'fa-solid fa-building' },
   { name: 'Carta', to: '/menu', icon: 'fa-solid fa-list' },
   { name: 'Rastrear Pedido', to: '/rastrear-pedido', icon: 'fa-solid fa-truck' },
@@ -131,6 +177,23 @@ const barraClase = computed(() => estilosPorRuta[route.fullPath] || 'barra-clara
 // Estado para el menú móvil
 const mobileMenuVisible = ref(false);
 
+const addEvent = () => [
+  document.addEventListener('click', validate)
+]
+
+const validate = (e) => {
+  // console.log(e.target)
+  if (e.target.id != 'mobileMenuVisible' && e.target.id != 'bars') {
+    mobileMenuVisible.value = false
+  }
+
+  // console.log(e.target.id)
+}
+
+onMounted(() => {
+  addEvent()
+})
+
 // Función para alternar el menú móvil
 const toggleMobileMenu = () => {
   mobileMenuVisible.value = !mobileMenuVisible.value;
@@ -140,6 +203,7 @@ const toggleMobileMenu = () => {
 <style scoped>
 .container {
   height: 3.5rem;
+  overflow: hidden;
   padding: 0 3rem;
   display: flex;
   position: sticky;
@@ -188,6 +252,11 @@ const toggleMobileMenu = () => {
 
 }
 
+.social-btn:hover {
+  background-color: black;
+  border-radius: 0%;
+}
+
 .logo2 {
   filter: saturate(0) brightness(100);
   height: 50%;
@@ -233,7 +302,7 @@ const toggleMobileMenu = () => {
   position: fixed;
   top: 3.5rem;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.83);
+  background-color: rgba(0, 0, 0, 0.7);
   width: 100%;
   max-width: 15rem;
   display: flex;
@@ -292,6 +361,49 @@ i {
 /* Estilos de las etiquetas de estado */
 .status-tag {
   padding: 0 1rem;
+  animation: anim_status_tag infinite .5s;
+  color: black;
+  background-color: rgb(119, 255, 0);
+
+}
+
+.closed-tag {
+  padding: 0 1rem;
+  animation: anim_status_tag_closed infinite .5s;
+  color: rgb(255, 255, 255);
+  background-color: rgb(255, 0, 0);
+
+}
+
+@keyframes anim_status_tag {
+  20% {
+    background-color: rgb(119, 255, 0);
+  }
+
+  50% {
+    background-color: yellow;
+  }
+
+  80% {
+    background-color: rgb(0, 255, 140);
+  }
+}
+
+@keyframes anim_status_tag_closed {
+  20% {
+    background-color: rgb(255, 0, 0);
+  }
+
+  50% {
+    background-color: rgb(0, 0, 0);
+  }
+
+  80% {
+    background-color: rgb(143, 0, 0);
+    transform: scale(1.1);
+  }
+
+
 }
 
 /* Nombre de la ciudad */
@@ -313,7 +425,7 @@ i {
 
 
 .active {
-  box-shadow: 0 0.4rem var(--p-primary-color);
+  box-shadow: 0 0.5rem var(--p-primary-color);
   /* color: var(--p-primary-color); */
   /* font-weight: bold; */
 }

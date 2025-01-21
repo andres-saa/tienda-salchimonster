@@ -79,27 +79,30 @@
                             }}
                         </b>
                     </span>
-                    <span v-else>
+                    <span v-else-if="siteStore.location.neigborhood.delivery_price">
                         <b>{{ formatoPesosColombianos(siteStore.location.neigborhood.delivery_price) }}</b>
                     </span>
                 </div>
                 <div class="col-6 my-0 py-0">
                     <span><b>Total</b></span>
                 </div>
-                <div class="col-6 my-0 text-right py-0 text-end">
+                <div class="col-6 my-0 text-right py-0 text-end" v-if="siteStore.location.neigborhood.delivery_price">
                     <!-- {{ siteStore.location }} -->
                     <span><b>{{ formatoPesosColombianos(
                         store.cart.total_cost +
                         siteStore.location.neigborhood.delivery_price
                             ) }}</b></span>
                 </div>
+
+                <Button @click="siteStore.visibles.currentSite = true" v-else label="Calcular mi domicilio"
+                    style="min-width: max-content;"></Button>
             </div>
 
             <!-- Botones de navegación y acciones -->
             <router-link to="/" v-if="route.path.includes('cart')">
-                <Button outlined icon="pi pi-shopping-cart" label="Seguir comprando"
-                    class="mt-4 button-common button-transparent button-fullwidth button-bold"
-                    severity="danger"></Button>
+                <Button outlined icon="pi pi-shopping-cart" label="Volver al menu'"
+                    class="mt-4 button-common button-transparent button-fullwidth button-bold" severity="danger">
+                </Button>
             </router-link>
 
             <router-link to="/cart" v-else-if="route.path != '/reservas'">
@@ -108,13 +111,19 @@
                     severity="danger"></Button>
             </router-link>
 
-            <Tag v-if="siteStore.status == 'cerrado' && route.path != '/reservas'" class="mt-2 tag-fullheight"
+            <Tag v-if="siteStore.status?.status == 'closed' && route.path != '/reservas'" class="mt-2 tag-fullheight"
                 severity="danger">
-                Este Restaurante esta cerrado
+                Cerrado, abre a las {{ siteStore.status.next_opening_time }}
             </Tag>
 
-            <!-- Botón “Pedir” -->
-            <router-link to="/pay" v-if="route.path.includes('cart') && siteStore.status != 'cerrado'">
+
+            <div>
+
+            </div>
+
+
+            <router-link to="/pay"
+                v-if="route.path.includes('cart') && (siteStore.status?.status !== 'closed' && route.path == '/reservas')">
                 <Button iconPos="right" icon="pi pi-arrow-right" label="Pedir"
                     class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
                     severity="help"></Button>
@@ -131,14 +140,23 @@
             </router-link>
 
             <!-- Botón “Finalizar pedido” si el restaurante no está cerrado -->
-            <router-link to="/pay" v-else-if="siteStore.status != 'cerrado'">
-                <Button @click="() => {
-                    orderService.sendOrder()
-                    sending = true
-                }" iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
+            <router-link to="/pay"
+                v-else-if="siteStore.status?.status !== 'closed' && siteStore.status?.status && route.path == '/cart'">
+                <Button iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
                     class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
                     severity="help"></Button>
             </router-link>
+
+
+            <Button
+                v-else-if="siteStore.status?.status !== 'closed' && siteStore.status?.status && route.path == '/pay'"
+                @click="() => {
+                    orderService.sendOrder()
+                    sending = true
+                }" iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
+                class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
+                severity="help"></Button>
+
         </div>
     </div>
 </template>

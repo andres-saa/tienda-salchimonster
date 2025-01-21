@@ -14,10 +14,16 @@
 
     <!-- Contenedor principal -->
     <div class="franchise-main">
+        <div
+            style="position: fixed;z-index: -1;top: 0  ; width: 100vw;height: 100vh;background-color: black; object-fit: cover;">
+            <img style="object-fit: cover;opacity: .4;width: 120vw;filter: blur(12px);"
+                src="https://backend.salchimonster.com/read-product-image/600/site-9" alt="">
+        </div>
+
         <div class="franchise-inner">
             <!-- Sección imágenes (izquierda) -->
             <div class="sedes">
-                <img v-for="i in [29, 3, 9, 1, 4, 8]" :key="`left-sede-${i}`" class="sede-img"
+                <img v-for="i in [29, 3, 9, 1, 4]" :key="`left-sede-${i}`" class="sede-img"
                     :src="`https://backend.salchimonster.com/read-product-image/600/site-${i}`" alt="Sede Izquierda" />
             </div>
 
@@ -100,7 +106,7 @@
 
             <!-- Sección imágenes (derecha) -->
             <div class="sedes">
-                <img v-for="i in [2, 11, 30, 10, 7, 6]" :key="`right-sede-${i}`" class="sede-img"
+                <img v-for="i in [2, 11, 30, 10, 7]" :key="`right-sede-${i}`" class="sede-img"
                     :src="`https://backend.salchimonster.com/read-product-image/600/site-${i}`" alt="Sede Derecha" />
             </div>
         </div>
@@ -282,7 +288,7 @@ const enviarFormulario = async () => {
 /* ====== Contenedor principal ====== */
 .franchise-main {
     width: 100%;
-    background-color: var(--p-primary-color);
+    /* background-color: var(--p-primary-color); */
     min-height: 100%;
     /* margin-top: 1rem; */
 }
@@ -290,9 +296,9 @@ const enviarFormulario = async () => {
 /* Contenedor interno */
 .franchise-inner {
     width: 100%;
-    max-width: 1366px;
+    max-width: 1600px;
     margin: auto;
-    align-items: center;
+    align-items: start;
     display: flex;
     padding: 1rem 0;
     gap: 1rem;

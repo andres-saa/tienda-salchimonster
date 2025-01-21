@@ -13,7 +13,7 @@
                 <img @click="open(image.producto)" v-for="(image, index) in cart?.menu?.data
                     .filter(p => p.categoria_id === section.categoria_id)
                     .map(p => { return { imagen: p.productogeneral_urlimagen, producto: p } })
-                    .slice(0, 4)" :key="index" class="category-img" :src="`https://img.restpe.com/${image.imagen}`"
+                    .slice(0, 4)" :key="index" class="category-img" :src="`${URI}/get-image?image_url=${image.imagen}`"
                     alt="Imagen de categoría">
 
             </div>
@@ -22,7 +22,7 @@
 
             <div class="section">
 
-                <div v-for="(product, index) in cart?.menu?.data?.filter(d => d.categoria_id == section.categoria_id)"
+                <div v-for="(product, index) in cart?.menu?.data?.filter(d => d.categoria_id == section.categoria_id && d.productogeneral_estado == 'Activo')"
                     :key="product.id" class="" style="width: 100%;">
 
                     <div class="card-container">
@@ -47,6 +47,10 @@ import { usecartStore } from '../store/shoping_cart';
 import MenuCard from '@/components/cards/MenuCard.vue';
 import { useReportesStore } from '@/store/ventas';
 import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { URI } from '@/service/conection';
+const route = useRoute()
+
 const store = useReportesStore()
 const cart = usecartStore()
 
@@ -65,6 +69,23 @@ const codigos = [
     // 14,//ADICIONES SALCHIPAPAS
 ]
 
+
+// console.log(route.query)
+
+const produtct_id = route.query?.producto;
+
+
+
+onMounted(() => {
+    console.log(produtct_id)
+
+    if (produtct_id) {
+        const product = cart.menu.data.find(p => cart.getProductId(p) == produtct_id)
+        cart.currentProduct = product
+        cart.visibles.currentProduct = true
+    }
+
+})
 
 
 const open = (product) => {
@@ -132,8 +153,9 @@ onMounted(() => {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: auto;
+    padding-bottom: 5rem;
     /* margin-top: 3rem; */
 }
 
@@ -173,15 +195,23 @@ onMounted(() => {
 
 .section {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     width: 100%;
+    padding: .5rem;
 }
 
 
 
-@media (max-width: 1220px) {
+@media (max-width: 1544px) {
     .section {
         grid-template-columns: repeat(2, 1fr);
+        /* max-width: 1024px; */
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        /* margin-top: 3rem; */
     }
 }
 

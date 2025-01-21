@@ -22,30 +22,31 @@
 <script setup>
 import { Button } from 'primevue';
 import { ref } from 'vue';
+import { onBeforeUnmount } from 'vue';
 
 
 const foodBanners = ref({
   1: {
     name: "Banner 1",
-    src: "https://www.salchimonster.com/images/banners/banner-0.jpeg",
+    src: "/images/banners/banner-0.jpeg",
     x: 0,
     index: 1
   },
   2: {
     name: "Banner 2",
-    src: "https://www.salchimonster.com/images/banners/banner-1.jpeg",
+    src: "/images/banners/banner-1.jpeg",
     x: -100,
     index: 2
   },
   3: {
     name: "Banner 3",
-    src: "https://www.salchimonster.com/images/banners/banner-2.jpeg",
+    src: "/images/banners/banner-2.jpeg",
     x: -200,
     index: 3
   },
   4: {
     name: "Banner 4",
-    src: "https://www.salchimonster.com/images/banners/banner-3.jpeg",
+    src: "/images/banners/banner-3.jpeg",
     x: -300,
     index: 4
   },
@@ -75,7 +76,7 @@ const changeBanner = (dir) => {
       index: newIndex + 1
     }
 
-    console.log(newv)
+    // console.log(newv)
     foodBanners.value[`${newIndex + 1}`] = { ...newv }
     last += 1
 
@@ -92,6 +93,19 @@ const changeBanner = (dir) => {
 
   // Actualizar el banner actual con el nuevo índice
 };
+
+
+
+
+const intervalId = setInterval(() => {
+  changeBanner(1);
+}, 3000); // 3000 milisegundos = 3 segundos
+
+// Limpiar el intervalo cuando el componente se desmonta
+onBeforeUnmount(() => {
+  clearInterval(intervalId);
+});
+
 
 </script>
 
@@ -128,6 +142,10 @@ i {
   border-radius: 50%;
   left: 1rem;
   padding: .5rem;
+  background-color: #00000070;
+  /* color: var(--p-primary-color); */
+  border: none;
+  color: white;
 }
 
 
@@ -137,6 +155,10 @@ i {
 .button-right {
   position: absolute;
   aspect-ratio: 1 / 1;
+  background-color: #00000070;
+  /* color: var(--p-primary-color); */
+  color: white;
+  border: none;
   border-radius: 50%;
   right: 1rem;
   padding: .5rem;

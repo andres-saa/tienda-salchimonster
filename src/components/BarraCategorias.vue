@@ -9,7 +9,7 @@
           <Button class="bar-button" :class="{ selected: cart.currentSection === section.categoria_id }"
             :label="section.categoria_descripcion">
             <img
-              :src="`https://img.restpe.com/${cart?.menu?.data.find(p => p.categoria_id == section.categoria_id)?.productogeneral_urlimagen}`"
+              :src="`${URI}/get-image?image_url=${cart?.menu?.data?.find(p => p.categoria_id == section.categoria_id)?.productogeneral_urlimagen}`"
               alt="" />
             <span><b>{{ section.categoria_descripcion }}</b></span>
           </Button>
@@ -23,6 +23,7 @@
 import { onMounted, onBeforeUnmount, computed, watch } from 'vue';
 import { usecartStore } from '../store/shoping_cart';
 import { Button } from 'primevue';
+import { URI } from '@/service/conection';
 
 // Store
 const cart = usecartStore();

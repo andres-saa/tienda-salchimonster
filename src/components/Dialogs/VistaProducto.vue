@@ -8,16 +8,15 @@
     <div v-if="productBaseToChange" class="change-dialog-content">
       <div class="change-option shadow-4 p-2" v-for="option in productBaseToChange.lista_productoCambio"
         :key="option.producto_cambio_id" @click="selectAlternative(option)">
-        <img class="change-option-img" :src="`https://img.restpe.com/${option.producto_urlimagen}`" alt="" />
+        <img class="change-option-img" :src="`${URI}/get-image?image_url=${option.producto_urlimagen}`" alt="" />
         <p><strong>{{ option.producto_descripcion }}</strong></p>
       </div>
-
       <Button @click="showChangeDialog = false;" severity="danger" icon="pi pi-times" class="close-change-dialog-btn" />
     </div>
   </Dialog>
 
   <!-- Dialog principal para mostrar un producto -->
-  <Dialog :closable="false" :close="reset()" v-model:visible="store.visibles.currentProduct" :style="{ width: '40rem' }"
+  <Dialog :closable="false" v-model:visible="store.visibles.currentProduct" :style="dialogStyle"
     :header="`${store.currentProduct.productogeneral_descripcion}`" :modal="true" class="container product-dialog">
     <!-- Botón para cerrar el diálogo principal -->
     <Button class="add-cart-button" @click="store.setVisible('currentProduct', false)" severity="danger"
@@ -48,18 +47,22 @@
 
     <!-- Contenido del diálogo principal -->
     <div class="dialog-main-content">
-      <img class="product-image" :src="`https://img.restpe.com/${store.currentProduct.productogeneral_urlimagen}`"
-        alt="" />
 
       <div>
+        <img style="position: sticky;top: 0;" class="product-image"
+          :src="`${URI}/get-image?image_url=${store.currentProduct.productogeneral_urlimagen}`" alt="" />
+      </div>
+
+
+      <div class="details" style="">
         <h3 class="text description">DESCRIPCION</h3>
-        <p>
+        <p class=" " style="margin: 1rem 0;">
           {{ store.currentProduct.productogeneral_descripcionweb?.toLowerCase() }}
         </p>
 
         <!-- Agrupadores de modificadores -->
         <div v-for="i in store.currentProduct.lista_agrupadores" :key="i.modificador_id">
-          <h3><strong>{{ i.modificador_nombre }}</strong></h3>
+          <h3 style="margin: 1rem 0;"><strong>{{ i.modificador_nombre }}</strong></h3>
 
           <div>
             <div class="modificador-row" v-for="modificador in i.listaModificadores"
@@ -74,7 +77,8 @@
 
                 <div class="modificador-price-quantity">
                   <span v-if="modificador.modificadorseleccion_precio > 0" class="pl-2 py-1 text-sm modificador-price">
-                    <b v-if="selectedAdditions[modificador.modificadorseleccion_id]?.quantity > 0">
+                    <b style="margin-right: .5rem;"
+                      v-if="selectedAdditions[modificador.modificadorseleccion_id]?.quantity > 0">
                       {{
                         formatoPesosColombianos(
                           modificador.modificadorseleccion_precio *
@@ -95,12 +99,12 @@
                       modificador.modificadorseleccion_precio > 0 &&
                       i.modificador_esmultiple > 0
                     " @click="decrement(modificador)" class="quantity-btn" severity="danger" icon="pi pi-minus" />
-                    <InputText v-if="
+                    <span v-if="
                       checkedAdition[modificador.modificadorseleccion_nombre] &&
                       modificador.modificadorseleccion_precio > 0 &&
                       i.modificador_esmultiple > 0
-                    " :modelValue="selectedAdditions[modificador.modificadorseleccion_id]?.quantity || 1" readonly
-                      class="quantity-input p-0 text-center" />
+                    " readonly class="quantity-input p-0 text-center"> {{
+                      selectedAdditions[modificador.modificadorseleccion_id]?.quantity || 1 }}</span>
                     <Button v-if="
                       checkedAdition[modificador.modificadorseleccion_nombre] &&
                       modificador.modificadorseleccion_precio > 0 &&
@@ -125,7 +129,8 @@
               <h3 class="m-0 p-0 text-2xl product-base-qty">
                 {{ Math.round(product_base.productocombo_cantidad) }} x
               </h3>
-              <img class="product-base-img" :src="`https://img.restpe.com/${product_base.producto_urlimagen}`" alt="" />
+              <img class="product-base-img" :src="`${URI}/get-image?image_url=${product_base.producto_urlimagen}`"
+                alt="" />
               <h3 class="m-0 p-0 product-base-desc">
                 {{ product_base.producto_descripcion }}
               </h3>
@@ -160,12 +165,28 @@ import { useRoute } from 'vue-router';
 import { usecartStore } from '@/store/shoping_cart';
 import { Dialog } from 'primevue';
 import { Button } from 'primevue';
-
+import { URI } from '@/service/conection';
+// import { URI } from '@/service/conection';
 const store = usecartStore();
 const route = useRoute();
 
+watch(() => store.visibles.currentProduct, (newVal) => {
+  if (!newVal) {
+    see.value = seeLeftHand.value = seeRightHand.value = false;
+    router.push({
+      path: route.path, // Mantiene la misma ruta
+      query: {
+      }
+    })
+    // alert('hol')
+  }
+})
+
 const productBaseToChange = ref(null);
 const showChangeDialog = ref(false);
+
+
+
 
 /**
  * Lógica para cambiar un producto base por otro alternativo.
@@ -274,7 +295,7 @@ const decrement = (item) => {
  * Agregar el producto (y sus adiciones) al carrito.
  */
 const addToCart = (product) => {
-  alert('hola');
+  // alert('hola');
   const additionsArray = Object.values(selectedAdditions.value);
 
   store.addProductToCart(product);
@@ -293,9 +314,7 @@ const addToCart = (product) => {
 const see = ref(false);
 const seeLeftHand = ref(false);
 const seeRightHand = ref(false);
-const reset = () => {
-  see.value = seeLeftHand.value = seeRightHand.value = false;
-};
+
 
 watch(
   () => store.visibles.currentProduct,
@@ -331,22 +350,32 @@ watch(
 /**
  * Detección de tamaño de pantalla
  */
+
+/**
+ * onMounted inicial
+ */
+
 const screenWidth = ref(window.innerWidth);
 
 const updateScreenWidth = () => {
   screenWidth.value = window.innerWidth;
 };
+
 window.addEventListener('resize', updateScreenWidth);
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', updateScreenWidth);
 });
 
-const isSmallScreen = computed(() => screenWidth.value < 768);
+const dialogStyle = computed(() => {
+  return isBelow1200.value
+    ? { width: '90%', 'max-width': '40rem' }
+    : { width: '90%', 'max-width': '1200px' };
+});
 
-/**
- * onMounted inicial
- */
+// Computed para determinar si la pantalla es menor a 1200px
+const isBelow1200 = computed(() => screenWidth.value < 1200);
+
 onMounted(() => {
   setTimeout(() => {
     if (route.params.product_id) {
@@ -414,7 +443,7 @@ const toast = useToast();
 
 /* Diálogo principal (producto) */
 .product-dialog {
-  max-width: 91vw;
+  max-width: 91vw !important;
 }
 
 /* Botón flotante para cerrar el diálogo principal */
@@ -466,6 +495,33 @@ const toast = useToast();
   border-radius: 1rem;
   padding: 0;
   padding-bottom: 0;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.details {
+  box-shadow: 0rem 1rem 3rem 1rem #00000010;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+@media (width<1200px) {
+
+  .dialog-main-content {
+    grid-template-columns: repeat(1, 1fr);
+
+  }
+
+  .product-dialog {
+    max-width: 20rem !important;
+  }
+
+  .details {
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+  }
 }
 
 /* Imagen del producto */
@@ -482,6 +538,7 @@ const toast = useToast();
   font-weight: bold;
   color: black;
   padding: 0.2rem 0;
+  /* background-color: red; */
 }
 
 /* Fila de modificador (checkbox + label + precio + botones) */
@@ -494,7 +551,7 @@ const toast = useToast();
 
 /* Checkbox de modificador */
 .modificador-checkbox {
-  outline: 2px solid var(--p-primary-color);
+  /* outline: 2px solid var(--p-primary-color); */
   border-radius: 0.2rem;
 }
 
@@ -533,6 +590,7 @@ const toast = useToast();
 
 /* Botón genérico de + / - */
 .quantity-btn {
+  /* margin-left: .5rem; */
   width: 2rem;
   height: 1.5rem;
   border: none;
@@ -541,6 +599,9 @@ const toast = useToast();
 /* Input de cantidad */
 .quantity-input {
   width: 2rem;
+  text-align: center;
+  font-weight: bold;
+  padding: 0;
   border: none;
   height: 1.5rem;
 }
@@ -591,7 +652,7 @@ const toast = useToast();
 .product-base-img {
   width: 4rem;
   aspect-ratio: 1 / 1;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 0.5rem;
 }
 
