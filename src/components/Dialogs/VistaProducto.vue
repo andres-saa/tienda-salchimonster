@@ -180,7 +180,10 @@ watch(() => store.visibles.currentProduct, (newVal) => {
     })
     // alert('hol')
   }
-})
+
+  selectedAdditions.value = {}
+  checkedAdition.value = {}
+},{deep:true})
 
 const productBaseToChange = ref(null);
 const showChangeDialog = ref(false);
@@ -298,7 +301,7 @@ const addToCart = (product) => {
   // alert('hola');
   const additionsArray = Object.values(selectedAdditions.value);
 
-  store.addProductToCart(product);
+  store.addProductToCart(product,1,additionsArray);
 
   additionsArray.forEach((adition) => {
     store.addAdditionToCart(adition);

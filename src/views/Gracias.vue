@@ -1,16 +1,15 @@
 <template>
     <div class="p-2 col-12 my-6"
-        style="height: auto;min-height: 90vh; display: flex;gap:2rem; justify-content: center; align-items: center;">
+        style="height: auto;min-height: 90vh;padding: .5rem; display: flex;gap:rem; justify-content: center; align-items: center;">
         <div class="shadow-7 p-4"
-            style="border-radius: 0.5rem; max-width: 500px;display: flex;flex-direction: column; gap:2rem">
-            <p class="text-4xl text-center mt-5" style="font-weight: bold;"> 🤩{{ user.user.name.toUpperCase() }}🤩</p>
-            <p class="text-2xl text-center mb-5" style="font-weight: bold;">🔥MUCHAS GRACIAS POR TU COMPRA!🔥</p>
+            style="border-radius: 0.5rem; max-width: 500px;display: flex;flex-direction: column;gap: .5rem;font-size: 1.3rem;">
+            <p class="text-4xl text-center mt-5" style="font-weight: bold;text-align: center;"> 🤩{{ user.user.name.toUpperCase() }}🤩</p>
+            <p class="text-2xl text-center " style="font-weight: bold;text-align: center;">🔥MUCHAS GRACIAS POR TU COMPRA!🔥</p>
 
-            <p class="text-4xl text-center my-5" style="font-weight: bold; text-transform: uppercase;"> <span
+            <p class="text-4xl text-center my-5" style="font-weight: bold; text-transform: uppercase;text-align: center;"> <span
                     class="text-2xl">ID DEL PEDIDO</span> <br> #{{ store.last_order }}</p>
 
-            <!-- {{ store.cart }} -->
-            <!-- <pre>{{ text }}</pre> -->
+         
 
 
             <p class="text-2xl text-center my-3 p-3"
@@ -18,7 +17,9 @@
                 Hemos recibido tu
                 pedido y en breve será despachado</p>
 
-
+<div>
+    
+</div>
 
 
             <div id="factura" style="width: 100%;text-transform: uppercase;">
@@ -101,26 +102,9 @@ const obtenerHoraFormateadaAMPM = (fecha) => {
 onMounted(() => {
     text.value = `Hola soy *${user.user.name.toUpperCase()}* 🤗 acabo de hacer el siguiente pedido en la página web. El número de la orden es *#${store.last_order}*.\n
 
-*Escribo para Realizar la Transferecia*\n
-*🛒 PRODUCTOS*\n${store.cart.products.map(product => `*${product.quantity}* ${product.product.product_name}`).join('\n')}\n\n`;
+    *Escribo para Realizar la Transferecia*\n
 
-    if (store.cart.additions.length > 0) {
-        text.value += `*➕ ADICIONES*\n${store.cart.additions.filter(a => a.group == 'ADICIONES').map(product => `*${product.quantity}* ${product.name}`).join('\n')}\n\n`;
-    }
-
-    if (store.cart.additions.filter(a => a.group == 'CAMBIOS').length > 0) {
-        text.value += `*➕ CAMBIOS*\n${store.cart.additions.filter(a => a.group == 'CAMBIOS').map(product => `*${product.quantity}* ${product.name}`).join('\n')}\n\n`;
-    }
-
-    if (store.cart.additions.filter(a => a.group == 'SALSAS').length > 0) {
-        text.value += `*➕ SALSAS*\n${store.cart.additions.filter(a => a.group == 'SALSAS').map(product => ` ${product.name}`).join('\n')}\n\n`;
-    }
-
-    text.value += `*📍 DIRECCIÓN*\n${user.user.address} BARRIO ${site.location?.neigborhood?.name}\n
-*📞 TELEFONO*\n${user.user.phone_number}\n
-*📝 NOTAS*\n${store.cart.order_notes || 'Sin notas'}\n
-*💰 METODO DE PAGO*\n${user.user.payment_method_option.name}\n
-*Muchas Gracias* 🙏`;
+    *Muchas Gracias* 🙏`;
 
     console.log(text.value);
 
@@ -148,15 +132,11 @@ onUnmounted(() => {
     //       was_reserva:false
     //   },
 
-    store.cart = {
-        products: [],
-        total_cost: 0,
-        additions: []  // Nueva propiedad para manejar las adiciones a nivel del carrito
-    }
+    store.cart = []
 })
 
 // onBeforeMount(() => {
-//     store.cart.products.length <= 0? router.push('/'):''
+//     store.cart.length <= 0? router.push('/'):''
 // })
 
 </script>
@@ -178,5 +158,12 @@ onUnmounted(() => {
 .wsp {
     animation: parpadeo ease infinite .5s;
     transition: all ease .5s;
+}
+
+
+*{
+    /* font-size: 1.3rem; */
+    /* margin: 0; */
+    
 }
 </style>

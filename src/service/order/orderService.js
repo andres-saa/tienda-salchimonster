@@ -17,74 +17,11 @@ const user = useUserStore();
 const preparar_orden = () => {
   user.user.was_reserva = false;
   cart.sending_order = true;
-  const order_products = cart.cart.products.map((p) => {
-    const generalPrice = p.product.productogeneral_precio;
-    const presentationPrice =
-      p.product.lista_presentacion?.[0]?.producto_precio;
-    // Filtramos los modificadores que pertenecen al producto actual
-    const modifiers = cart.cart.additions.filter(
-      (add) => add.parent_id === p.product.producto_id
-    );
-
-    // Suma de precios de todos los modificadores (asegurándonos de convertir a número)
-    const sumModifiers = modifiers.reduce((acc, curr) => {
-      return acc + Number(curr.price);
-    }, 0);
-
-    // Precio base (conversión a número para evitar concatenaciones)
-    const basePrice =
-      generalPrice !== undefined
-        ? Number(generalPrice)
-        : Number(presentationPrice) || 0;
-
-    // Precio final = precio base + sumatoria de precios de los modificadores
-    const totalPrice = basePrice + sumModifiers;
-
-    // Si deseas formatear el resultado a dos decimales:
-    const formattedTotalPrice = totalPrice.toFixed(2);
-
-    // Devolver el objeto con los campos requeridos
-    return {
-      pedido_productoid: p.product.producto_id,
-      pedido_cantidad: p.quantity,
-
-      // Sugerencia: si quieres guardarlo como número, usa `totalPrice`
-      // si quieres guardarlo como string con 2 decimales, usa `formattedTotalPrice`
-      pedido_precio: formattedTotalPrice,
-      pedido_base_price:basePrice,
-      pedido_escombo: p.product.productogeneral_escombo,
-      pedido_nombre_producto: p.product.productogeneral_descripcion,
-
-      lista_productocombo: p.product.lista_productobase?.map((comboItem) => {
-        return {
-          pedido_productoid: parseInt(comboItem.producto_id),
-          pedido_cantidad: parseInt(comboItem.productocombo_cantidad),
-          pedido_precio: parseFloat(comboItem.productocombo_precio), // Convertir a número
-          pedido_nombre: comboItem.producto_descripcion,
-        };
-      }),
-
-      modificadorseleccionList: modifiers.map((ad) => {
-        return {
-          modificadorseleccion_cantidad: Number(ad.quantity),
-          pedido_precio: Number(ad.price), // Convertir a número
-          modificador_id: ad.group_id,
-          modificadorseleccion_id: ad.id,
-          modificador_nombre: ad.name,
-          pedido_productoid: ad.parent_id,
-        };
-      }),
-    };
-  });
+  const order_products = cart.cart
 
   // console.log(order_products);
 
-  const order_aditionals = cart.cart.additions.map((a) => {
-    return {
-      aditional_item_instance_id: a.id,
-      quantity: a.quantity,
-    };
-  });
+
 
   const site_id = site.location.site.site_id;
   const pe_site_id = site.location.site.pe_site_id;
@@ -111,12 +48,13 @@ const preparar_orden = () => {
     delivery_price: delivery_price,
     order_notes: order_notes || "SIN NOTAS",
     user_data: user_data,
-    order_aditionals: order_aditionals,
+    order_aditionals: [],
     pe_json: order_products,
-    total: cart.cart.total_cost,
-  };
+    total: cart.cartTotal
+  };   
+  console.log(order)
 
-  return order;
+  return order
 };
 
 const preparar_orden_reserva = () => {

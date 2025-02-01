@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="cart-has-products" v-if="store.cart.products.length > 0">
+        <div class="cart-has-products" v-if="store.cart.length > 0">
             <h1 class="cart-title text-center text-2xl my-8">
                 <b>CARRITO DE COMPRAS</b>
             </h1>
@@ -8,80 +8,79 @@
             <div class="cart-grid">
 
                 <div class="cart-items-container col-12 text-sm md:col-6 p-3 md:px-4">
-                    <div class="cart-product-item col-12 py-3 p-shadow shadow-6" v-for="product in store.cart.products"
-                        :key="product.product.productogeneral_id">
+                    <div class="cart-product-item col-12 py-3 p-shadow shadow-6" v-for="product in store.cart"
+                        :key="productproductogeneral_id">
 
 
-                        <img class="cart-product-img p-1"
-                            :src="`${URI}/get-image?image_url=${product.product.productogeneral_urlimagen}`" alt="" />
 
+                        
+                        <div>
+
+                            <img class="cart-product-img p-1"
+                            :src="`${URI}/get-image?image_url=${product.productogeneral_urlimagen}`" alt="" />
+
+
+                        
                         <Button class="cart-delete-product-button ml-2"
-                            @click="store.removeProductFromCart(product.product.productogeneral_id)" icon="pi pi-trash"
+                            @click="store.removeProductFromCart(product.signature)" icon="pi pi-trash"
                             severity="danger" rounded />
 
                         <div class="cart-product-info">
                             <div class="cart-product-info-inner">
                                 <div class="cart-product-description-container">
-                                    <span class="p-0 m-0">{{ product.product.productogeneral_descripcion }}</span>
+                                    <span class="p-0 m-0">{{ product.pedido_nombre_producto }}</span>
                                 </div>
 
                                 <div class="cart-product-quantity-container">
                                     <div class="cart-product-quantity-control p-0">
                                         <Button class="cart-quantity-btn-minus"
-                                            @click="store.removeProductInstance(product.product.productogeneral_id)"
+                                            @click="store.decrementProduct(product.signature)"
                                             icon="pi pi-minus" severity="danger"></Button>
 
-                                        <span class="cart-product-quantity-label" readonly>{{ product.quantity }}</span>
+                                        <span class="cart-product-quantity-label" readonly>{{ product.pedido_cantidad }}</span>
 
                                         <Button class="cart-quantity-btn-plus"
-                                            @click="store.addProductToCart(product.product)" icon="pi pi-plus"
+                                            @click="store.incrementProduct(product.signature)" icon="pi pi-plus"
                                             severity="danger"></Button>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <h5 class="p-0 m-0">
-                            <b>{{ formatoPesosColombianos(product.total_cost) }}</b>
+                                    
+                        <h5 class="p-0 m-0 " style="margin-left: 1rem;">
+                            <b>{{ formatoPesosColombianos(product.pedido_precio) }}</b>
                         </h5>
-                    </div>
-                    <div class="col-12 p-0 mt-1">
-                        <div class="cart-additions-group p-shadow p-3 mb-4" v-for="(items, grupo) in agrupados"
-                            :key="grupo">
-                            <Button class="cart-delete-group-button ml-2" @click="deleteGroup(items)" icon="pi pi-trash"
-                                severity="danger" rounded />
 
-                            <div class="mb-2">
-                                <span class="mb-2 text-center">
-                                    <b>{{ grupo }}</b>
-                                </span>
+                                </div>
 
-                                <div class="mt-2">
-                                    <div class="cart-additions-item" v-for="item in items"
-                                        :key="item.aditional_item_instance_id">
-                                        <Button text rounded @click="deleteAd(item)"
+                                <div >
+
+
+                                    <div v-if="product?.modificadorseleccionList?.length > 0" class="mt-2 " style="box-shadow: 0 0 1rem #00000030;width: 100%;  padding: .5rem;margin-top: 1rem;border-radius: .5rem;">
+                                    <div class="cart-additions-item" v-for="item in product.modificadorseleccionList"
+                                       >
+                                        <!-- <Button text rounded @click="deleteAd(item)"
                                             class="cart-delete-addition-button p-0 m-0" severity="danger"
-                                            icon="pi pi-trash m-0"></Button>
+                                            icon="pi pi-trash m-0"></Button> -->
 
                                         <div class="cart-additions-item-container">
-                                            <span class="text adicion" style="text-transform: capitalize;">{{ item.name
+                                            <span class="text adicion" style="text-transform: capitalize;">( {{ product.pedido_cantidad }} ) {{ item.modificador_nombre
                                                 }}</span>
                                             <span class="cart-addition-item-price">
-                                                <span v-if="item.price > 0" class="pl-2 py-1 text-sm">
-                                                    <b>{{ formatoPesosColombianos(item.price * item.quantity) }}</b>
+                                                <span v-if="item.pedido_precio > 0" class="">
+                                                    <b>{{ formatoPesosColombianos(item.pedido_precio * item.modificadorseleccion_cantidad) }}</b>
+                                                    
                                                 </span>
 
-                                                <div v-if="grupo != 'SALSAS'"
+                                                <div 
                                                     class="cart-addition-quantity-control ml-2">
-                                                    <Button v-if="item.multiple > 0" @click="decrement(item)"
+                                                    <Button  @click="store.decrementAdditional(product.signature, item)"
                                                         severity="danger" class="cart-addition-quantity-btn-minus"
                                                         icon="pi pi-minus"></Button>
 
-                                                    <span v-if="item.multiple > 0" :modelValue="item.quantity" readonly
+                                                    <span  :modelValue="item.quantity" readonly
                                                         class="cart-addition-quantity-label p-0 text-center">{{
-                                                            item.quantity }}</span>
+                                                            item.modificadorseleccion_cantidad / product.pedido_cantidad }}</span>
 
-                                                    <Button v-if="item.multiple > 0" @click="increment(item)"
+                                                    <Button  @click="store.incrementAdditional(product.signature, item)"
                                                         severity="danger" class="cart-addition-quantity-btn-plus"
                                                         icon="pi pi-plus"></Button>
                                                 </div>
@@ -89,9 +88,16 @@
                                         </div>
                                     </div>
                                 </div>
+                                </div>
                             </div>
                         </div>
+
+
                     </div>
+
+                    </div>
+
+                   
                 </div>
 
                 <resumen class="md:col-6 shadow-6"></resumen>
@@ -123,6 +129,13 @@ const agrupados = ref({})
 const user = useUserStore()
 
 
+const mycart = ref([])
+
+
+onMounted( () => {
+    console.log(store.cart)
+})
+
 onBeforeMount(() => {
 
     if (!siteStore.location.site?.site_id) {
@@ -131,14 +144,14 @@ onBeforeMount(() => {
 })
 
 const update = () => {
-    agrupados.value = store.cart.additions.reduce((acumulador, elemento) => {
-        let grupo = elemento.group;
-        if (!acumulador[grupo]) {
-            acumulador[grupo] = [];
-        }
-        acumulador[grupo].push(elemento);
-        return acumulador;
-    }, {});
+    // agrupados.value = store.cart.additions.reduce((acumulador, elemento) => {
+    //     let grupo = elemento.group;
+    //     if (!acumulador[grupo]) {
+    //         acumulador[grupo] = [];
+    //     }
+    //     acumulador[grupo].push(elemento);
+    //     return acumulador;
+    // }, {});
 };
 
 watch(
@@ -149,7 +162,7 @@ watch(
     { deep: true }
 );
 
-orderService.preparar_orden();
+// orderService.preparar_orden();
 
 const increment = (adition) => {
     const new_adition = { ...adition };
@@ -196,25 +209,25 @@ onMounted(async () => {
     //   adicionales.value = await adicionalesService.getAditional(product_id)
     // }
 
-    agrupados.value = store.cart.additions.reduce((acumulador, elemento) => {
-        let grupo = elemento.group;
-        if (!acumulador[grupo]) {
-            acumulador[grupo] = [];
-        }
-        acumulador[grupo].push(elemento);
-        return acumulador;
-    }, {});
+    // agrupados.value = store.cart.additions.reduce((acumulador, elemento) => {
+    //     let grupo = elemento.group;
+    //     if (!acumulador[grupo]) {
+    //         acumulador[grupo] = [];
+    //     }
+    //     acumulador[grupo].push(elemento);
+    //     return acumulador;
+    // }, {});
 });
 
-const getAditional = () => {
-    const ids = store.cart.products.map((p) => p.product.producto_id);
-    // console.log(ids);
+// const getAditional = () => {
+//     const ids = store.cart.map((p) => p.product.producto_id);
+//     // console.log(ids);
 
-    const menu = store.menu.data.map((p) => p.lista_agrupadores);
-    // console.log(menu);
-};
+//     const menu = store.menu.data.map((p) => p.lista_agrupadores);
+//     // console.log(menu);
+// };
 
-getAditional();
+// getAditional();
 </script>
 
 <style scoped>
@@ -251,7 +264,7 @@ getAditional();
 
 /* Cada producto dentro del carrito */
 .cart-product-item {
-    display: flex;
+    /* display: flex; */
     align-items: end;
     position: relative;
     background-color: white;
@@ -309,6 +322,7 @@ getAditional();
 /* Contenedor para el control de cantidad */
 .cart-product-quantity-container {
     display: flex;
+    align-items: center;
 }
 
 .cart-product-quantity-control {
@@ -381,7 +395,9 @@ getAditional();
 /* Cada ítem adicional */
 .cart-additions-item {
     display: flex;
+    margin-top: .5rem;
     gap: 1rem;
+    width: 100%;
     align-items: center;
 }
 
@@ -410,6 +426,7 @@ getAditional();
 .cart-addition-quantity-control {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.411);
     margin-left: 1rem;
+    align-items: center;
     display: flex;
     border-radius: 0.3rem;
 }

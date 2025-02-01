@@ -3,19 +3,19 @@
     route.path == '/'
 
   " class="fixed-cart-bar background">
-    <div v-if="store.cart.products.length > 0" @click="enviarAlCarro" :class="['cart-bar', { hidden: !showElement }]">
+    <div v-if="store.cart.length > 0" @click="enviarAlCarro" :class="['cart-bar', { hidden: !showElement }]">
       <button class="cart-button">
         <i class="cart-icon icono pi pi-shopping-cart"></i>
 
-        <div v-for="product in store.cart.products.slice(0, 4)" :key="product.id" class="product-item">
-          <Button class="quantity-button" :label="`${product.quantity}`" severity="danger" rounded />
+        <div v-for="product in store.cart.slice(0, 4)" :key="product.id" class="product-item">
+          <Button class="quantity-button" :label="`${product.pedido_cantidad}`" severity="danger" rounded />
           <img class="img-cart" @mouseover="() => vueMenu = true"
-            :src="`${URI}/get-image?image_url=${product.product.productogeneral_urlimagen}`" alt="Product Image" />
+            :src="`${URI}/get-image?image_url=${product.productogeneral_urlimagen}`" alt="Product Image" />
         </div>
 
-        <div v-if="store.cart.products.length > 4" class="extra-products">
+        <div v-if="store.cart.length > 4" class="extra-products">
           <p class="extra-products-text">
-            +{{ store.cart.products.length - 4 }}
+            +{{ store.cart.length - 4 }}
           </p>
         </div>
       </button>

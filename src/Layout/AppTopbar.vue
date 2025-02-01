@@ -13,7 +13,7 @@
     <div class="section-logo section">
       <div class="section-logo--buttons">
         <img style="cursor: pointer;" @click="router.push('/')" :class="route.fullPath == '/menu' ? 'logo2' : 'logo'"
-          src="https://salchimonster.com/images/logo.png" alt="Logo" />
+          src="https://backend.salchimonster.com/read-photo-product/xai0dVnL" alt="Logo" />
       </div>
 
       <i class="pi pi-map-marker" @click="siteStore.visibles.currentSite = true"></i>
