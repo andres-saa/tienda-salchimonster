@@ -17,31 +17,31 @@
                     </h6>
 
                     <h6 class="m-0 ml-3 " style="margin-left: 1rem;" v-for="i in product.lista_productocombo" :key="i.producto_id">
-                        ( {{  product.pedido_cantidad }} ) <b style="margin-right: .5rem;">{{ parseInt(i.pedido_cantidad ) }}</b> 
+                        ( {{  product.pedido_cantidad }} ) <b style="margin-right: .5rem;">{{ parseInt(i.pedido_cantidad ) }}</b>
                         <span class="font-weight-400">{{ i.pedido_nombre   }}</span>
                     </h6>
 
-                    
 
 
 
-                 
+
+
                 </div>
 
-                
-                
+
+
 
                 <div class="col-6 my-0 text-right py-2">
                     <h6 v-if="product.modificadorseleccionList.length < 1" class="text-end">
-                        {{ formatoPesosColombianos(product.pedido_precio * product.pedido_cantidad) }}
+                        {{ formatoPesosColombianos(product.pedido_precio) }}
                     </h6>
 
                     <h6 v-else class="text-end">
                         {{ formatoPesosColombianos(product.pedido_base_price * product.pedido_cantidad) }}
                     </h6>
                 </div>
-                
-                
+
+
                 </div>
                 <div class="addition-item" v-for="item in product.modificadorseleccionList" :key="item">
                             <div class="addition-item-inner">
@@ -53,13 +53,13 @@
                                 </span>
                             </div>
                     </div>
-               
+
             </div>
 
             <!-- Adicionales agrupados -->
             <div class="col-12 p-0 mt-1">
-           
-                  
+
+
             </div>
 
             <hr class="p-0 mt-2" />

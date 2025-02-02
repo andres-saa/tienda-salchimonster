@@ -13,14 +13,14 @@
 
 
 
-                        
+
                         <div>
 
                             <img class="cart-product-img p-1"
                             :src="`${URI}/get-image?image_url=${product.productogeneral_urlimagen}`" alt="" />
 
 
-                        
+
                         <Button class="cart-delete-product-button ml-2"
                             @click="store.removeProductFromCart(product.signature)" icon="pi pi-trash"
                             severity="danger" rounded />
@@ -44,7 +44,7 @@
                                             severity="danger"></Button>
                                     </div>
 
-                                    
+
                         <h5 class="p-0 m-0 " style="margin-left: 1rem;">
                             <b>{{ formatoPesosColombianos(product.pedido_precio) }}</b>
                         </h5>
@@ -67,10 +67,10 @@
                                             <span class="cart-addition-item-price">
                                                 <span v-if="item.pedido_precio > 0" class="">
                                                     <b>{{ formatoPesosColombianos(item.pedido_precio * item.modificadorseleccion_cantidad) }}</b>
-                                                    
+
                                                 </span>
 
-                                                <div 
+                                                <div
                                                     class="cart-addition-quantity-control ml-2">
                                                     <Button  @click="store.decrementAdditional(product.signature, item)"
                                                         severity="danger" class="cart-addition-quantity-btn-minus"
@@ -97,7 +97,7 @@
 
                     </div>
 
-                   
+
                 </div>
 
                 <resumen class="md:col-6 shadow-6"></resumen>
