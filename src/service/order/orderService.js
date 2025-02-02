@@ -39,10 +39,10 @@ const preparar_orden = () => {
 
   const order = {
     order_products: [],
-    "site_id": site_id,
-    // site_id: 12,
-    // pe_site_id: 12,
-    "pe_site_id":pe_site_id,
+    // "site_id": site_id,
+    site_id: 12,
+    pe_site_id: 12,
+    // "pe_site_id":pe_site_id,
     delivery_person_id: 4,
     payment_method_id: payment_method_id,
     delivery_price: delivery_price,

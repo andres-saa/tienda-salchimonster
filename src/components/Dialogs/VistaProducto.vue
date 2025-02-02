@@ -48,8 +48,8 @@
     <!-- Contenido del diálogo principal -->
     <div class="dialog-main-content">
 
-      <div style="position: sticky;top: 0;background-color: red; height: 74vh;display: flex;">
-        <img  class="product-image"
+      <div>
+        <img style="position: sticky;top: 0;" class="product-image"
           :src="`${URI}/get-image?image_url=${store.currentProduct.productogeneral_urlimagen}`" alt="" />
       </div>
 
@@ -426,7 +426,7 @@ const toast = useToast();
 .change-option-img {
   width: 100px;
   height: 100px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* Botón para cerrar el diálogo de cambio */
