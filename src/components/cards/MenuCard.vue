@@ -26,7 +26,7 @@
 
                 <!-- Fila de acciones (corazón y precio) -->
                 <div class="flex-row-center-space-between">
-                    <Button icon="pi pi-heart text-xl p-0 m-0" text rounded class="heart-button" />
+                    <!-- <Button icon="pi pi-heart text-xl p-0 m-0" text rounded class="heart-button" /> -->
 
                     <div class="flex-center-gap">
                         <h2 class="text-xl p-0 m-0 precio">
@@ -207,7 +207,7 @@ onBeforeUnmount(() => {
 /* Fila con “display: flex; justify-content: space-between; align-items: center;” */
 .flex-row-center-space-between {
     display: flex;
-    justify-content: space-between;
+    justify-content: end;
     align-items: center;
 }
 

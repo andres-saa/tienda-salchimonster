@@ -24,7 +24,7 @@ onMounted(async () => {
     siteStore.status = status
   }
   const data = await fetchService.get(`${URI}/get-product-integration/6149/${pe_id}`)
-  cart.menu = data.data
+  cart.menu = data
 
 })
 </script>

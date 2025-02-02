@@ -155,7 +155,7 @@ onMounted(() => {
 .container {
     max-width: 1600px;
     margin: auto;
-    padding-bottom: 5rem;
+    /* padding-bottom: 5rem; */
     /* margin-top: 3rem; */
 }
 
