@@ -4,7 +4,6 @@
     <RouterView></RouterView>
     <BarraCategorias></BarraCategorias>
     <MenuSection></MenuSection>
-    {{ store.cart }}
   </div>
 
 </template>
