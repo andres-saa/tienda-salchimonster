@@ -11,7 +11,7 @@
                     <b>{{ section.categoria_descripcion }}</b>
                 </span>
                 <img @click="open(image.producto)" v-for="(image, index) in cart?.menu?.data
-                    .filter(p => p.categoria_id === section.categoria_id)
+                    .filter(p => p.categoria_id === section.categoria_id  &&  (p?.productogeneral_precio > 0 || p?.lista_presentacion?.[0].producto_precio > 0))
                     .map(p => { return { imagen: p.productogeneral_urlimagen, producto: p } })
                     .slice(0, 4)" :key="index" class="category-img" :src="`${URI}/get-image?image_url=${image.imagen}`"
                     alt="Imagen de categoría">
