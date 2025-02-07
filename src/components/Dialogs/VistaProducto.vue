@@ -191,9 +191,6 @@ const showChangeDialog = ref(false);
 
 
 
-/**
- * Lógica para cambiar un producto base por otro alternativo.
- */
 const selectAlternative = (option) => {
   const currentProduct = {
     producto_cambio_id: productBaseToChange.value.producto_id,

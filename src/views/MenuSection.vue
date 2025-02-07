@@ -22,7 +22,8 @@
 
             <div class="section">
 
-                <div v-for="(product, index) in cart?.menu?.data?.filter(d => d.categoria_id == section.categoria_id && d.productogeneral_estado == 'Activo')"
+                <div v-for="(product, index) in cart?.menu?.data?.filter(d => d.categoria_id == section.categoria_id &&
+                d.productogeneral_estado == 'Activo' &&   (d?.productogeneral_precio > 0 || d?.lista_presentacion?.[0].producto_precio > 0)) "
                     :key="product.id" class="" style="width: 100%;">
 
                     <div class="card-container">
