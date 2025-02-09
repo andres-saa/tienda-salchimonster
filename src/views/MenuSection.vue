@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="containerm">
         <div :id="section.categoria_id" class=" container-button" v-for="(section, index) in cart?.menu?.listaCategorias?.filter(c => codigos.includes(parseInt(c.categoria_id)))
             ?.sort((a, b) => codigos.indexOf(parseInt(a.categoria_id)) - codigos.indexOf(parseInt(b.categoria_id)))"
             :key="section.categoria_id">
@@ -10,11 +10,11 @@
                 <span class="category-name">
                     <b>{{ section.categoria_descripcion }}</b>
                 </span>
-                <img @click="open(image.producto)" v-for="(image, index) in cart?.menu?.data
+                <!-- <img @click="open(image.producto)" v-for="(image, index) in cart?.menu?.data
                     .filter(p => p.categoria_id === section.categoria_id  &&  (p?.productogeneral_precio > 0 || p?.lista_presentacion?.[0].producto_precio > 0))
                     .map(p => { return { imagen: p.productogeneral_urlimagen, producto: p } })
                     .slice(0, 4)" :key="index" class="category-img" :src="`${URI}/get-image?image_url=${image.imagen}`"
-                    alt="Imagen de categoría">
+                    alt="Imagen de categoría"> -->
 
             </div>
 
@@ -81,7 +81,7 @@ onMounted(() => {
     console.log(produtct_id)
 
     if (produtct_id) {
-        const product = cart.menu.data.find(p => cart.getProductId(p) == produtct_id)
+        const product = cart.menu?.data?.find(p => cart.getProductId(p) == produtct_id)
         cart.currentProduct = product
         cart.visibles.currentProduct = true
     }
@@ -153,10 +153,11 @@ onMounted(() => {
     padding-bottom: 2rem; */
 }
 
-.container {
+.containerm {
     max-width: 1600px;
-    margin: auto;
-    /* padding-bottom: 5rem; */
+    margin:0 auto;
+
+    padding-bottom: 5rem;
     /* margin-top: 3rem; */
 }
 
@@ -165,7 +166,7 @@ onMounted(() => {
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
-    padding: 0 1rem;
+    /* padding: 0 1rem; */
 
     margin: 2rem auto;
     justify-content: center;

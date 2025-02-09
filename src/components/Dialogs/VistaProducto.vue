@@ -1,6 +1,6 @@
 <template>
   <!-- Dialog para cambiar un producto base -->
-  <Dialog v-model:visible="showChangeDialog" :closable="false" :modal="true" class="p-3 change-dialog">
+  <Dialog v-model:visible="showChangeDialog" style="max-width:20rem" :closable="false" :modal="true" class="p-3 change-dialog">
     <template #header>
       <h3>Elige una alternativa para {{ productBaseToChange.producto_descripcion }}</h3>
     </template>
@@ -39,6 +39,20 @@
     </template>
 
     <template #footer>
+      <div
+                                                    class="cart-addition-quantity-control ml-2">
+                                                    <Button @click="quantity>1? quantity-=1 : 0"
+                                                        severity="danger" style="border-radius:.5rem 0 0 .5rem" class="cart-addition-quantity-btn-minus"
+                                                        icon="pi pi-minus"></Button>
+
+                                                    <span  readonly
+                                                        class="cart-addition-quantity-label p-0 text-center">{{quantity
+                                                            }}</span>
+
+                                                    <Button @click="quantity+=1"
+                                                        severity="danger" style="border-radius:0 .5rem .5rem 0" class="cart-addition-quantity-btn-plus"
+                                                        icon="pi pi-plus"></Button>
+                                                </div>
       <div class="footer-container">
         <Button class="add-cart-footer-btn" @click="addToCart(store.currentProduct)" label="Agregar al carrito"
           icon="pi pi-shopping-cart" />
@@ -67,7 +81,7 @@
           <div>
             <div class="modificador-row" v-for="modificador in i.listaModificadores"
               :key="modificador.modificadorseleccion_id">
-              <Checkbox class="my-1 modificador-checkbox" @change="() => handleAdditionChange(modificador, i)" binary
+              <Checkbox class="my-1 modificador-checkbox" @change="() => handleAdditionChange(modificador, i.modificador_id)" binary
                 v-model="checkedAdition[modificador.modificadorseleccion_nombre]" />
 
               <div class="modificador-row-content">
@@ -78,12 +92,12 @@
                 <div class="modificador-price-quantity">
                   <span v-if="modificador.modificadorseleccion_precio > 0" class="pl-2 py-1 text-sm modificador-price">
                     <b style="margin-right: .5rem;"
-                      v-if="selectedAdditions[modificador.modificadorseleccion_id]?.quantity > 0">
+                      v-if="selectedAdditions[modificador.modificadorseleccion_id]?.modificadorseleccion_cantidad > 0">
                       {{
                         formatoPesosColombianos(
                           modificador.modificadorseleccion_precio *
                           parseInt(
-                            selectedAdditions[modificador.modificadorseleccion_id]?.quantity
+                            selectedAdditions[modificador.modificadorseleccion_id]?.modificadorseleccion_cantidad
                           )
                         )
                       }}
@@ -104,7 +118,7 @@
                       modificador.modificadorseleccion_precio > 0 &&
                       i.modificador_esmultiple > 0
                     " readonly class="quantity-input p-0 text-center"> {{
-                      selectedAdditions[modificador.modificadorseleccion_id]?.quantity || 1 }}</span>
+                      selectedAdditions[modificador.modificadorseleccion_id]?.modificadorseleccion_cantidad || 1 }}</span>
                     <Button v-if="
                       checkedAdition[modificador.modificadorseleccion_nombre] &&
                       modificador.modificadorseleccion_precio > 0 &&
@@ -125,30 +139,30 @@
         <div class="product-base-grid">
           <div class="product-base-item" v-for="product_base in store.currentProduct.lista_productobase"
             :key="product_base.producto_id">
+            <h3 class="m-0 p-0 product-base-desc">
+                {{ product_base.producto_descripcion }}
+              </h3>
             <div class="product-base-item-header">
               <h3 class="m-0 p-0 text-2xl product-base-qty">
                 {{ Math.round(product_base.productocombo_cantidad) }} x
               </h3>
               <img class="product-base-img" :src="`${URI}/get-image?image_url=${product_base.producto_urlimagen}`"
                 alt="" />
-              <h3 class="m-0 p-0 product-base-desc">
-                {{ product_base.producto_descripcion }}
-              </h3>
-            </div>
-
-            <div class="product-base-change-btn-wrapper">
-              <Button class="product-base-change-btn" style="" label="Cambiar" v-if="
+                <Button class="product-base-change-btn" style="" label="Cambiar" v-if="
                 product_base.lista_productoCambio &&
                 product_base.lista_productoCambio.length > 0
               " @click="changeProduct(product_base)" />
+
             </div>
+
+
+<div style="border-top:.3rem solid;margin-top:.5rem;opacity:.2"></div>
           </div>
+
         </div>
       </div>
 
-      <!-- Sección inferior cuando la pantalla es grande -->
-      <div v-if="!isSmallScreen" class="col-12 md:col-6 add-car pt-5 dialog-bottom-fade">
-      </div>
+
     </div>
   </Dialog>
 </template>
@@ -169,6 +183,10 @@ import { URI } from '@/service/conection';
 // import { URI } from '@/service/conection';
 const store = usecartStore();
 const route = useRoute();
+const see = ref(false);
+const seeLeftHand = ref(false);
+const seeRightHand = ref(false);
+const quantity = ref(1)
 
 watch(() => store.visibles.currentProduct, (newVal) => {
   if (!newVal) {
@@ -183,6 +201,7 @@ watch(() => store.visibles.currentProduct, (newVal) => {
 
   selectedAdditions.value = {}
   checkedAdition.value = {}
+  quantity.value = 1
 },{deep:true})
 
 const productBaseToChange = ref(null);
@@ -253,24 +272,16 @@ const changeProduct = (product_base) => {
 const selectedAdditions = ref({});
 const checkedAdition = ref({});
 
-const handleAdditionChange = (item, group) => {
+const handleAdditionChange = (item, modificador_id) => {
   if (checkedAdition.value?.[item?.modificadorseleccion_nombre]) {
     const new_item = {
-      id: item.modificadorseleccion_id,
-      name: item.modificadorseleccion_nombre,
-      price: item.modificadorseleccion_precio,
-      group: group.modificador_nombre,
-      group_id: group.modificador_id,
-      multiple: group.modificador_esmultiple,
-      parent_id:
-        store.currentProduct.producto_id ||
-        store.currentProduct.lista_presentacion[0].producto_id,
+      ...item,
+      modificadorseleccion_cantidad:1,
+      modificador_id:modificador_id,
+
     };
 
-    selectedAdditions.value[new_item.id] = {
-      ...new_item,
-      quantity: item.quantity || 1,
-    };
+    selectedAdditions.value[new_item.modificadorseleccion_id] = new_item
   } else {
     delete selectedAdditions.value[item.modificadorseleccion_id];
   }
@@ -278,16 +289,16 @@ const handleAdditionChange = (item, group) => {
 
 const increment = (item) => {
   if (checkedAdition.value?.[item?.modificadorseleccion_nombre]) {
-    selectedAdditions.value[item.modificadorseleccion_id].quantity++;
+    selectedAdditions.value[item.modificadorseleccion_id].modificadorseleccion_cantidad++;
   }
 };
 
 const decrement = (item) => {
   if (
-    selectedAdditions.value[item.modificadorseleccion_id].quantity > 1 &&
+    selectedAdditions.value[item.modificadorseleccion_id].modificadorseleccion_cantidad > 1 &&
     selectedAdditions.value[item.modificadorseleccion_id]
   ) {
-    selectedAdditions.value[item.modificadorseleccion_id].quantity--;
+    selectedAdditions.value[item.modificadorseleccion_id].modificadorseleccion_cantidad --;
   }
 };
 
@@ -298,11 +309,8 @@ const addToCart = (product) => {
   // alert('hola');
   const additionsArray = Object.values(selectedAdditions.value);
 
-  store.addProductToCart(product,1,additionsArray);
+  store.addProductToCart(product,quantity.value,additionsArray);
 
-  additionsArray.forEach((adition) => {
-    store.addAdditionToCart(adition);
-  });
 
   selectedAdditions.value = {}; // Reseteamos las adiciones
   store.setVisible('currentProduct', false);
@@ -311,10 +319,6 @@ const addToCart = (product) => {
 /**
  * Reset al cerrar el diálogo.
  */
-const see = ref(false);
-const seeLeftHand = ref(false);
-const seeRightHand = ref(false);
-
 
 watch(
   () => store.visibles.currentProduct,
@@ -325,6 +329,7 @@ watch(
     const new_route = `/${route.params.menu_name}/${route.params.category_id}`;
     if (route.path != '/') {
       router.push(new_route);
+
     }
   }
 );
@@ -340,6 +345,7 @@ watch(
     if (!new_val) {
       selectedAdditions.value = {};
       adicionales.value = [];
+
     } else {
       // Lógica cuando se abre el panel de adiciones, si la hay
     }
@@ -373,6 +379,8 @@ const dialogStyle = computed(() => {
     : { width: '90%', 'max-width': '1200px' };
 });
 
+
+
 // Computed para determinar si la pantalla es menor a 1200px
 const isBelow1200 = computed(() => screenWidth.value < 1200);
 
@@ -385,6 +393,8 @@ onMounted(() => {
       store.visibles.currentProduct = true;
     }
   }, 1000);
+
+
 });
 
 const toast = useToast();
@@ -421,9 +431,14 @@ const toast = useToast();
 
 /* Imagen de cada opción */
 .change-option-img {
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
+  padding:10px;
+  border-radius:.5rem;
   object-fit: contain;
+  /* border:2px solid; */
+  box-shadow: 0rem 0rem 1rem #00000030;
+
 }
 
 /* Botón para cerrar el diálogo de cambio */
@@ -484,7 +499,7 @@ const toast = useToast();
   color: white;
   width: auto;
   border: none;
-  padding: 0.5rem 3rem;
+  /* padding: 0.5rem 3rem; */
   font-weight: bold;
 }
 
@@ -615,21 +630,23 @@ const toast = useToast();
 .product-base-grid {
   display: grid;
   gap: 1rem;
+  padding:0rem;
   grid-template-columns: repeat(1, 1fr);
-  border-radius: 0.5rem;
+  /* border-radius: 0.5rem; */
   overflow: hidden;
 }
 
 /* Cada ítem de producto base */
 .product-base-item {
-  border: 2px solid var(--p-primary-color);
+  /* border: 2px solid var(--p-primary-color); */
   display: flex;
   border-radius: 0.5rem;
+  /* margin:1rem 0; */
   background-color: #fff;
   flex-direction: column;
-  box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-  gap: 0.5rem;
+  /* box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1); */
+  /* padding: 1rem; */
+  /* gap: 0.5rem; */
 }
 
 /* Encabezado del producto base */
@@ -639,7 +656,7 @@ const toast = useToast();
   align-items: center;
   position: relative;
   border-radius: 0.5rem;
-  padding: 1rem;
+  /* padding: 1rem; */
 }
 
 /* Cantidad (Ej.: “2 x”) */
@@ -653,6 +670,8 @@ const toast = useToast();
   width: 4rem;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+  box-shadow: 0rem 0rem 1rem #00000080;
+
   border-radius: 0.5rem;
 }
 
@@ -751,6 +770,24 @@ const toast = useToast();
   * {
     font-size: 12.5px;
   }
+}
+
+.cart-addition-quantity-label {
+    width: 3rem;
+    height: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cart-addition-quantity-control {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.411);
+    margin-left: 1rem;
+    align-items: center;
+    display: flex;
+    border-radius: 0.3rem;
 }
 
 /* Ajuste de capitalización para la clase “adicion” */

@@ -9,12 +9,14 @@
 
                 <div class="cart-items-container col-12 text-sm md:col-6 p-3 md:px-4">
                     <div class="cart-product-item col-12 py-3 p-shadow shadow-6" v-for="product in store.cart"
-                        :key="productproductogeneral_id">
+                        :key="product.pedido_productoid">
 
 
 
 
-                        <div>
+                        <div>    <div class="cart-product-description-container">
+                                    <span class="p-0 m-0">{{ product.pedido_nombre_producto }}</span>
+                                </div>
 
                             <img class="cart-product-img p-1"
                             :src="`${URI}/get-image?image_url=${product.productogeneral_urlimagen}`" alt="" />
@@ -27,9 +29,7 @@
 
                         <div class="cart-product-info">
                             <div class="cart-product-info-inner">
-                                <div class="cart-product-description-container">
-                                    <span class="p-0 m-0">{{ product.pedido_nombre_producto }}</span>
-                                </div>
+
 
                                 <div class="cart-product-quantity-container">
                                     <div class="cart-product-quantity-control p-0">
@@ -40,13 +40,13 @@
                                         <span class="cart-product-quantity-label" readonly>{{ product.pedido_cantidad }}</span>
 
                                         <Button class="cart-quantity-btn-plus"
-                                            @click="store.incrementProduct(product.signature)" icon="pi pi-plus"
+                                            @click=" store.incrementProduct (product.signature)" icon="pi pi-plus"
                                             severity="danger"></Button>
                                     </div>
 
 
                         <h5 class="p-0 m-0 " style="margin-left: 1rem;">
-                            <b>{{ formatoPesosColombianos(product.pedido_precio) }}</b>
+                            <b>{{ formatoPesosColombianos(product.pedido_precio  * product.pedido_cantidad) }}</b>
                         </h5>
 
                                 </div>
@@ -62,25 +62,25 @@
                                             icon="pi pi-trash m-0"></Button> -->
 
                                         <div class="cart-additions-item-container">
-                                            <span class="text adicion" style="text-transform: capitalize;">( {{ product.pedido_cantidad }} ) {{ item.modificador_nombre
+                                            <span class="text adicion" style="text-transform: capitalize;">( {{ product.pedido_cantidad }} ) <span> <b>{{item.modificadorseleccion_cantidad}}</b></span> {{ item.modificadorseleccion_nombre
                                                 }}</span>
                                             <span class="cart-addition-item-price">
                                                 <span v-if="item.pedido_precio > 0" class="">
-                                                    <b>{{ formatoPesosColombianos(item.pedido_precio * item.modificadorseleccion_cantidad) }}</b>
+                                                    <b>{{ formatoPesosColombianos(item.pedido_precio * item.modificadorseleccion_cantidad * product.pedido_cantidad) }}</b>
 
                                                 </span>
 
                                                 <div
                                                     class="cart-addition-quantity-control ml-2">
-                                                    <Button  @click="store.decrementAdditional(product.signature, item)"
+                                                    <Button style="border-radius:.3rem 0 0 .3rem"  @click="store.decrementAdditional(product.signature, item)"
                                                         severity="danger" class="cart-addition-quantity-btn-minus"
                                                         icon="pi pi-minus"></Button>
 
                                                     <span  :modelValue="item.quantity" readonly
                                                         class="cart-addition-quantity-label p-0 text-center">{{
-                                                            item.modificadorseleccion_cantidad / product.pedido_cantidad }}</span>
+                                                            item.modificadorseleccion_cantidad * product.pedido_cantidad  }}</span>
 
-                                                    <Button  @click="store.incrementAdditional(product.signature, item)"
+                                                    <Button  style="border-radius:0  .3rem   .3rem 0" @click="store.incrementAdditional(product.signature, item)"
                                                         severity="danger" class="cart-addition-quantity-btn-plus"
                                                         icon="pi pi-plus"></Button>
                                                 </div>
@@ -250,7 +250,7 @@ onMounted(async () => {
     margin: 0 auto;
     margin-top: 3rem;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 2fr  2fr;
     gap: 2rem;
 }
 

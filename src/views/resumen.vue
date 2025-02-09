@@ -33,7 +33,7 @@
 
                 <div class="col-6 my-0 text-right py-2">
                     <h6 v-if="product.modificadorseleccionList.length < 1" class="text-end">
-                        {{ formatoPesosColombianos(product.pedido_precio) }}
+                        {{ formatoPesosColombianos(product.pedido_precio * product.pedido_cantidad) }}
                     </h6>
 
                     <h6 v-else class="text-end">
@@ -45,11 +45,11 @@
                 </div>
                 <div class="addition-item" v-for="item in product.modificadorseleccionList" :key="item">
                             <div class="addition-item-inner">
-                                <span class="text adicion"><span><b>- ( {{ product.pedido_cantidad }} ) {{ item.modificadorseleccion_cantidad / product.pedido_cantidad }}</b></span> {{ item.modificador_nombre
+                                <span class="text adicion"><span><b>- ( {{ product.pedido_cantidad }} ) {{ item.modificadorseleccion_cantidad }}</b></span> {{ item.modificadorseleccion_nombre
                                     }}</span>
 
                                 <span    v-if="item.pedido_precio > 0" class="pl-2 text-sm">
-                                    <b>{{ formatoPesosColombianos(item.pedido_precio * item.modificadorseleccion_cantidad) }}</b>
+                                    <b>{{ formatoPesosColombianos(item.pedido_precio * item.modificadorseleccion_cantidad * product.pedido_cantidad) }}</b>
                                 </span>
                             </div>
                     </div>

@@ -41,7 +41,7 @@ const preparar_orden = () => {
     order_products: [],
     "site_id": site_id,
     // site_id: 12,
-    // pe_site_id: 12,
+    // pe_site_id: 2,
     "pe_site_id":pe_site_id,
     delivery_person_id: 4,
     payment_method_id: payment_method_id,
@@ -50,8 +50,8 @@ const preparar_orden = () => {
     user_data: user_data,
     order_aditionals: [],
     pe_json: order_products,
-    total: cart.cartTotal
-  };   
+    total: 0
+  };
   console.log(order)
 
   return order
