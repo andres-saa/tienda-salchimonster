@@ -1,5 +1,5 @@
 <template>
-    <Dialog style="width: 30rem;max-width: 96%;" v-model:visible="store.visibles.currentSite" header="Selección de sede"
+    <Dialog :closable="store.location?.site?.pe_site_id > 0" style="width: 30rem;max-width: 96%;" v-model:visible="store.visibles.currentSite" header="Selección de sede"
         :modal="true" class="dialog">
         <div class="dialog-content">
             <b class="dialog-title">

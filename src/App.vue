@@ -17,6 +17,8 @@ const cart = usecartStore()
 const siteStore = useSitesStore()
 
 onMounted(async () => {
+
+
   const site_id = siteStore.location.site?.site_id
   const pe_id = siteStore.location.site?.pe_site_id
   const status = await fetchService.get(`${URI}/site/${site_id}/status`)

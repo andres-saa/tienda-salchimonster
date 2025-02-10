@@ -51,7 +51,9 @@ import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { URI } from '@/service/conection';
 const route = useRoute()
+import { useSitesStore } from '@/store/site';
 
+const siteStore = useSitesStore()
 const store = useReportesStore()
 const cart = usecartStore()
 
@@ -128,6 +130,11 @@ const smoothScrollTo = (categoryId) => {
 
 
 onMounted(() => {
+
+  if( !siteStore.location?.site?.pe_site_id){
+    siteStore.visibles.currentSite = true
+    console.log(siteStore.location)
+  }
     if (cart.currentSection) {
         smoothScrollTo(cart.currentSection)
     }
