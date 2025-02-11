@@ -16,6 +16,7 @@ export const usecartStore = defineStore('salchi_super_cart_web443', {
     visibles: {
       currentProduct: false,
       addAdditionToCart: false,
+      loading:true,
       last_order: '',
     },
 

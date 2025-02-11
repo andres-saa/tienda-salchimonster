@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useReportesStore } from '@/store/ventas';
+import { usecartStore } from "@/store/shoping_cart";
+
 import router from "@/router";
 
 export const fetchService = {
@@ -14,15 +16,15 @@ export const fetchService = {
             } else {
                 store.setLoading(true, 'cargando');
             }
-    
+
             // Configura los headers si están presentes en las opciones
             const config = {
                 headers: options.headers || {}
             };
-    
+
             // Realizar la solicitud GET con los headers configurados
             const response = await axios.get(url, config);
-    
+
             // Comprobar el estado de la respuesta
             if (response.status === 200) {
                 // Desactivar el estado de carga
@@ -41,28 +43,28 @@ export const fetchService = {
             return null;
         }
     },
-    
+
 
     async post(url, data, loadingMessage, redirectPath = null) {
         const store = useReportesStore();
         try {
             // Establecer el mensaje de carga y activar el estado de carga
             store.setLoading(true, loadingMessage);
-    
+
             // Realizar la solicitud POST
             const response = await axios.post(url, data);
-    
+
             // Comprobar el estado de la respuesta
             if (response.status === 200 || response.status === 201) {
                 // Desactivar el estado de carga
                 store.setLoading(false);
-                
+
                 // Redirigir si se ha proporcionado una ruta
                 if (redirectPath) {
-              
+
                     this.router.push(redirectPath);
                 }
-                
+
                 return response.data;
             } else {
                 // Desactivar el estado de carga
