@@ -9,7 +9,7 @@
             <p class="text-4xl text-center my-5" style="font-weight: bold; text-transform: uppercase;text-align: center;"> <span
                     class="text-2xl">ID DEL PEDIDO</span> <br> #{{ store.last_order }}</p>
 
-         
+
 
 
             <p class="text-2xl text-center my-3 p-3"
@@ -18,7 +18,7 @@
                 pedido y en breve será despachado</p>
 
 <div>
-    
+
 </div>
 
 
@@ -80,7 +80,9 @@ import { formatoPesosColombianos } from '@/service/utils/formatoPesos';
 const text = ref('');
 const store = usecartStore();
 const user = useUserStore()
+import { useReportesStore } from '@/store/ventas';
 
+const reportes = useReportesStore()
 
 const obtenerHoraFormateadaAMPM = (fecha) => {
     const fechaParseada = new Date(fecha);
@@ -100,6 +102,8 @@ const obtenerHoraFormateadaAMPM = (fecha) => {
 
 
 onMounted(() => {
+    reportes.setLoading(false, "enviando tu pedido");
+
     text.value = `Hola soy *${user.user.name.toUpperCase()}* 🤗 acabo de hacer el siguiente pedido en la página web. El número de la orden es *#${store.last_order}*.\n
 
     *Escribo para Realizar la Transferecia*\n
@@ -164,6 +168,6 @@ onUnmounted(() => {
 *{
     /* font-size: 1.3rem; */
     /* margin: 0; */
-    
+
 }
 </style>

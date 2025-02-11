@@ -161,15 +161,14 @@
             </router-link>
 
 
-            <Button
-                v-else-if="siteStore.status?.status !== 'closed' && siteStore.status?.status && route.path == '/pay'"
+            <Button :disabled = "reportes.loading.visible"
+                v-else-if="siteStore.status?.status !== 'closed' && siteStore.status?.status && route.path == '/pay' && !reportes.loading.visible"
                 @click="() => {
                     orderService.sendOrder()
                     sending = true
                 }" iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
                 class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
                 severity="help"></Button>
-
         </div>
     </div>
 </template>
@@ -184,6 +183,9 @@ import { onMounted, ref, watch } from 'vue';
 import { useUserStore } from '@/store/user';
 import { Button } from 'primevue';
 import { Tag } from 'primevue';
+import { useReportesStore } from '@/store/ventas';
+
+const reportes = useReportesStore()
 
 const sending = ref(false);
 const route = useRoute();

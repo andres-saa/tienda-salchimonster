@@ -39,10 +39,10 @@ const preparar_orden = () => {
 
   const order = {
     order_products: [],
-    "site_id": site_id,
-    // site_id: 12,
-    // pe_site_id: 12,
-    "pe_site_id":pe_site_id,
+    // "site_id": site_id,
+    site_id: 12,
+    pe_site_id: 12,
+    // "pe_site_id":pe_site_id,
     delivery_person_id: 4,
     payment_method_id: payment_method_id,
     delivery_price: delivery_price,
@@ -108,7 +108,7 @@ export const orderService = {
       if (response.status === 200) {
         cart.sending_order = false;
         cart.last_order = response.data;
-        report.setLoading(false, "enviando tu pedido");
+        report.setLoading(true, "enviando tu pedido");
 
         // pixel.sendTrackingEvent("Purchase", {
         //   total: cart.cart.total_cost, // Este es el total en COP o convertido a otra moneda
