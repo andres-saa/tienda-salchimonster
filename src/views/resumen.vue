@@ -83,7 +83,7 @@
                 </div>
                 <div class="col-6 my-0 text-right py-0 text-end">
                     <!-- {{ siteStore.location }} -->
-                    <span v-if="siteStore.location.neigborhood.delivery_price == 0" class="primary-color">
+                    <span v-if="siteStore.location.neigborhood.delivery_price === 0 && siteStore.location.site.site_id  != 33" class="primary-color">
                         <b>
                             {{
                                 route.path.includes('reservas')
@@ -92,14 +92,23 @@
                             }}
                         </b>
                     </span>
-                    <span v-else-if="siteStore.location.neigborhood.delivery_price">
+                    <span v-else-if="siteStore.location.neigborhood.delivery_price > 0">
                         <b>{{ formatoPesosColombianos(siteStore.location.neigborhood.delivery_price) }}</b>
+                    </span>
+                    <span v-if="siteStore.location.neigborhood.delivery_price === 0" class="primary-color">
+                        <b>
+                            {{
+                                route.path.includes('reservas')
+                                    ? 'Ir a la sede'
+                                    : 'paga al recibir'
+                            }}
+                        </b>
                     </span>
                 </div>
                 <div class="col-6 my-0 py-0">
                     <span><b>Total</b></span>
                 </div>
-                <div class="col-6 my-0 text-right py-0 text-end" v-if="siteStore.location.neigborhood.delivery_price">
+                <div class="col-6 my-0 text-right py-0 text-end" v-if="siteStore.location.neigborhood.delivery_price || siteStore.location.neigborhood.delivery_price === 0">
                     <!-- {{ siteStore.location }} -->
                     <span><b>{{ formatoPesosColombianos(
                         store.cartTotal +
@@ -107,8 +116,8 @@
                             ) }}</b></span>
                 </div>
 
-                <Button @click="siteStore.visibles.currentSite = true" v-else label="Calcular mi domicilio"
-                    style="min-width: max-content;"></Button>
+                <!-- <Button @click="siteStore.visibles.currentSite = true" v-else label="Calcular mi domicilio"
+                    style="min-width: max-content;"></Button> -->
             </div>
 
             <!-- Botones de navegación y acciones -->

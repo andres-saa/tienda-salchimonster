@@ -21,29 +21,32 @@
                 <div class="form-group">
                     <InputText id="username" placeholder="NOMBRE" v-model="user.user.name" />
                 </div>
-
+                <span>Ubicacio'n</span>
                 <div class="form-group">
+
                     <InputText @click="siteStore.setVisible('currentSite', true)"
-                        :modelValue="siteStore.location.neigborhood.name" id="neighborhood" placeholder="Barrio"
+                        :modelValue="siteStore.location.neigborhood.name" id="neighborhood" placeholder="Ubicacion"
                         readonly />
                 </div>
 
                 <!-- {{ siteStore.visibles }} -->
 
+                <span>direccio'n</span>
                 <div class="form-group">
                     <InputText v-model="user.user.address" id="address" placeholder="DIRECCION" />
                 </div>
 
+                <span>Telefono</span>
                 <div class="form-group">
-                    <InputMask v-model="user.user.phone_number" id="phone_number" mask="999 999 9999"
+                    <InputText v-model="user.user.phone_number" id="phone_number" mask="999 999 9999"
                         placeholder="TELEFONO" />
                 </div>
-
+                <span>Metodo de pago</span>
                 <div class="form-group">
                     <Select style="width: 100%;" v-model="user.user.payment_method_option" id="payment_method"
                         placeholder="METODO DE PAGO" :options="payment_method_options" optionLabel="name" />
                 </div>
-
+                <span>Metodo de pago</span>
                 <Textarea v-model="store.cart.order_notes" class="order-notes" placeholder="NOTAS:"></Textarea>
 
             </div>
