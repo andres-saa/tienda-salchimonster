@@ -51,9 +51,21 @@
                 
                 <span>Metodo de pago</span>
                 <div class="form-group">
-                    <Select style="width: 100%;" v-model="user.user.payment_method_option" id="payment_method"
-                        placeholder="METODO DE PAGO" :options="payment_method_options" optionLabel="name" />
-                </div>
+                    <Select
+                        style="width: 100%;"
+                        v-model="user.user.payment_method_option"
+                        id="payment_method"
+                        placeholder="METODO DE PAGO"
+                        :options="
+                        siteStore.location?.site?.site_id === 33 
+                            ? payment_method_options.filter(option => [6, 8].includes(option.id))
+                            : payment_method_options
+                        "
+                        optionLabel="name"
+                    />
+
+                    
+                    </div>
                 <span>Notas</span>
 
 <!-- Si el usuario tiene placa -->
