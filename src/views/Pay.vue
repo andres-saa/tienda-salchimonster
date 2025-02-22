@@ -7,7 +7,7 @@
 
         <div style="margin: auto;max-width: 800px;">
             <div class="title " style="  margin: 3rem .5rem">
-                <Tag severity="success " class="advertice"> El tiempo promedio de entrega es de 60 a 75 minutos, porvaor
+                <Tag severity="success " class="advertice"> El tiempo promedio de entrega es de 60 a 75 minutos, por favor
                     tengalo en cuenta
                     antes de ordenar</Tag>
             </div>
@@ -17,7 +17,7 @@
 
 
             <div class="form-column">
-
+                <span>NOMBRE</span>
                 <div class="form-group">
                     <InputText id="username" placeholder="NOMBRE" v-model="user.user.name" />
                 </div>
@@ -31,7 +31,7 @@
 
                 <!-- {{ siteStore.visibles }} -->
 
-                <span>direccio'n</span>
+                <span>Direccio'n</span>
                 <div class="form-group">
                     <InputText v-model="user.user.address" id="address" placeholder="DIRECCION" />
                 </div>
@@ -41,14 +41,46 @@
                     <InputText v-model="user.user.phone_number" id="phone_number" mask="999 999 9999"
                         placeholder="TELEFONO" />
                 </div>
+
+                <span>Placa de vehiculo(Si vas a venir a recoger)</span>
+                <div class="form-group">
+                    <InputText v-model="user.user.placa" id="phone_number" mask="999 999 9999"
+                        placeholder="Si vas a venir a recoger" />
+                </div>
+                
+                
                 <span>Metodo de pago</span>
                 <div class="form-group">
                     <Select style="width: 100%;" v-model="user.user.payment_method_option" id="payment_method"
                         placeholder="METODO DE PAGO" :options="payment_method_options" optionLabel="name" />
                 </div>
-                <span>Metodo de pago</span>
-                <Textarea v-model="store.cart.order_notes" class="order-notes" placeholder="NOTAS:"></Textarea>
+                <span>Notas</span>
 
+<!-- Si el usuario tiene placa -->
+            <template v-if="user.user.placa">
+            <!-- Textarea SOLO LECTURA con el texto fijo y la placa -->
+            <Textarea
+                :value="'Voy a pasar a recoger, la placa de mi vehiculo es: ' + user.user.placa"
+                class="order-notes"
+                disabled
+            />
+            
+            <!-- Textarea EDITABLE para las notas adicionales -->
+            <Textarea
+                v-model="store.cart.order_notes"
+                class="order-notes"
+                placeholder="Notas adicionales"
+            />
+            </template>
+
+            <!-- Si NO hay placa, solo muestras el textarea normal -->
+            <template v-else>
+            <Textarea
+                v-model="store.cart.order_notes"
+                class="order-notes"
+                placeholder="Notas"
+            />
+            </template>
             </div>
 
             <resumen class="resumen-column"></resumen>
@@ -59,7 +91,7 @@
 
 <script setup>
 import { useToast } from 'primevue/usetoast';
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch,computed } from 'vue';
 import resumen from './resumen.vue';
 import { usecartStore } from '@/store/shoping_cart';
 import { useSitesStore } from '@/store/site';
@@ -88,6 +120,17 @@ onMounted(async () => {
     }
 })
 
+
+
+const finalNotes = computed(() => {
+  // Si hay placa, devuelve la concatenación
+  if (user.user.placa) {
+    return `Voy a pasar a recoger la plata de mi vehículo, la placa de mi vehiculo es: ${user.user.placa}.
+    ${store.cart.order_notes}`;
+  }
+  // Si no hay placa, usa directamente el contenido
+  return store.cart.order_notes;
+});
 
 
 watch(() => user.user.payment_method_option, (new_val) => {

@@ -26,7 +26,7 @@
           <Tag v-else="siteStore.status?.status" class="closed-tag">Seleccionar sede</Tag>
         </div>
         <div class="site-info-name" v-if="siteStore.location?.site?.site_id">
-          <span class="city-name"> Sede - {{ siteStore.location?.site.site_name }}</span>
+          <span class="city-name"> {{ siteStore.location?.site.site_name }}</span>
         </div>
       </div>
     </div>

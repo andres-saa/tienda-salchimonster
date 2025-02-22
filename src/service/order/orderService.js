@@ -29,7 +29,13 @@ const preparar_orden = () => {
   const delivery_price =
     payment_method_id === 7 ? 0 : site.location.neigborhood.delivery_price;
 
-  const order_notes = cart.cart.order_notes;
+    const baseNotes = cart?.cart?.order_notes ?? "";
+
+    // Verifica si existe `placa` antes de sumarla
+    let order_notes = baseNotes;
+    if (user?.user?.placa) {
+      order_notes +=`\n, Voy a pasar a recoger, la placa de mi vehiculo es: ' ${user.user.placa};` 
+    }
   const user_data = {
     user_name: user.user.name,
     user_phone: user.user.phone_number?.split(" ").join(""),
