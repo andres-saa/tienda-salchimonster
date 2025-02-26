@@ -75,13 +75,13 @@
                     </span>
                 </div>
 
-                <div class="col-6 my-0 py-0">
+                <div class="col-6 my-0 py-0" v-if=" siteStore.location.site.site_id  != 33">
                     <span :style="siteStore.location.neigborhood.delivery_price == 0
                         ? 'text-decoration: line-through;'
                         : ''
                         "><b>Domicilio</b></span>
                 </div>
-                <div class="col-6 my-0 text-right py-0 text-end">
+                <div v-if=" siteStore.location.site.site_id  != 33" class="col-6 my-0 text-right py-0 text-end">
                     <!-- {{ siteStore.location }} -->
                     <span v-if="siteStore.location.neigborhood.delivery_price === 0 && siteStore.location.site.site_id  != 33" class="primary-color">
                         <b>
@@ -95,15 +95,7 @@
                     <span v-else-if="siteStore.location.neigborhood.delivery_price > 0">
                         <b>{{ formatoPesosColombianos(siteStore.location.neigborhood.delivery_price) }}</b>
                     </span>
-                    <span v-if="siteStore.location.neigborhood.delivery_price === 0" class="primary-color">
-                        <b>
-                            {{
-                                route.path.includes('reservas')
-                                    ? 'Ir a la sede'
-                                    : 'paga al recibir'
-                            }}
-                        </b>
-                    </span>
+                    
                 </div>
                 <div class="col-6 my-0 py-0">
                     <span><b>Total</b></span>

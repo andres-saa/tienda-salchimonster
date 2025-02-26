@@ -17,38 +17,45 @@ const user = useUserStore();
 const preparar_orden = () => {
   user.user.was_reserva = false;
   cart.sending_order = true;
-  const order_products = cart.cart
-
-  // console.log(order_products);
-
-
+  const order_products = cart.cart;
 
   const site_id = site.location.site.site_id;
   const pe_site_id = site.location.site.pe_site_id;
   const payment_method_id = user.user.payment_method_option?.id;
+  const order_type_id = user.user.order_type?.id;
+
+  // Validación: el método de entrega es obligatorio
+  if (!order_type_id) {
+    alert("Error: Debe seleccionar un método de entrega.");
+    return;
+  }
+
+  const placa = user.user.placa;
   const delivery_price =
     payment_method_id === 7 ? 0 : site.location.neigborhood.delivery_price;
 
-    const baseNotes = cart?.cart?.order_notes ?? "";
+  // Validación: si el método es "Pasar a recoger" (id 2) y la sede es 33,
+  // se requiere que se ingrese la placa del vehículo.
+  if (order_type_id === 2 && site_id === 33 && (!placa || placa.trim() === "")) {
+    alert("Error: Debe proporcionar la placa del vehículo para recogida.");
+    return;
+  }
 
-    // Verifica si existe `placa` antes de sumarla
-    let order_notes = baseNotes;
-    if (user?.user?.placa) {
-      order_notes +=`\n, Voy a pasar a recoger, la placa de mi vehiculo es: ' ${user.user.placa};` 
-    }
+  const baseNotes = cart?.cart?.order_notes ?? "";
+  let order_notes = baseNotes;
+
   const user_data = {
     user_name: user.user.name,
     user_phone: user.user.phone_number?.split(" ").join(""),
-    user_address:
-      ` ${user.user.address} ${site.location?.neigborhood?.name}` || "",
+    user_address: ` ${user.user.address} ${site.location?.neigborhood?.name}` || "",
   };
 
   const order = {
     order_products: [],
-    "site_id": site_id,
-    // site_id: 12,
-    // pe_site_id: 12,
-    "pe_site_id":pe_site_id,
+    site_id: 12, // Puedes utilizar site_id si es necesario
+    pe_site_id: 12, // Puedes utilizar pe_site_id si es necesario
+    order_type_id: order_type_id,
+    placa: placa,
     delivery_person_id: 4,
     payment_method_id: payment_method_id,
     delivery_price: delivery_price,
@@ -58,10 +65,10 @@ const preparar_orden = () => {
     pe_json: order_products,
     total: 0
   };
-  console.log(order)
 
-  return order
+  return order;
 };
+
 
 const preparar_orden_reserva = () => {
   user.user.was_reserva = true;

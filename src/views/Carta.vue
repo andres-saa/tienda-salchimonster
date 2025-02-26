@@ -33,7 +33,7 @@
                 <!-- Imagen de la bandera dentro del botón -->
         
                     <img
-                        src="/images/menu/jersey_flag.jpg"
+                        src="/images/menu/jersey_flag.png"
                         alt="Bandera de New Jersey" 
                         class="flag-icon"
                     />

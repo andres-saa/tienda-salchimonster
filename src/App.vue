@@ -23,7 +23,7 @@ onMounted(async () => {
 
   const site_id = siteStore.location.site?.site_id
   const pe_id = siteStore.location.site?.pe_site_id
-  const status = await fetchService.get(`${URI}/site/${site_id}/status`)
+  const status = await fetchService.get(`${URI}/site/${12}/status`)
   if (status) {
     siteStore.status = status
   }
