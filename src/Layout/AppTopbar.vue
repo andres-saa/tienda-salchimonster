@@ -20,13 +20,13 @@
       <div class="site-info" @click="siteStore.visibles.currentSite = true">
 
         <div class="site-info-status">
-          <span class="city-name">{{ siteStore.location?.city?.city_name }}</span>
+          <!-- <span class="city-name">{{ siteStore.location?.city?.city_name }}</span> -->
           <Tag v-if="siteStore.status?.status == 'open'" class="status-tag">Abierto</Tag>
           <Tag v-else-if="siteStore.status?.status" class="closed-tag">Cerrado</Tag>
           <Tag v-else="siteStore.status?.status" class="closed-tag">Seleccionar sede</Tag>
         </div>
         <div class="site-info-name" v-if="siteStore.location?.site?.site_id">
-          <span class="city-name"> Sede - {{ siteStore.location?.site.site_name }}</span>
+          <span class="city-name"> {{ siteStore.location?.site.site_name }}</span>
         </div>
       </div>
     </div>

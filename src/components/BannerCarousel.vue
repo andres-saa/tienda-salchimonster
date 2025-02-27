@@ -11,6 +11,11 @@
 
     </div>
 
+    <div class="slider" style="position: absolute;" :style="`transform: translate(${current_banner.x}%)`">
+
+    <img style="position:" v-for="img in foodBanners" :src="img.src" alt="" :key="img.x">
+
+    </div>
 
     <Button class="button-right" @click="changeBanner(1)"> <i class="pi pi-angle-right"></i></Button>
 
@@ -28,27 +33,33 @@ import { onBeforeUnmount } from 'vue';
 const foodBanners = ref({
   1: {
     name: "Banner 1",
-    src: "/images/banners/banner-0.jpeg",
+    src: "/images/banners/banner--1.jpeg",
     x: 0,
     index: 1
   },
   2: {
-    name: "Banner 2",
-    src: "/images/banners/banner-1.jpeg",
+    name: "Banner 1",
+    src: "/images/banners/banner-0.jpeg",
     x: -100,
     index: 2
   },
   3: {
-    name: "Banner 3",
-    src: "/images/banners/banner-2.jpeg",
+    name: "Banner 2",
+    src: "/images/banners/banner-1.jpeg",
     x: -200,
     index: 3
   },
   4: {
-    name: "Banner 4",
-    src: "/images/banners/banner-3.jpeg",
+    name: "Banner 3",
+    src: "/images/banners/banner-2.jpeg",
     x: -300,
     index: 4
+  },
+  5: {
+    name: "Banner 4",
+    src: "/images/banners/banner-3.jpeg",
+    x: -400,
+    index: 5
   },
 
 })
@@ -99,7 +110,7 @@ const changeBanner = (dir) => {
 
 const intervalId = setInterval(() => {
   changeBanner(1);
-}, 3000); // 3000 milisegundos = 3 segundos
+}, 5000); // 3000 milisegundos = 3 segundos
 
 // Limpiar el intervalo cuando el componente se desmonta
 onBeforeUnmount(() => {
@@ -113,7 +124,7 @@ onBeforeUnmount(() => {
 img {
   width: 100%;
   min-width: 100%;
-  aspect-ratio: 16/7;
+  aspect-ratio: 16/9;
   object-fit: cover;
 }
 
