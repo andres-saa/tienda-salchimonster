@@ -2,13 +2,12 @@
     <div class="finalizar-compra-container">
         <!-- <validate></validate> -->
 
-        <p class="">FINALIZAR COMPRA</p>
+        <h2 class="title">UNOS DATICOS Y LISTO PAPIII</h2>
 
 
-        <div style="margin: auto;max-width: 800px;">
+        <div style="margin: auto;">
             <div class="title " style="  margin: 3rem .5rem">
-                <Tag severity="success " class="advertice"> El tiempo promedio de entrega es de 60 a 75 minutos, porvaor
-                    tengalo en cuenta
+                <Tag severity="success " class="advertice"> Recuerda seleccionar la fecha Y la hora en la cual vas a ir al restaurante
                     antes de ordenar</Tag>
             </div>
         </div>
@@ -28,10 +27,15 @@
                         readonly />
                 </div>
 
-                <!-- {{ siteStore.visibles }} -->
+
+
 
                 <div class="form-group">
-                    <InputText v-model="user.user.address" id="address" placeholder="DIRECCION" />
+                    <Calendar hour-format="12" style="width: 100%;" v-model="user.user.date_reserv" id="address" placeholder="FECHA DE RESERVA" />
+                </div>
+
+                <div class="form-group">
+                    <Calendar time-only="" hour-format="12" style="width: 100%;" v-model="user.user.hour_reserv" id="address" placeholder="HORA DE RESERVA" />
                 </div>
 
                 <div class="form-group">
@@ -44,11 +48,18 @@
                         placeholder="METODO DE PAGO" :options="payment_method_options" optionLabel="name" />
                 </div>
 
+
+                <div class="form-group">
+                    <Select style="width: 100%;" v-model="user.user.site_id" id="site"
+                        placeholder="SEDE" :options="sites.filter(s => s.show_on_web)" optionLabel="site_name" />
+                </div>
+
+
                 <Textarea v-model="store.cart.order_notes" class="order-notes" placeholder="NOTAS:"></Textarea>
 
             </div>
 
-            <resumen class="resumen-column"></resumen>
+            <resumenReservas class="resumen-column"></resumenReservas>
 
         </div>
     </div>
@@ -57,26 +68,31 @@
 <script setup>
 import { useToast } from 'primevue/usetoast';
 import { ref, onMounted, watch } from 'vue';
-import resumen from './resumen.vue';
-import { usecartStore } from '@/store/shoping_cart';
+import resumen from '../resumen.vue';
 import { useSitesStore } from '@/store/site';
 import { useUserStore } from '@/store/user'
 import { Textarea } from 'primevue';
 import { Tag } from 'primevue';
 import { InputText } from 'primevue';
+import resumenReservas from './resumenReservas.vue';
 import { InputNumber } from 'primevue';
 import { InputMask } from 'primevue';
 import { Select } from 'primevue';
 import { fetchService } from '@/service/utils/fetchService';
 import { URI } from '@/service/conection';
-const store = usecartStore()
+import { usecarReservastStore } from '@/store/shoping_cart_reservas';
+import Calendar from 'primevue/calendar';
+const store = usecarReservastStore()
 const siteStore = useSitesStore()
 const user = useUserStore()
 
 const payment_method_options = ref([])
+const sites = ref([])
 
 onMounted(async () => {
     payment_method_options.value = await fetchService.get(`${URI}/payment_methods`)
+    sites.value = await fetchService.get(`${URI}/sites`)
+
 
     if (user.user.payment_method_option?.id != 7)
         siteStore.setNeighborhoodPrice()
@@ -111,7 +127,7 @@ watch(() => user.user.payment_method_option, (new_val) => {
 /* Título */
 .title {
     text-align: center;
-    font-size: 2rem;
+    font-size: 1.7rem;
     /* text-2xl */
     margin: 2rem 0;
     /* my-8 */
@@ -147,7 +163,7 @@ watch(() => user.user.payment_method_option, (new_val) => {
 /* Grid del Formulario y Resumen */
 .form-grid {
     display: grid;
-    max-width: 800px;
+    /* max-width: 800px; */
     margin: 0 auto;
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -156,7 +172,7 @@ watch(() => user.user.payment_method_option, (new_val) => {
 /* Responsividad para Pantallas Medianas y Grandes */
 @media (min-width: 768px) {
     .form-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
     }
 }
 

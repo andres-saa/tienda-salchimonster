@@ -19,7 +19,7 @@
                         optionLabel="city_name" placeholder="SELECCIONA UNA CIUDAD" class="dropdown" required />
                 </div>
 
-                <!-- Selección de Barrio -->
+
                 <div class="form-group">
                     <div class="label-spinner">
                         <label for="neighborhood-dropdown" class="label">¿Cuál es tu barrio?</label>
