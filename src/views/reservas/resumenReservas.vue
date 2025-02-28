@@ -143,14 +143,12 @@
             </router-link>
 
             <!-- Botón “Finalizar pedido” al reservar -->
-            <router-link to="/pay" v-else-if="route.path.includes('reservas')">
-                <Button @click="() => {
-                    orderService.sendOrderReserva()
-                    sending = true
-                }" iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
+            <!-- <router-link to="/pay" v-else-if="route.path.includes('reservas')"> -->
+                <Button v-else-if="route.path.includes('reservas')" @click="alerta"
+                 iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
                     class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
                     severity="help"></Button>
-            </router-link>
+            <!-- </router-link> -->
 
             <!-- Botón “Finalizar pedido” si el restaurante no está cerrado -->
             <router-link to="/pay"
@@ -191,6 +189,12 @@ const route = useRoute();
 const store = usecarReservastStore();
 const siteStore = useSitesStore();
 const user = useUserStore();
+
+
+const alerta = (     ) => {
+  alert('El esquema de comandas cambio y el modelo actual ya no es valido' )
+}
+
 
 const agrupados = ref({});
 
