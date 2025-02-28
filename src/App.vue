@@ -38,7 +38,7 @@ onMounted(async () => {
     <div
     class=""
     v-if="reportes.loading.visible"
-    style="width: 100vw;transition: all ease .3s;backdrop-filter: blur(5px);  flex-direction: column;pointer-events:auto; background-color: #00000020; height: 100vh;position: fixed;display: flex;align-items: center;justify-content: center; left: 0;right: 0;z-index: 99999999;"
+    style="width: 100vw;transition: all ease .3s;  flex-direction: column;pointer-events:auto; background-color: #00000020; height: 100vh;position: fixed;display: flex;align-items: center;justify-content: center; left: 0;right: 0;z-index: 99999999;"
   >
   <div class="luz" style="aspect-ratio: 1  / 1;display: flex;justify-content: center;align-items: center;">
 
@@ -66,7 +66,7 @@ onMounted(async () => {
 
 .girar{
 
-  animation: girar infinite .5s linear;
+  animation: girar infinite 1s linear;
 
 }
 

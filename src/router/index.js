@@ -28,6 +28,14 @@ const router = createRouter({
               meta: {  title:'Carrito de compras' },
 
             },
+
+            {
+              path: '/cumples',
+              name: 'cumples',
+              component: () => import('@/views/reservas/Reservas.vue'),
+              meta: {  title:'Carrito de compras' },
+
+            },
             {
               path: '/cumples',
               name: 'cumples',

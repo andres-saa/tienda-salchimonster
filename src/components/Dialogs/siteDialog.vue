@@ -19,21 +19,21 @@
                         optionLabel="city_name" placeholder="SELECCIONA UNA CIUDAD" class="dropdown" required />
                 </div>
 
-                <!-- Selección de Barrio -->
-                <div class="form-group" v-if="currenCity && currenCity.city_id !== 15">
-    <div class="label-spinner">
-        <label for="neighborhood-dropdown" class="label">¿Cuál es tu barrio?</label>
-        <div v-if="spinnersView.barrio" class="loading-neighborhood">
-            <ProgressSpinner class="spinner" strokeWidth="8" fill="var(--white)" animationDuration=".5s"
-                aria-label="Buscando barrios" />
-            <p class="loading-text">Buscando barrios...</p>
-        </div>
-    </div>
-    <Dropdown id="neighborhood-dropdown" v-model="currenNeigborhood"
-        :disabled="!possibleNeigborhoods.length" :options="possibleNeigborhoods" optionLabel="name"
-        placeholder="Selecciona un barrio" filter filterPlaceholder="Escribe el nombre de tu barrio"
-        class="dropdown" required />
-</div>
+
+                <div class="form-group">
+                    <div class="label-spinner">
+                        <label for="neighborhood-dropdown" class="label">¿Cuál es tu barrio?</label>
+                        <div v-if="spinnersView.barrio" class="loading-neighborhood">
+                            <ProgressSpinner class="spinner" strokeWidth="8" fill="var(--white)" animationDuration=".5s"
+                                aria-label="Buscando barrios" />
+                            <p class="loading-text">Buscando barrios...</p>
+                        </div>
+                    </div>
+                    <Dropdown id="neighborhood-dropdown" v-model="currenNeigborhood"
+                        :disabled="!possibleNeigborhoods.length" :options="possibleNeigborhoods" optionLabel="name"
+                        placeholder="Selecciona un barrio" filter filterPlaceholder="Escribe el nombre de tu barrio"
+                        class="dropdown" required />
+                </div>
 
                 <!-- Vista Previa de la Sede -->
                 <div class="image-container">
@@ -41,20 +41,16 @@
                         :src="`${URI}/read-product-image/600/site-${currenNeigborhood?.site_id}`"
                         :class="{ 'default-image': currenNeigborhood.site?.name === 'default' }"
                         alt="Vista previa de la sede" />
-                    <img v-else
-                        src="https://backend.salchimonster.com/read-photo-product/xai0dVnL"
-                        style="object-fit: contain;"
-                        alt="Vista previa de la sede" />
 
                     <div v-if="currenNeigborhood?.site_id" class="image-overlay">
                         <p class="site-info">
-                            <span class="brand-name">SALCHIMONSTER </span>
+                            <span class="brand-name">SALCHIMONSTER</span>
                             <span class="site-name">{{ currentSite?.site_name }}</span>
                         </p>
                     </div>
                 </div>
 
-
+                <!-- Botón Guardar -->
                 <div class="button-container">
                     <Button label="Guardar" @click="setNeigborhood" :disabled="!currenNeigborhood?.name"
                         class="save-button" />
@@ -100,29 +96,6 @@ const possibleNeigborhoods = ref([]);
 const resetNeighborhood = () => {
     currenNeigborhood.value = { site: { site_name: 'default' } };
 };
-
-
-watch(currenCity, async () => {
-    if (currenCity.value && currenCity.value.city_id === 15) {
-        // Asigna automáticamente el barrio cuando la ciudad es 15
-        currenNeigborhood.value = {
-            neighborhood_id: 5881,
-            name: "NEW JERSEY",
-            delivery_price: 0.0,
-            site_id: 33,
-            city_id: 15
-        };
-        // (Opcional) También se puede asignar el sitio correspondiente si es necesario:
-        currentSite.value = await sitesService.getSiteById(33);
-        // Limpia la lista de barrios ya que no se usará el dropdown
-        possibleNeigborhoods.value = [];
-    } else {
-        // Si se selecciona otra ciudad, se limpia el barrio actual y se cargan los posibles barrios
-        resetNeighborhood();
-        changePossiblesNeigborhoods();
-    }
-});
-
 
 const changePossiblesNeigborhoods = async () => {
     if (currenCity.value && currenCity.value.city_id) {
