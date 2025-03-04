@@ -7,7 +7,7 @@
                 <Button label="Buscar" class="search-button" @click="getOrder" />
             </div>
 
-            <p v-if="order?.status" :class="`estado ${order.status}`">
+            <p v-if="order?.status" :class="`estado ${order.status?.split(' ').join('-')}`">
                 {{ getOrderMessage(order) }}
             </p>
 
@@ -290,6 +290,8 @@ const getOrderMessage = (order) => {
     switch (order.status) {
         case "enviada":
             return `El pedido fue enviado a su domicilio a las ${hora}`;
+        case "validacion pendiente":
+            return `Tu pedido se encuentra en etapa de validacio'n en breve te contactaremos`;
         case "cancelada":
             return `El pedido fue cancelado a las ${hora}\nResponsable: ${order.responsible}\nRazón: ${order.reason}`;
         case "en preparacion":
@@ -384,6 +386,10 @@ const obtenerHoraFormateadaAMPM = (fecha) => {
 
 .en-preparacion {
     background-color: rgb(84, 212, 255);
+}
+
+.validacion-pendiente {
+    background-color: rgb(237, 147, 255);
 }
 
 .cancelada {
