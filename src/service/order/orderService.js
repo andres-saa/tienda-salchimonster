@@ -52,8 +52,8 @@ const preparar_orden = () => {
 
   const order = {
     order_products: [],
-    site_id: 33, // Puedes utilizar site_id si es necesario
-    pe_site_id: 16, // Puedes utilizar pe_site_id si es necesario
+    site_id: site_id, // Puedes utilizar site_id si es necesario
+    pe_site_id: pe_site_id, // Puedes utilizar pe_site_id si es necesario
     order_type_id: order_type_id,
     placa: placa,
     delivery_person_id: 4,
