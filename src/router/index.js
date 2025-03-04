@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import App from '@/App.vue'
-
+import pixel from './pixel'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -18,14 +18,14 @@ const router = createRouter({
               path: '/',
               name: 'home',
               component: () => import('@/views/Home.vue'),
-              meta: {  title:'Domicilios' },
+              meta: { title: 'Domicilios' },
 
             },
             {
               path: '/cart',
               name: 'cart',
               component: () => import('@/views/Cart.vue'),
-              meta: {  title:'Carrito de compras' },
+              meta: { title: 'Carrito de compras' },
 
             },
 
@@ -33,28 +33,28 @@ const router = createRouter({
               path: '/cumples',
               name: 'cumples',
               component: () => import('@/views/reservas/Reservas.vue'),
-              meta: {  title:'Carrito de compras' },
+              meta: { title: 'Carrito de compras' },
 
             },
             {
               path: '/cumples',
               name: 'cumples',
               component: () => import('@/views/Cumples.vue'),
-              meta: {  title:'Carrito de compras' },
+              meta: { title: 'Carrito de compras' },
 
             },
             {
               path: '/sedes',
               name: 'sedes',
               component: () => import('@/views/Sedes.vue'),
-              meta: {  title:'Sedes' },
+              meta: { title: 'Sedes' },
 
             },
             {
               path: '/menu',
               name: 'Carta',
               component: () => import('@/views/Carta.vue'),
-              meta: {  title:'Carta menu' },
+              meta: { title: 'Carta menu' },
 
             },
 
@@ -62,14 +62,14 @@ const router = createRouter({
               path: '/colaboraciones',
               name: 'colaboraciones',
               component: () => import('@/views/Colaboraciones.vue'),
-              meta: {  title:'Colaboraciones' },
+              meta: { title: 'Colaboraciones' },
 
             },
             {
               path: '/rastrear-pedido',
               name: 'rastrear-pedido',
               component: () => import('@/views/Rastrear.vue'),
-              meta: {  title:'Rastrear pedido' },
+              meta: { title: 'Rastrear pedido' },
 
             },
 
@@ -77,7 +77,7 @@ const router = createRouter({
               path: '/sonando',
               name: 'sonando',
               component: () => import('@/views/Sonando.vue'),
-              meta: {  title:'Sonando SM' },
+              meta: { title: 'Sonando SM' },
 
             },
 
@@ -86,7 +86,7 @@ const router = createRouter({
               path: '/franquicias',
               name: 'franquicias',
               component: () => import('@/views/Franquicias.vue'),
-              meta: {  title:'Franquicias' },
+              meta: { title: 'Franquicias' },
 
             },
 
@@ -95,21 +95,21 @@ const router = createRouter({
               path: '/pqrs-user',
               name: 'pqrs-user',
               component: () => import('@/views/Pqr.vue'),
-              meta: {  title:'PQRS' },
+              meta: { title: 'PQRS' },
 
             },
             {
               path: '/pay',
               name: 'pay',
               component: () => import('@/views/Pay.vue'),
-              meta: {  title:'Finalizar pedido' },
+              meta: { title: 'Finalizar pedido' },
 
             },
             {
               path: '/gracias',
               name: 'gracias',
               component: () => import('@/views/Gracias.vue'),
-              meta: {  title:'Muchas gracias' },
+              meta: { title: 'Muchas gracias' },
 
             },
           ],
@@ -119,7 +119,22 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async(to, from, next) => {
+
+
+
+
+
+pixel.init()
+router.afterEach((to, from) => {
+  // Esto rastreará una "PageView" cada vez que el usuario cambie de ruta
+  pixel.sendTrackingEvent('PageView');
+});
+
+
+
+
+
+router.beforeEach(async (to, from, next) => {
 
 
   if (to.params.menu_name) {
