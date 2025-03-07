@@ -32,12 +32,13 @@ const cart = usecartStore();
 const codigos = [10, 26, 8, 9, 13, 27, 11, 4, 5,
   // Agregamos las categorías nuevas
   // 108, // SM NEW JERSEY
- 
+
   110, // SALCHIPAPA PARA 2 PERSONAS NJ
   112, // SALCHIPAPAS PERSONALES NJ
   113,  // PARA COMPARTIR
   111, // BURGERMONSTER
   109, // BEBIDAS
+  115
    ];
 
 // Filtra y ordena las categorías con base en 'codigos'
