@@ -127,14 +127,14 @@ const whatsappUrl = computed(() => {
 
 
 onUnmounted(() => {
-    // user.user = {
-    //       name:'',
-    //       neigborhood:'',
-    //       address:'',
-    //       phone_number:'',
-    //       payment_method_option:'',
-    //       was_reserva:false
-    //   },
+    user.user = {
+          name:'',
+          neigborhood:'',
+          address:'',
+          phone_number:'',
+          payment_method_option:'',
+          was_reserva:false
+      },
 
     store.cart = []
 })
