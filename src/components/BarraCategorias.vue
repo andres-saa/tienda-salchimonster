@@ -1,17 +1,38 @@
 <template>
-  <div ref="categoryBar"
-    style="position: sticky;  box-shadow: 0 1rem .5rem #00000020;
- top: 3.5rem;padding: .2rem; z-index: 9999;display: flex;align-items: center; background-color: var(--p-primary-color); overflow-x: auto;">
-    <div class="container" style="justify-content: start; align-items: center;">
-      <div v-for="(section, index) in filteredAndSortedCategories" :key="section.categoria_id"
-        :id="'categoryButton-' + section.categoria_id" class="container-button">
+  <div
+    ref="categoryBar"
+    style="
+      position: sticky;
+      box-shadow: 0 1rem 0.5rem #00000020;
+      top: 3.5rem;
+      padding: 0.2rem;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      background-color: var(--p-primary-color);
+      overflow-x: auto;
+    "
+  >
+    <div class="container" style="justify-content: start; align-items: center">
+      <div
+        v-for="(section, index) in filteredAndSortedCategories"
+        :key="section.categoria_id"
+        :id="'categoryButton-' + section.categoria_id"
+        class="container-button"
+      >
         <a @click.prevent="smoothScrollTo(section.categoria_id)">
-          <Button class="bar-button" :class="{ selected: cart.currentSection === section.categoria_id }"
-            :label="section.categoria_descripcion">
+          <Button
+            class="bar-button"
+            :class="{ selected: cart.currentSection === section.categoria_id }"
+            :label="section.categoria_descripcion"
+          >
             <img
-              :src="`${URI}/get-image?image_url=${cart?.menu?.data?.find(p => p.categoria_id == section.categoria_id)?.productogeneral_urlimagen}`"
-              alt="" />
-            <span><b>{{ section.categoria_descripcion }}</b></span>
+              :src="`${URI}/get-image?image_url=${cart?.menu?.data?.find((p) => p.categoria_id == section.categoria_id)?.productogeneral_urlimagen}`"
+              alt=""
+            />
+            <span
+              ><b>{{ section.categoria_descripcion }}</b></span
+            >
           </Button>
         </a>
       </div>
@@ -20,35 +41,45 @@
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, computed, watch } from 'vue';
-import { usecartStore } from '../store/shoping_cart';
-import { Button } from 'primevue';
-import { URI } from '@/service/conection';
+import { onMounted, onBeforeUnmount, computed, watch } from 'vue'
+import { usecartStore } from '../store/shoping_cart'
+import { Button } from 'primevue'
+import { URI } from '@/service/conection'
 
 // Store
-const cart = usecartStore();
+const cart = usecartStore()
 
 // Orden personalizado de las categorías (IDs)
-const codigos = [10, 26, 8, 9, 13, 27, 11, 4, 5,
-  // Agregamos las categorías nuevas
-  // 108, // SM NEW JERSEY
-
+const codigos = [
+  10,
+  26,
+  8,
+  9,
+  13,
+  27,
+  11,
+  4,
+  5,
   110, // SALCHIPAPA PARA 2 PERSONAS NJ
   112, // SALCHIPAPAS PERSONALES NJ
-  113,  // PARA COMPARTIR
+  113, // PARA COMPARTIR
   111, // BURGERMONSTER
   109, // BEBIDAS
-  115
-   ];
+  115,
+  118, 
+  119, 
+  116,
+  117
+]
 
 // Filtra y ordena las categorías con base en 'codigos'
 const filteredAndSortedCategories = computed(() => {
   return cart?.menu?.listaCategorias
-    ?.filter(c => codigos.includes(parseInt(c.categoria_id)))
+    ?.filter((c) => codigos.includes(parseInt(c.categoria_id)))
     ?.sort((a, b) => {
-      return codigos.indexOf(parseInt(a.categoria_id)) - codigos.indexOf(parseInt(b.categoria_id));
-    });
-});
+      return codigos.indexOf(parseInt(a.categoria_id)) - codigos.indexOf(parseInt(b.categoria_id))
+    })
+})
 
 /**
  * Desplaza suavemente el contenido principal hasta la sección
@@ -56,33 +87,33 @@ const filteredAndSortedCategories = computed(() => {
  */
 const smoothScrollTo = (categoryId) => {
   // ----- SCROLL VERTICAL (al contenido) -----
-  const element = document.getElementById(categoryId);
+  const element = document.getElementById(categoryId)
   if (element) {
-    const offset = 10 * 16;
-    const elementY = element.getBoundingClientRect().top + window.pageYOffset;
-    const targetPosition = elementY - offset;
+    const offset = 10 * 16
+    const elementY = element.getBoundingClientRect().top + window.pageYOffset
+    const targetPosition = elementY - offset
 
     window.scrollTo({
       top: targetPosition,
-      behavior: 'smooth'
-    });
+      behavior: 'smooth',
+    })
   }
 
   // ----- MARCAR SECCIÓN ACTUAL -----
-  cart.currentSection = categoryId;
+  cart.currentSection = categoryId
 
   // ----- SCROLL HORIZONTAL (a la barra de categorías) -----
   setTimeout(() => {
-    const buttonElement = document.getElementById(`categoryButton-${categoryId}`);
+    const buttonElement = document.getElementById(`categoryButton-${categoryId}`)
     if (buttonElement) {
       buttonElement.scrollIntoView({
         behavior: 'smooth',
-        inline: 'center',   // Centra horizontalmente
-        block: 'nearest'       // No desplaza verticalmente innecesariamente
-      });
+        inline: 'center', // Centra horizontalmente
+        block: 'nearest', // No desplaza verticalmente innecesariamente
+      })
     }
-  }, 1000);
-};
+  }, 1000)
+}
 
 // IntersectionObserver para marcar la sección activa al hacer scroll
 // let observer = null;
@@ -111,18 +142,12 @@ const smoothScrollTo = (categoryId) => {
 //     }
 //   });
 
-
-
-
-
-
 // });
 
 // Al desmontar, limpiamos el observer
 onBeforeUnmount(() => {
   // if (observer) observer.disconnect();
-});
-
+})
 
 // watch(() => cart.currentSection, (f) => {
 //   setTimeout(() => {
@@ -141,7 +166,6 @@ onBeforeUnmount(() => {
  * Watch que, cada vez que cambie la sección activa,
  * busca el botón correspondiente y hace scroll para centrarlo.
  */
-
 </script>
 
 <style scoped>
@@ -150,29 +174,25 @@ onBeforeUnmount(() => {
   align-items: center;
   padding: 0 1rem;
   gap: 0.5rem;
-  animation: ;
-
+  animation:;
 }
 
 .bar-button {
   border-radius: 10rem;
   background-color: #fff;
   color: #000;
-  padding: .2rem 1rem .4rem .4rem;
+  padding: 0.2rem 1rem 0.4rem 0.4rem;
   white-space: nowrap;
-  box-shadow: 0 0 .5rem #00000050;
+  box-shadow: 0 0 0.5rem #00000050;
   /* para evitar quiebres de línea */
 }
 
-
 .bar-button:hover {
-
   background-color: #000000;
   color: #fff;
 
   /* para evitar quiebres de línea */
 }
-
 
 .container-button {
   display: flex;
@@ -185,7 +205,6 @@ onBeforeUnmount(() => {
   background-color: #000;
   color: #fff;
 }
-
 
 @keyframes scrollHint {
   0% {
