@@ -61,7 +61,7 @@
     <div v-else-if="carta === 2">
         <div class="image-gallery">
             <img 
-                v-for="i in [1, 2, 3, 4, 5]" 
+                v-for="i in [1, 2, 3, 4, 5,6,7,8]" 
                 :key="'newjersey-' + i"
                 :src="`/images/menu/${i}.jpeg`"
                 :class="{ 'horizontal-image': !isMobile, 'vertical-image': isMobile }"
