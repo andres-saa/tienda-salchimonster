@@ -65,7 +65,6 @@ const preparar_orden = () => {
     pe_json: order_products,
     total: 0
   };
-npm
   return order;
 };
 
