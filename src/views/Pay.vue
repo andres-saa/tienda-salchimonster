@@ -34,7 +34,7 @@
               v-model="user.user.order_type"
               id="metodo_de_entrega"
               placeholder="Metodo de entrega"
-              :options="computedOrderTypes"
+              :options="computedOrderTypes.filter(t => [1,2,3].includes( t.id))"
               optionLabel="name"
             />
           </div>
