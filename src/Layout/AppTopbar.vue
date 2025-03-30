@@ -94,22 +94,6 @@ import { URI } from '@/service/conection';
 
 import { usecartStore } from '@/store/shoping_cart';
 
-
-
-import { useI18n } from 'vue-i18n';
-
-// ...
-const { locale } = useI18n();
-
-function changeLanguage(lang) {
-  locale.value = lang;
-  localStorage.setItem('lang', lang); // Persistir para que no se pierda al refrescar
-}
-
-
-changeLanguage('en_US')
-
-
 const cart = usecartStore()
 
 const siteStore = useSitesStore()
