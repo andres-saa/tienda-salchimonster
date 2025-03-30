@@ -1,5 +1,5 @@
 <template>
-    <div class="containerm">
+    <div class="containerm" lang="es" translate="yes">
         <div :id="section.categoria_id" class=" container-button" v-for="(section, index) in cart?.menu?.listaCategorias?.filter(c => codigos.includes(parseInt(c.categoria_id)))
             ?.sort((a, b) => codigos.indexOf(parseInt(a.categoria_id)) - codigos.indexOf(parseInt(b.categoria_id)))"
             :key="section.categoria_id">
@@ -60,8 +60,8 @@ const cart = usecartStore()
 
 // IDs de las categorías (con sus nombres en comentarios)
 const codigos = [
-118, 
-  119, 
+118,
+  119,
   116,
   117,
   10,
