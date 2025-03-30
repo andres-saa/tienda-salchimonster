@@ -16,10 +16,7 @@ import { randomHoverColor } from './service/randomHoverColor';
 import { randomHoverBorderColor } from './service/randomHoverBorderColor';
 import App from './App.vue'
 import router from './router'
-import { i18n } from './i18n'; // Importa la configuración
-
 const app = createApp(App)
-app.use(i18n); // Usa i18n de forma global
 
 const MyPreset = definePreset(Aura, {
   semantic: {
