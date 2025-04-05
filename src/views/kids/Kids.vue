@@ -13,7 +13,7 @@
 
 
 <div style="width: 100%; padding-bottom: 5rem; display: flex;flex-direction: column;align-items: center;background-color: var(--p-primary-color);min-height: 120vh;">
-<h1 style="font-size: 5rem;margin:3rem ; color: white;text-shadow: 0 1rem .5rem #00000040;">
+<h1 style="margin:3rem ; color: white;text-shadow: 0 1rem .5rem #00000040;">
 Monster kids
 </h1>
 
@@ -84,6 +84,8 @@ Monster kids
 
 
 <div class="movil" >
+
+
   <p>
     <h2>La Gran Misión de los Monster Kids</h2>
 <br>
@@ -245,6 +247,17 @@ const product =  {
 }
 
 
+.pc{
+  grid-area: m;display: flex;align-items: end; justify-content: end;flex-direction: column; max-height: max-content;text-overflow: clip;
+;position: relative;  background-color: white; padding: 1rem;border-radius: .5rem;box-shadow: 0 1rem 1rem  #00000040;transition: all ease .3s;
+}
+
+.movil {
+  grid-area: m;display: none;align-items: end; justify-content: end;flex-direction: column; max-height: max-content;text-overflow: clip;
+  ;position: relative;  background-color: white; padding: 1rem;border-radius: .5rem;box-shadow: 0 1rem 1rem  #00000040;transition: all ease .3s;
+}
+
+
 .video{
   aspect-ratio: 9 /  16;width: 100%;position: sticky;top: 5rem; box-shadow: 0 1rem 1rem  #00000040; grid-area: v; max-height: 80vh;border-radius: 0.5em;
 }
@@ -271,7 +284,7 @@ const product =  {
 
 .container8{
   grid-template-columns: 1fr;
-  grid-template-areas: none;
+  grid-template-areas: 'a';
   display: block;
 }
 .grid{
@@ -280,6 +293,9 @@ const product =  {
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
+}
+h1{
+  font-size: 2rem;
 }
 
 .people{
@@ -298,15 +314,8 @@ const product =  {
 }
 
 
-
-.pc{
-  grid-area: m;display: flex;align-items: end; justify-content: end;flex-direction: column; max-height: max-content;text-overflow: clip;
-;position: relative;  background-color: white; padding: 1rem;border-radius: .5rem;box-shadow: 0 1rem 1rem  #00000040;transition: all ease .3s;
-}
-
-.movil {
-  grid-area: m;display: none;align-items: end; justify-content: end;flex-direction: column; max-height: max-content;text-overflow: clip;
-  ;position: relative;  background-color: white; padding: 1rem;border-radius: .5rem;box-shadow: 0 1rem 1rem  #00000040;transition: all ease .3s;
+h1{
+  font-size:3rem;
 }
 
 
