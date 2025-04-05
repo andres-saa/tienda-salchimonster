@@ -59,6 +59,14 @@ const router = createRouter({
             },
 
             {
+              path: '/kids',
+              name: 'Kids',
+              component: () => import('@/views/kids/Kids.vue'),
+              meta: { title: 'Monster Kids' },
+
+            },
+
+            {
               path: '/colaboraciones',
               name: 'colaboraciones',
               component: () => import('@/views/Colaboraciones.vue'),

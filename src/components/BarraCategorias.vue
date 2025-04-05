@@ -51,8 +51,9 @@ const cart = usecartStore()
 
 // Orden personalizado de las categorías (IDs)
 const codigos = [
-118, 
-  119, 
+120,
+118,
+  119,
   116,
   117,
   10,
@@ -69,7 +70,8 @@ const codigos = [
   113, // PARA COMPARTIR
   111, // BURGERMONSTER
   109, // BEBIDAS
-  115
+  115,
+
 
 ]
 

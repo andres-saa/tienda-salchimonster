@@ -61,6 +61,7 @@ const cart = usecartStore()
 // IDs de las categorías (con sus nombres en comentarios)
 const codigos = [
 118,
+120,
   119,
   116,
   117,
@@ -78,7 +79,8 @@ const codigos = [
   113, // PARA COMPARTIR
   111, // BURGERMONSTER
   109, // BEBIDAS
-  115
+  115,
+
 
 ]
 

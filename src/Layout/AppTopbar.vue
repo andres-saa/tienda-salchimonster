@@ -134,6 +134,7 @@ const socialLinks = [
 // Definir los botones de navegación
 const buttons = [
   { name: 'Domicilios', to: '/', icon: 'fa-solid fa-bars' },
+  { name: 'Kids', to: '/kids', icon: 'fa-solid fa-bars' },
   // { name: 'Reserva Cumples', to: '/cumples', icon: 'fa-solid fa-bars' },
   { name: 'Sedes', to: '/sedes', icon: 'fa-solid fa-building' },
   { name: 'Carta', to: '/menu', icon: 'fa-solid fa-list' },
@@ -166,6 +167,7 @@ const estilosPorRuta = {
   '/hola': 'barra-clara',
   '/sonando': 'barra-oscura',
   '/pqrs-user': 'barra-oscura',
+  '/kids':'barra-carta',
   '/colaboraciones': 'barra-oscura'
 
 

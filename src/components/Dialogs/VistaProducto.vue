@@ -189,7 +189,7 @@ const seeRightHand = ref(false);
 const quantity = ref(1)
 
 watch(() => store.visibles.currentProduct, (newVal) => {
-  if (!newVal) {
+  if (!newVal&& route.path !== '/kids') {
     see.value = seeLeftHand.value = seeRightHand.value = false;
     router.push({
       path: route.path, // Mantiene la misma ruta
@@ -327,7 +327,7 @@ watch(
       return;
     }
     const new_route = `/${route.params.menu_name}/${route.params.category_id}`;
-    if (route.path != '/') {
+    if (route.path != '/' && route.path != '/kids') {
       router.push(new_route);
 
     }

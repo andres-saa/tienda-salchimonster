@@ -277,7 +277,7 @@ onBeforeUnmount(() => {
     }
 }
 
-@media (max-width: 2000px) {
+@media (max-width: 20000px) {
     .container {
         grid-template-columns: 1fr 2fr;
         width: 100%;

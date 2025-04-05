@@ -39,25 +39,25 @@ const foodBanners = ref({
   },
   2: {
     name: "Banner 1",
-    src: "/images/banners/banner-0.jpeg",
+    src: "/images/banners/banner-1.jpeg",
     x: -100,
     index: 2
   },
   3: {
     name: "Banner 2",
-    src: "/images/banners/banner-1.jpeg",
+    src: "/images/banners/banner-2.jpeg",
     x: -200,
     index: 3
   },
   4: {
     name: "Banner 3",
-    src: "/images/banners/banner-2.jpeg",
+    src: "/images/banners/banner-3.jpeg",
     x: -300,
     index: 4
   },
   5: {
     name: "Banner 4",
-    src: "/images/banners/banner-3.jpeg",
+    src: "/images/banners/banner-4.jpeg",
     x: -400,
     index: 5
   },

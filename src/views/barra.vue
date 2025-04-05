@@ -1,8 +1,8 @@
 <template>
   <div v-if="
-    route.path == '/'
+    route.path == '/' || route.path == '/kids'
 
-  " class="fixed-cart-bar background">
+  " class="fixed-cart-bar background" :style="route.path != '/kids'? '  background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));': ''">
     <div v-if="store.cart.length > 0" @click="enviarAlCarro" :class="['cart-bar', { hidden: !showElement }]">
       <button class="cart-button">
         <i class="cart-icon icono pi pi-shopping-cart"></i>
@@ -70,7 +70,7 @@ const enviarAlCarro = () => {
   justify-content: center;
   width: 100%;
   padding: 0 1rem;
-  background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+
   z-index: 999;
 }
 
@@ -160,7 +160,7 @@ const enviarAlCarro = () => {
 
 /* Background gradient */
 .background {
-  background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+
 }
 
 /* Transition for all elements */
