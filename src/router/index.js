@@ -67,6 +67,14 @@ const router = createRouter({
             },
 
             {
+              path: '/piano-kids',
+              name: 'piano-kids',
+              component: () => import('@/views/kids/Piano.vue'),
+              meta: { title: 'Monster Kids' },
+
+            },
+
+            {
               path: '/colaboraciones',
               name: 'colaboraciones',
               component: () => import('@/views/Colaboraciones.vue'),
