@@ -208,7 +208,7 @@ const ver_mas = ref(false)
 
 const product =  {
             "productogeneral_id": "347",
-            "productogeneral_descripcionweb": "Salchipapa MiniKids con Papa Francesa,Salchicha Premum SM, Nuggets de pollo, jugo del valle,Alpinito,Monstruo del Imperio.",
+            "productogeneral_descripcionweb": "Salchipapa MiniKids con Papa Francesa,Salchicha Premium SM, Nuggets de pollo, jugo del valle,Alpinito,Monstruo del Imperio.",
             "productogeneral_descripcion": "MONSTERKIDS",
             "productogeneral_marca": "",
             "productogeneral_escombo": "0",
