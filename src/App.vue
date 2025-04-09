@@ -27,8 +27,9 @@ onMounted(async () => {
   if (status) {
     siteStore.status = status
   }
-  const data = await fetchService.get(`${URI}/get-product-integration/6149/${pe_id || 1}`)
-  cart.menu = data
+  const data = await fetchService.get(`${URI}/tiendas/${pe_id || 1}/products`)
+
+  cart.menu = data.categorias
 
 })
 </script>

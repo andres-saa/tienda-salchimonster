@@ -1,7 +1,6 @@
 <template>
     <div class="containerm" lang="es" translate="yes">
-        <div :id="section.categoria_id" class=" container-button" v-for="(section, index) in cart?.menu?.listaCategorias?.filter(c => codigos.includes(parseInt(c.categoria_id)))
-            ?.sort((a, b) => codigos.indexOf(parseInt(a.categoria_id)) - codigos.indexOf(parseInt(b.categoria_id)))"
+        <div :id="section.categoria_id" class=" container-button" v-for="(section, index) in cart?.menu.filter(p => p.products  && p.visible)"
             :key="section.categoria_id">
 
 
@@ -22,8 +21,7 @@
 
             <div class="section">
 
-                <div v-for="(product, index) in cart?.menu?.data?.filter(d => d.categoria_id == section.categoria_id &&
-                d.productogeneral_estado == 'Activo' &&   (d?.productogeneral_precio > 0 || d?.lista_presentacion?.[0].producto_precio > 0)) "
+                <div v-for="(product, index) in section?.products"
                     :key="product.id" class="" style="width: 100%;">
 
                     <div class="card-container">
@@ -215,18 +213,33 @@ onMounted(() => {
 }
 
 .section {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    width: 100%;
-    padding: .5rem;
+  display: grid;
+  /* Crea tantas columnas como quepan hasta un máximo de 3 */
+  grid-template-columns: repeat(auto-fit, minmax(25%, 1fr));
+
+  /* Asegura que no haya más de 3 columnas (3 * 250px = 750px) */
+  max-width: 1600px;
+  width: 100%;
+
+  /* Centra la grid en la página */
+  margin: 0 auto;
+
+  /* Centra el contenido en cada celda de la grid */
+
+  margin: auto;
+  gap: 0.5rem;
+  padding: 0.5rem;
 }
 
 
 
 @media (max-width: 1544px) {
     .section {
-        grid-template-columns: repeat(2, 1fr);
-        /* max-width: 1024px; */
+         /* Crea tantas columnas como quepan hasta un máximo de 3 */
+  grid-template-columns: repeat(auto-fit, minmax(33%, 1fr));
+
+        max-width: 1200px;
+        margin: auto;
     }
 
     .container {
@@ -253,6 +266,8 @@ onMounted(() => {
 @media (max-width: 870px) {
     .section {
         grid-template-columns: repeat(1, 1fr);
+        max-width: 600px;
+        margin: auto;
     }
 
     .category-img {

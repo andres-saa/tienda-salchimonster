@@ -1,5 +1,5 @@
 <template>
-    <div class="container shadow-3 col-12 product-card" @click="open(props.product)">
+    <div class="container-card shadow-3 col-12 product-card" @click="open(props.product)">
         <div class="imagen">
             <!-- Imagen con lazy loading personalizado -->
             <img ref="productImage" class="imagen-producto lazy"
@@ -29,6 +29,15 @@
                     <!-- <Button icon="pi pi-heart text-xl p-0 m-0" text rounded class="heart-button" /> -->
 
                     <div class="flex-center-gap">
+                      <h2 class="text-xl p-0 m-0 precio" style="opacity: .5;font-weight: 500;text-decoration:line-through;" v-if="props.product.last_price > 0">
+                            <b>
+                                {{
+                                    formatoPesosColombianos(
+                                        props.product.last_price
+                                    )
+                                }}
+                            </b>
+                        </h2>
                         <h2 class="text-xl p-0 m-0 precio">
                             <b>
                                 {{
@@ -40,6 +49,8 @@
                             </b>
                         </h2>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -160,7 +171,7 @@ onBeforeUnmount(() => {
     width: 100%;
     height: 100%;
     position: relative;
-    /* El resto de estilos los hereda de .container */
+    /* El resto de estilos los hereda de .container-card */
 }
 
 /* Contenedor “imagen” (estilos unificados) */
@@ -238,14 +249,15 @@ onBeforeUnmount(() => {
 
 /* --- Estilos existentes y/o adicionales --- */
 
-.container {
+.container-card {
     display: grid;
     gap: 1rem;
     /* Spacing between grid items */
     grid-template-columns: 1fr;
     height: 100%;
     width: 100%;
-    margin: 0;
+    max-width: 600px;
+    margin: 0 auto;
     padding: 1rem;
     box-shadow: 0 1rem 1rem rgba(160, 160, 160, 0.3);
     border-radius: 0.5rem;
@@ -259,7 +271,7 @@ onBeforeUnmount(() => {
     display: none;
 }
 
-.container:hover {
+.container-card:hover {
     transform: translateY(-0.5rem);
     box-shadow: 0 1.5rem 1rem rgba(160, 160, 160, 0.4);
 }
@@ -278,7 +290,7 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 20000px) {
-    .container {
+    .container-card {
         grid-template-columns: 1fr 2fr;
         width: 100%;
     }

@@ -15,7 +15,7 @@
   >
     <div class="container" style="justify-content: start; align-items: center">
       <div
-        v-for="(section, index) in filteredAndSortedCategories"
+        v-for="(section, index) in cart?.menu?.filter(p => p.products  && p.visible)"
         :key="section.categoria_id"
         :id="'categoryButton-' + section.categoria_id"
         class="container-button"
@@ -27,7 +27,7 @@
             :label="section.categoria_descripcion"
           >
             <img
-              :src="`${URI}/get-image?image_url=${cart?.menu?.data?.find((p) => p.categoria_id == section.categoria_id)?.productogeneral_urlimagen}`"
+              :src="`${URI}/get-image?image_url=${section.products?.[0]?.productogeneral_urlimagen}`"
               alt=""
             />
             <span
@@ -77,7 +77,7 @@ const codigos = [
 
 // Filtra y ordena las categorías con base en 'codigos'
 const filteredAndSortedCategories = computed(() => {
-  return cart?.menu?.listaCategorias
+  return cart?.menu
     ?.filter((c) => codigos.includes(parseInt(c.categoria_id)))
     ?.sort((a, b) => {
       return codigos.indexOf(parseInt(a.categoria_id)) - codigos.indexOf(parseInt(b.categoria_id))

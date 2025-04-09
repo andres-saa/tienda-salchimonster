@@ -104,10 +104,10 @@ const route = useRoute();
 onMounted(async () => {
   const site_id = siteStore.location.site?.site_id
   const pe_id = siteStore.location.site?.pe_site_id || 1
-  const status = await fetchService.get(`${URI}/site/${site_id}/status`)
-  if (status) {
-    siteStore.status = status
-  }
+  // const status = await fetchService.get(`${URI}/site/${site_id}/status`)
+  // if (status) {
+  //   siteStore.status = status
+  // }
   // cart.menu = await fetchService.get(`${URI}/get-product-integration/6149/${pe_id}/status`)
 })
 
