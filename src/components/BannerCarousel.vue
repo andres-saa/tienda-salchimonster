@@ -1,196 +1,196 @@
 <template>
+  <div class="container" style="background-color: var(--primary-color); min-width: 100%;">
+    <!-- Botón para ir al banner anterior (sólo se muestra si hay más de un banner) -->
 
-
-  <div class="container">
-
-    <Button class="button-left" @click="changeBanner(-1)"> <i class="pi pi-angle-left"></i></Button>
-
-    <div class="slider" :style="`transform: translate(${current_banner.x}%)`">
-
-      <img v-for="img in foodBanners" :src="img.src" alt="" :key="img.x">
-
+    <!-- Contenedor (slider) con las imágenes -->
+    <div class="slider" :style="sliderStyle">
+      <img
+        v-for="(banner, idx) in banners"
+        :key="banner.id ?? idx"
+        :src="`${URI}/read-photo-product/${banner.img_identifier}`"
+        :alt="banner.title ?? `Banner ${idx}`"
+      />
     </div>
-
-    <div class="slider" style="position: absolute;" :style="`transform: translate(${current_banner.x}%)`">
-
-    <img style="position:" v-for="img in foodBanners" :src="img.src" alt="" :key="img.x">
-
-    </div>
-
-    <Button class="button-right" @click="changeBanner(1)"> <i class="pi pi-angle-right"></i></Button>
+        <Button class="button-left" v-if="banners.length > 1" @click="prevBanner">
+      <i class="pi pi-angle-left"></i>
+    </Button>
 
 
+    <!-- Botón para ir al banner siguiente (sólo se muestra si hay más de un banner) -->
+    <Button class="button-right" v-if="banners.length > 1" @click="nextBanner">
+      <i class="pi pi-angle-right"></i>
+    </Button>
   </div>
-
 </template>
 
 <script setup>
-import { Button } from 'primevue';
-import { ref } from 'vue';
-import { onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+// import { Button } from 'primevue/button' // Ajusta si no usas PrimeVue
+import { fetchService } from '@/service/utils/fetchService'
+import { URI } from '@/service/conection'
 
 
-const foodBanners = ref({
-  1: {
-    name: "Banner 1",
-    src: "/images/banners/banner--1.jpeg",
-    x: 0,
-    index: 1
-  },
-  2: {
-    name: "Banner 1",
-    src: "/images/banners/banner-1.jpeg",
-    x: -100,
-    index: 2
-  },
-  3: {
-    name: "Banner 2",
-    src: "/images/banners/banner-2.jpeg",
-    x: -200,
-    index: 3
-  },
-  4: {
-    name: "Banner 3",
-    src: "/images/banners/banner-3.jpeg",
-    x: -300,
-    index: 4
-  },
-  5: {
-    name: "Banner 4",
-    src: "/images/banners/banner-4.jpeg",
-    x: -400,
-    index: 5
-  },
+const banners = ref([])
+const currentIndex = ref(0)
+let intervalId = null
 
+/** Intervalo de autoplay en milisegundos. Ajusta a tu gusto. */
+const INTERVAL_TIME = 3000
+
+/**
+ * onMounted: carga los banners desde el backend, los ordena por index,
+ * y arranca el autoplay.
+ */
+onMounted(async () => {
+  await loadBanners()
+  startAutoplay()
 })
 
-
-const current_banner = ref({
-  ...foodBanners.value[1]
-},)
-
-let last = 1
-
-const changeBanner = (dir) => {
-  const max_value = Object.keys(foodBanners.value).length - 1; // Máximo número de banners
-  const min_value = 1; // Índice mínimo
-
-  // Actualizar el índice del banner, asegurándose de que se mantenga en los límites
-  let newIndex = current_banner.value.index + dir;
-
-  if (newIndex > max_value) {
-    // return; // Salir si el índice está fuera de los límites
-    const newv = {
-      name: foodBanners.value[last].name,
-      src: foodBanners.value[last].src,
-      x: -(newIndex + 1) * 100,
-      index: newIndex + 1
-    }
-
-    // console.log(newv)
-    foodBanners.value[`${newIndex + 1}`] = { ...newv }
-    last += 1
-
-  }
-
-  if (newIndex < min_value) {
-    return; // Salir si el índice está fuera de los límites
-  }
-
-  else {
-    current_banner.value = foodBanners.value[newIndex];
-
-  }
-
-  // Actualizar el banner actual con el nuevo índice
-};
-
-
-
-
-const intervalId = setInterval(() => {
-  changeBanner(1);
-}, 5000); // 3000 milisegundos = 3 segundos
-
-// Limpiar el intervalo cuando el componente se desmonta
+/** onBeforeUnmount: limpia el autoplay al desmontar el componente */
 onBeforeUnmount(() => {
-  clearInterval(intervalId);
-});
+  stopAutoplay()
+})
 
+/**
+ * Carga los banners del backend y los ordena por la propiedad "index".
+ * Asegúrate de que el backend retorne un array con { index, img_identifier, id, ... }
+ */
+async function loadBanners() {
+  try {
+    const data = await fetchService.get(`${URI}/banners`)
+    // Ordenar el array según la propiedad "index" (ascendente)
+    banners.value = data.sort((a, b) => a.index - b.index)
+    currentIndex.value = 0
+  } catch (error) {
+    console.error('Error al cargar banners:', error)
+  }
+}
 
+/** Inicia el autoplay (pasa al siguiente banner cada INTERVAL_TIME ms) */
+function startAutoplay() {
+  if (!intervalId && banners.value.length > 1) {
+    intervalId = setInterval(() => {
+      nextBanner()
+    }, INTERVAL_TIME)
+  }
+}
+
+/** Detiene el autoplay */
+function stopAutoplay() {
+  if (intervalId) {
+    clearInterval(intervalId)
+    intervalId = null
+  }
+}
+
+/** Cambia al siguiente banner (cíclicamente) */
+function nextBanner() {
+  if (banners.value.length === 0) return
+  currentIndex.value = (currentIndex.value + 1) % banners.value.length
+}
+
+/** Cambia al banner anterior (cíclicamente) */
+function prevBanner() {
+  if (banners.value.length === 0) return
+  currentIndex.value =
+    (currentIndex.value - 1 + banners.value.length) % banners.value.length
+}
+
+/**
+ * Computed que calcula el estilo de desplazamiento (translateX)
+ * en función de currentIndex.
+ */
+const sliderStyle = computed(() => {
+  const translateX = -currentIndex.value * 100
+  return `transform: translateX(${translateX}%); transition: all 0.3s ease;`
+})
 </script>
 
 <style scoped>
-img {
-  width: 100%;
-  min-width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-}
-
-.slider {
-  display: flex;
-  z-index: -1;
-  transition: all .3s ease;
-
-}
-
-i {
-  font-size: xx-large;
-}
-
+/* Contenedor principal */
 .container {
   overflow: hidden;
   display: flex;
   align-items: center;
   position: relative;
   margin-top: 0rem;
+  padding: 0;
+  width: 100%;
 }
 
-.button-left {
-  position: absolute;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  left: 1rem;
-  padding: .5rem;
-  background-color: #00000070;
-  /* color: var(--p-primary-color); */
-  border: none;
-  color: white;
+/* Slider (contenedor de imágenes) */
+.slider {
+  display: flex;
+  width: 100%;
+  /* La transición se maneja en "sliderStyle" (computed) */
+  padding: 0;
+  margin: 0;
+}
+
+/* Ajustes de imagen */
+img {
+  width: 100%;
+  min-width: 100%;
+  aspect-ratio: 16/7; /* Ajusta según tu preferencia */
+  object-fit: cover;
+  height: 100%;
+
 }
 
 
 
 
 
+/* Botones de navegación */
+.button-left,
 .button-right {
   position: absolute;
   aspect-ratio: 1 / 1;
-  background-color: #00000070;
-  /* color: var(--p-primary-color); */
-  color: white;
-  border: none;
   border-radius: 50%;
+  padding: 0.5rem;
+  background-color: #00000070;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-left {
+  left: 1rem;
+}
+
+.button-right {
   right: 1rem;
-  padding: .5rem;
+}
+
+i {
+  font-size: xx-large;
+}
+
+
+@media (width < 600px) {
+
+  img {
+  width: 100%;
+  min-width: 100%;
+  aspect-ratio: 4 / 3; /* Ajusta según tu preferencia */
+  object-fit: cover;
+  height: 100%;
+
 }
 
 
 
-@media (width < 1100px) {
+}
+
+/* Ajustes en pantallas más pequeñas */
+@media (max-width: 1100px) {
   .button-right {
-
-    right: .5rem;
-
+    right: 0.5rem;
   }
-
   .button-left {
-
-    left: .5rem;
-
+    left: 0.5rem;
   }
-
-
-
 }
 </style>
