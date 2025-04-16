@@ -128,6 +128,13 @@ const router = createRouter({
               meta: { title: 'Muchas gracias' },
 
             },
+            {
+              path: '/gracias-epayco',
+              name: 'gracias-epayco',
+              component: () => import('@/views/GraciasEpayco.vue'),
+              meta: {  title:'Muchas gracias' },
+
+            },
           ],
         },
       ],

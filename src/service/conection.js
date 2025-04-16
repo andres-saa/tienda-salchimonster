@@ -5,10 +5,11 @@
 // const URI = 'http://localhost:8000'
 // const URI = 'http://167.71.178.54:8200'
 // const URI = 'http://back.novatocode.online'
-const URI = 'https://backend.salchimonster.com'
+const URI = 'https://9001.salchimonster.com'
 const URI_SOCKET = 'backend.salchimonster.com'
+const SELF_URI = 'https://5174.salchimonster.com'
 // const URI_SOCKET = 'localhost:8000'
-export { URI, URI_SOCKET }
+export { URI, URI_SOCKET,SELF_URI }
 
 // const products = [
 //     {

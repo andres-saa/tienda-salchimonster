@@ -95,7 +95,7 @@
                     <span v-else-if="siteStore.location.neigborhood.delivery_price > 0">
                         <b>{{ formatoPesosColombianos(siteStore.location.neigborhood.delivery_price) }}</b>
                     </span>
-                    
+
                 </div>
                 <div class="col-6 my-0 py-0">
                     <span><b>Total</b></span>
@@ -143,35 +143,47 @@
                     severity="help"></Button>
             </router-link>
 
-            <!-- Botón “Finalizar pedido” al reservar -->
-            <router-link to="/pay" v-else-if="route.path.includes('reservas')">
-                <Button @click="() => {
-                    orderService.sendOrderReserva()
-                    sending = true
-                }" iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
-                    class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
-                    severity="help"></Button>
-            </router-link>
+                        <!-- Botón “Finalizar pedido” (ir a /pay) -->
+              <router-link to="/pay" v-else-if="route.path == '/cart'">
+                <Button
+                  iconPos="right"
+                  icon="pi pi-arrow-right"
+                  label="Finalizar pedido"
+                  class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
+                  severity="help"
+                />
+              </router-link>
 
-            <!-- Botón “Finalizar pedido” si el restaurante no está cerrado -->
-            <router-link to="/pay"
-                v-else-if="siteStore.status?.status !== 'closed' && siteStore.status?.status && route.path == '/cart'">
-                <Button iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
-                    class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
-                    severity="help"></Button>
-            </router-link>
-
-
-            <Button :disabled = "reportes.loading.visible"
-                v-else-if="siteStore.status?.status !== 'closed' && siteStore.status?.status && route.path == '/pay' && !reportes.loading.visible"
-                @click="() => {
-                    orderService.sendOrder()
-                    sending = true
-                }" iconPos="right" icon="pi pi-arrow-right" label="Finalizar pedido"
+              <!-- BOTÓN QUE USA LA PASARELA DE EPAYCO -->
+              <Button
+                :disabled="reportes.loading.visible"
+                v-else-if="route.path == '/pay' && !reportes.loading.visible && user?.user?.payment_method_option?.id == 6"
+                @click="pay"
+                iconPos="right"
+                icon="pi pi-arrow-right"
+                label="Realizar pago con Tarjeta"
                 class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
-                severity="help"></Button>
+                severity="help"
+              />
+
+
+
+              <Button
+                :disabled="reportes.loading.visible"
+                v-else-if="route.path == '/pay' && !reportes.loading.visible "
+                @click="orderService.sendOrder()"
+                iconPos="right"
+                icon="pi pi-arrow-right"
+                label="Finalizar pedido"
+                class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
+                severity="help"
+              />
+
+
         </div>
     </div>
+
+
 </template>
 
 <script setup>
@@ -185,6 +197,12 @@ import { useUserStore } from '@/store/user';
 import { Button } from 'primevue';
 import { Tag } from 'primevue';
 import { useReportesStore } from '@/store/ventas';
+import { orderServiceEpayco } from '@/service/order/orderServiceEpayco';
+import { URI,URI_SOCKET,SELF_URI } from '@/service/conection';
+
+
+
+
 
 const reportes = useReportesStore()
 
@@ -224,6 +242,52 @@ watch(
     },
     { deep: true }
 );
+
+const order_id = ref('')
+const pay = async() => {
+ order_id.value =  await orderServiceEpayco.sendOrder()
+ payWithEpayco(order_id.value)
+
+}
+
+const payWithEpayco = (order_id) => {
+  // Verificamos que el objeto ePayco esté disponible en window
+  if (!window.ePayco) {
+    console.error("Epayco script no se ha cargado o no está disponible");
+    return;
+  }
+
+  // Configuramos el Checkout
+  const handler = window.ePayco.checkout.configure({
+    key: '19f27e6b07849610b188d4f6997541a2',  // Reemplaza con tu Public Key real
+    test: true,                              // true = pruebas, false = producción
+    response_type: 'redirect',
+    onClosed: function () {
+      console.log("Modal de Epayco cerrado");
+    }
+  });
+
+  // Calcular total a pagar
+  const totalAPagar = store.cartTotal +
+  siteStore.location.neigborhood.delivery_price
+
+  // Abrimos el modal con los datos necesarios
+  handler.open({
+    name: "Tu pedido",
+    description: "Compra en nuestro restaurante",
+    amount: totalAPagar,
+    currency:siteStore?.location?.site?.time_zone == 'America/New_York'? "usd" : "cop",
+    invoice: order_id, // ID único (puedes ajustar a tu lógica)
+    tax_base: "0",
+    tax: "0",
+    country: "co",
+    lang: "es",
+    external: "false",
+    confirmation: `${URI}/confirmacion-epayco`, // Ajusta con tu backend
+    response: `${SELF_URI}/gracias-epayco`     // URL de respuesta final
+  });
+};
+
 </script>
 
 <style scoped>
