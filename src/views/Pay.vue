@@ -2,7 +2,7 @@
     <div class="finalizar-compra-container">
       <!-- <validate></validate> -->
       <p class="title">FINALIZAR COMPRA</p>
-  
+
       <div style="margin: auto; max-width: 800px;">
         <div class="title" style="margin: 3rem .5rem">
           <Tag severity="success" class="advertice">
@@ -26,7 +26,7 @@
               readonly
             />
           </div>
-  
+
           <span>Metodo Entrega</span>
           <div class="form-group">
             <Select
@@ -38,7 +38,7 @@
               optionLabel="name"
             />
           </div>
-  
+
           <!-- Mostrar dirección solo si el método no es "Pasar a recoger" (id 2) -->
           <template v-if="!user.user.order_type || user.user.order_type.id !== 2">
             <span>Direccio'n</span>
@@ -46,7 +46,7 @@
               <InputText v-model="user.user.address" id="address" placeholder="DIRECCION" />
             </div>
           </template>
-  
+
           <span>Telefono</span>
           <div class="form-group">
             <InputText
@@ -56,7 +56,21 @@
               placeholder="TELEFONO"
             />
           </div>
-  
+
+          <span>Correo Electrónico</span>
+          <div class="form-group">
+            <InputText
+              v-model="user.user.email"
+              id="phone_number"
+              mask="999 999 9999"
+              placeholder="Correo Electronico"
+            />
+          </div>
+
+
+
+
+
           <!-- Mostrar campo de placa solo si el método es "Pasar a recoger" (id 2) y la sede es 33 -->
           <template v-if="user.user.order_type && user.user.order_type.id === 2 && siteStore.location?.site?.site_id === 33">
             <span>Placa de tu vehiculo</span>
@@ -64,7 +78,7 @@
               <InputText v-model="user.user.placa" id="placa" placeholder="Placa de tu vehiculo" />
             </div>
           </template>
-  
+
           <span>Metodo de pago</span>
           <div class="form-group">
             <Select
@@ -77,19 +91,19 @@
                   ? payment_method_options.filter(option => [6, 8].includes(option.id))
                   : siteStore.location?.site?.site_id !== 33
                   ? payment_method_options.filter(option => ![7].includes(option.id))
-                  : payment_method_options  
+                  : payment_method_options
               "
               optionLabel="name"
             />
           </div>
           <span>Notas</span>
-  
+
           <Textarea
             v-model="store.cart.order_notes"
             class="order-notes"
             placeholder="Notas adicionales"
           />
-  
+
           <!-- En otros casos, muestra un textarea normal -->
           <template>
             <Textarea
@@ -99,12 +113,12 @@
             />
           </template>
         </div>
-  
+
         <resumen class="resumen-column"></resumen>
       </div>
     </div>
   </template>
-  
+
   <script setup>
   import { ref, onMounted, watch, computed } from 'vue';
   import resumen from './resumen.vue';
@@ -117,27 +131,27 @@
   import { Select } from 'primevue';
   import { fetchService } from '@/service/utils/fetchService';
   import { URI } from '@/service/conection';
-  
+
   const store = usecartStore();
   const siteStore = useSitesStore();
   const user = useUserStore();
-  
+
   const order_types = ref([]);
   const payment_method_options = ref([]);
-  
+
   onMounted(async () => {
     user.user.order_type = null
 
     payment_method_options.value = await fetchService.get(`${URI}/payment_methods`);
     order_types.value = await fetchService.get(`${URI}/get_all_order_types`);
-  
+
     if (user.user.payment_method_option?.id != 7) {
       siteStore.setNeighborhoodPrice();
     } else {
       siteStore.setNeighborhoodPriceCero();
     }
   });
-  
+
   watch(() => user.user.order_type, (new_val) => {
     if (new_val.id == 2) {
       siteStore.current_delivery = siteStore.location.neigborhood.delivery_price;
@@ -156,7 +170,7 @@
   watch(() => user.user.order_type,() => {
     user.user.placa = null
   })
-  
+
   // Computed para filtrar los tipos de orden según la sede
   const computedOrderTypes = computed(() => {
     const currentSiteId = siteStore.location?.site?.site_id;
@@ -169,14 +183,14 @@
     }
   });
   </script>
-  
+
   <style scoped>
   /* Contenedor Principal */
   .finalizar-compra-container {
     padding: 0;
     margin-bottom: 2rem;
   }
-  
+
   /* Título */
   .title {
     text-align: center;
@@ -184,7 +198,7 @@
     margin: 2rem 0;
     font-weight: bold;
   }
-  
+
   .advertice {
     animation: anim_status_tag 2s infinite ease;
     color: black;
@@ -192,7 +206,7 @@
     font-weight: 400;
     font-size: 1.1rem;
   }
-  
+
   @keyframes anim_status_tag {
     20% {
       background-color: rgb(0, 255, 110);
@@ -205,7 +219,7 @@
       background-color: rgb(0, 255, 140);
     }
   }
-  
+
   /* Grid del Formulario y Resumen */
   .form-grid {
     display: grid;
@@ -214,13 +228,13 @@
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
+
   @media (min-width: 768px) {
     .form-grid {
       grid-template-columns: 1fr 1fr;
     }
   }
-  
+
   /* Columna del Formulario */
   .form-column {
     display: flex;
@@ -228,7 +242,7 @@
     gap: 1rem;
     padding: 0.25rem;
   }
-  
+
   /* Grupo de Formularios */
   .form-group {
     display: flex;
@@ -236,32 +250,32 @@
     gap: 0.5rem;
     width: 100%;
   }
-  
+
   /* Área de Notas */
   .order-notes {
     height: 8rem;
     resize: none;
     width: 100%;
   }
-  
+
   /* Eliminar estilos en línea de elementos enfocados */
   *:focus {
     outline: none;
     border: none;
   }
-  
+
   input,
   textarea,
   select {
     width: 100%;
     box-sizing: border-box;
   }
-  
+
   /* Personalizar Scrollbar */
   ::-webkit-scrollbar {
     width: 1rem;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background-color: rgb(255, 0, 0);
     border-radius: 9px;
@@ -270,4 +284,3 @@
     width: 10rem;
   }
   </style>
-  

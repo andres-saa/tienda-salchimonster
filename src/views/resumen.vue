@@ -154,23 +154,10 @@
                 />
               </router-link>
 
-              <!-- BOTÓN QUE USA LA PASARELA DE EPAYCO -->
-              <Button
-                :disabled="reportes.loading.visible"
-                v-else-if="route.path == '/pay' && !reportes.loading.visible && user?.user?.payment_method_option?.id == 6"
-                @click="pay"
-                iconPos="right"
-                icon="pi pi-arrow-right"
-                label="Realizar pago con Tarjeta"
-                class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
-                severity="help"
-              />
-
-
 
               <Button
                 :disabled="reportes.loading.visible"
-                v-else-if="route.path == '/pay' && !reportes.loading.visible "
+                v-else-if="route.path == '/pay' && !reportes.loading.visible && siteStore.status?.status !== 'closed' "
                 @click="orderService.sendOrder()"
                 iconPos="right"
                 icon="pi pi-arrow-right"

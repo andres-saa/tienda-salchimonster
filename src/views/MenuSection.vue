@@ -1,51 +1,46 @@
 <template>
-    <div class="containerm" lang="es" translate="yes">
-        <div :id="section.categoria_id" class=" container-button" v-for="(section, index) in cart?.menu.filter(p => p.products  && p.visible)"
-            :key="section.categoria_id">
+  <div class="containerm" lang="es" translate="yes">
+    <div
+      v-for="(section, index) in cart?.menu.filter(p => p.products && p.visible )"
+      :key="section.categoria_id"
+      :id="section.categoria_id"
+      class="container-button"
+      :data-category-name="section.categoria_descripcion"
 
 
+    >
+      <div class="category-header">
+        <span class="category-name" style="margin: 0 1rem;">
+          <b>{{ section.categoria_descripcion }}</b>
+        </span>
+      </div>
 
-            <div class="category-header">
-                <span class="category-name" style="margin: 0 1rem;">
-                    <b>{{ section.categoria_descripcion }}</b>
-                </span>
-                <!-- <img @click="open(image.producto)" v-for="(image, index) in cart?.menu?.data
-                    .filter(p => p.categoria_id === section.categoria_id  &&  (p?.productogeneral_precio > 0 || p?.lista_presentacion?.[0].producto_precio > 0))
-                    .map(p => { return { imagen: p.productogeneral_urlimagen, producto: p } })
-                    .slice(0, 4)" :key="index" class="category-img" :src="`${URI}/get-image?image_url=${image.imagen}`"
-                    alt="Imagen de categoría"> -->
-
-            </div>
-
-
-
-            <div class="section">
-
-                <div v-for="(product, index) in section?.products"
-                    :key="product.id" class="" style="width: 100%;">
-
-                    <div class="card-container">
-                        <MenuCard style="height: 100%;" :id="`tarjeta-${index}`" :index="index + 1" :product="product">
-                        </MenuCard>
-                    </div>
-
-                </div>
-
-
-            </div>
-
+      <div class="section">
+        <div
+          v-for="(product, idx) in section?.products?.filter(p => p?.productogeneral_precio > 0 || p?.lista_presentacion[0]?.producto_precio > 0)"
+          :key="product.id"
+          style="width: 100%;"
+        >
+          <div class="card-container">
+            <MenuCard
+              style="height: 100%;"
+              :id="`tarjeta-${index}-${idx}`"
+              :index="idx + 1"
+              :product="product"
+            />
+          </div>
         </div>
+      </div>
     </div>
-
+  </div>
 </template>
-
 
 
 <script setup>
 import { usecartStore } from '../store/shoping_cart';
 import MenuCard from '@/components/cards/MenuCard.vue';
 import { useReportesStore } from '@/store/ventas';
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { URI } from '@/service/conection';
 const route = useRoute()
@@ -101,6 +96,38 @@ onMounted(() => {
 })
 
 
+let scrollTimeout = null
+let observer = null
+
+onMounted(() => {
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Cancelamos el timer anterior
+        if (scrollTimeout) clearTimeout(scrollTimeout)
+        // Programamos la asignación sólo si pasan 500 ms sin más intersecciones
+        scrollTimeout = setTimeout(() => {
+          cart.currentSection = entry.target.id
+        }, 500)
+      }
+    })
+  }, {
+    root: null,
+    rootMargin: '-50% 0px -50% 0px',
+    threshold: 0
+  })
+
+  // Observamos cada sección
+  document.querySelectorAll('.container-button').forEach(el => {
+    observer.observe(el)
+  })
+})
+
+onUnmounted(() => {
+  if (observer) observer.disconnect()
+  if (scrollTimeout) clearTimeout(scrollTimeout)
+})
+
 const open = (product) => {
     cart.setCurrentProduct(product);
     cart.setVisible('currentProduct', true);
@@ -135,19 +162,19 @@ const smoothScrollTo = (categoryId) => {
                 block: 'nearest'       // No desplaza verticalmente innecesariamente
             });
         }
-    }, 1000);
+    }, 100);
 };
 
 
 onMounted(() => {
 
-  if( !siteStore.location?.site?.pe_site_id){
-    siteStore.visibles.currentSite = true
-    console.log(siteStore.location)
-  }
-    if (cart.currentSection) {
-        smoothScrollTo(cart.currentSection)
-    }
+  // if( !siteStore.location?.site?.pe_site_id){
+  //   siteStore.visibles.currentSite = true
+  //   console.log(siteStore.location)
+  // }
+  //   if (cart.currentSection) {
+  //       smoothScrollTo(cart.currentSection)
+  //   }
 })
 
 </script>

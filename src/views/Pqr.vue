@@ -2,7 +2,7 @@
     <!-- Primer Diálogo -->
     <Dialog class="dialog-custom" v-model:visible="visibleDialog" modal>
         <div class="dialog-content">
-            <h4>Hemos recibido su solicitud y ha quedado registrada con el id </h4>
+            <h4 style="font-weight: 400;">Hemos recibido su solicitud y ha quedado registrada con el id </h4>
             <br>
             <b>
                 <p class="last-id">{{ last_id }}</p>
@@ -110,6 +110,13 @@
             </div>
 
             <div class="form-input" v-if="selectedType">
+                <h3 class="field">Correo Electrónico</h3>
+                <InputText :useGrouping="false" v-model="userEmail" class="input-"
+                    placeholder="Escriba su Correo electrónico">
+                </InputText>
+            </div>
+
+            <div class="form-input" v-if="selectedType">
                 <h3 class="field">Dirección</h3>
                 <InputText v-model="userAddress" class="input-full" placeholder="Escriba su dirección"></InputText>
             </div>
@@ -142,6 +149,7 @@ const types = ref([]);
 const orderId = ref('');
 const userName = ref('');
 const userPhone = ref('');
+const userEmail = ref('')
 const userAddress = ref('');
 const comments = ref('');
 const rating = ref(null);
@@ -173,7 +181,7 @@ const handleSubmit = async () => {
     }
 
     if (selectedType.value != 8 && (!userName.value || !userPhone.value || !userAddress.value)) {
-        alert('Por favor, complete los campos obligatorios (nombre, teléfono y direccion).');
+        alert('Por favor, complete los campos obligatorios (nombre, teléfono, direccion y Correo Electronico).');
         return;
     }
 
@@ -206,7 +214,8 @@ const handleSubmit = async () => {
             user_name: userName.value || '',
             user_phone: userPhone.value?.toString() || '',
             user_address: userAddress.value || '',
-            site_id: selecteSite.value || null
+            site_id: selecteSite.value || null,
+            email:userEmail.value
         }
     };
 
@@ -244,7 +253,7 @@ onMounted(async () => {
 
 .dialog-content {
     height: auto;
-    color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
     background-color: white;
     display: flex;
     flex-direction: column;

@@ -48,6 +48,7 @@ const preparar_orden = () => {
     user_name: user.user.name,
     user_phone: user.user.phone_number?.split(" ").join(""),
     user_address: ` ${user.user.address} ${site.location?.neigborhood?.name}` || "",
+    email: user.user.email
   };
 
   const order = {
@@ -233,13 +234,7 @@ export const orderService = {
 };
 
 function validateOrder(order) {
-  // const cart = usecartStore()
-  // if (!order.order_products.every(p => p.product_instance_id && p.quantity)) {
-  //   alert('Some products in your cart are missing details.');
-  //   cart.sending_order = false
 
-  //   return false;
-  // }
 
   if (
     !order.user_data.user_name ||
@@ -247,11 +242,11 @@ function validateOrder(order) {
     !order.user_data.user_phone ||
     order.user_data.user_phone.trim() == "" ||
     !order.user_data.user_address ||
-    order.user_data.user_address.trim() == ""
+    order.user_data.user_address.trim() == "" ||
+    order.user_data.email.trim() == ""
   ) {
     alert("Sus datos estan incompletos por favor reviselos");
     cart.sending_order = false;
-
     return false;
   }
 

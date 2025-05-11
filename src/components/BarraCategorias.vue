@@ -9,7 +9,7 @@
       z-index: 9999;
       display: flex;
       align-items: center;
-      background-color: var(--p-primary-color);
+      background-color: white;
       overflow-x: auto;
     "
   >
@@ -20,7 +20,7 @@
         :id="'categoryButton-' + section.categoria_id"
         class="container-button"
       >
-        <a @click.prevent="smoothScrollTo(section.categoria_id)">
+        <a @click.prevent="smoothScrollTo(section.categoria_id, true,true)">
           <Button
             class="bar-button"
             :class="{ selected: cart.currentSection === section.categoria_id }"
@@ -88,7 +88,7 @@ const filteredAndSortedCategories = computed(() => {
  * Desplaza suavemente el contenido principal hasta la sección
  * y actualiza cart.currentSection para que se marque como activa
  */
-const smoothScrollTo = (categoryId) => {
+const smoothScrollTo = (categoryId, desplaza = true, button = false) => {
   // ----- SCROLL VERTICAL (al contenido) -----
   const element = document.getElementById(categoryId)
   if (element) {
@@ -96,11 +96,16 @@ const smoothScrollTo = (categoryId) => {
     const elementY = element.getBoundingClientRect().top + window.pageYOffset
     const targetPosition = elementY - offset
 
-    window.scrollTo({
+    if (desplaza && button) {
+      window.scrollTo({
       top: targetPosition,
       behavior: 'smooth',
     })
+
+    }
+
   }
+
 
   // ----- MARCAR SECCIÓN ACTUAL -----
   cart.currentSection = categoryId
@@ -109,13 +114,16 @@ const smoothScrollTo = (categoryId) => {
   setTimeout(() => {
     const buttonElement = document.getElementById(`categoryButton-${categoryId}`)
     if (buttonElement) {
-      buttonElement.scrollIntoView({
+
+        buttonElement.scrollIntoView({
         behavior: 'smooth',
         inline: 'center', // Centra horizontalmente
         block: 'nearest', // No desplaza verticalmente innecesariamente
       })
+
+
     }
-  }, 1000)
+  }, 0)
 }
 
 // IntersectionObserver para marcar la sección activa al hacer scroll
@@ -169,6 +177,24 @@ onBeforeUnmount(() => {
  * Watch que, cada vez que cambie la sección activa,
  * busca el botón correspondiente y hace scroll para centrarlo.
  */
+
+watch(() => cart.currentSection,(newval) => {
+
+  setTimeout(() => {
+    const buttonElement = document.getElementById(`categoryButton-${newval}`)
+    if (buttonElement) {
+
+        buttonElement.scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center', // Centra horizontalmente
+        block: 'nearest', // No desplaza verticalmente innecesariamente
+      })
+
+
+    }
+  }, 0)
+
+})
 </script>
 
 <style scoped>
@@ -181,11 +207,12 @@ onBeforeUnmount(() => {
 }
 
 .bar-button {
-  border-radius: 10rem;
+  border-radius: .3rem;
   background-color: #fff;
   color: #000;
   padding: 0.2rem 1rem 0.4rem 0.4rem;
   white-space: nowrap;
+  border: none;
   box-shadow: 0 0 0.5rem #00000050;
   /* para evitar quiebres de línea */
 }
@@ -234,6 +261,6 @@ img {
   height: 2rem;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  border-radius: 50%;
+  border-radius: .3rem;
 }
 </style>
