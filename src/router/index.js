@@ -66,6 +66,19 @@ const router = createRouter({
 
             },
 
+
+
+            {
+              path: '/gana',
+              name: 'gana',
+              component: () => import('@/views/dameCorreo.vue'),
+              meta: { title: 'Gana' },
+
+            },
+
+
+
+
             {
               path: '/piano-kids',
               name: 'piano-kids',
