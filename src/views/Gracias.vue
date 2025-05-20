@@ -116,10 +116,13 @@ onMounted(() => {
 
 
 
+
 const whatsappUrl = computed(() => {
     const baseUrl = 'https://api.whatsapp.com/send';
+    let phone = 573053447255
+    last_order.value.spli('-')[0] == 'NEW'?  phone = 13477929350 :  phone = 573053447255
     const urlParams = new URLSearchParams({
-        phone: '573053447255',
+        phone: phone,
         text: text.value
     });
     return `${baseUrl}?${urlParams.toString()}`;

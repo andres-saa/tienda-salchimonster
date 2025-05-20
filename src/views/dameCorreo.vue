@@ -1,9 +1,18 @@
 <template>
   <div class="wrapper"
     style="background: url(https://backend.salchimonster.com/read-photo-product/6xjNbDfY);background-size: cover;backdrop-filter: blur(3rem);">
-    <form class="user-form" v-if="show" @submit.prevent="submitForm">
+
+
+    <div style="background-image: url('https://cdn.pixabay.com/animation/2024/05/02/07/43/07-43-00-535_512.gif');min-height: 100vh;">
+
+      <div style="height: min-content;">
+<h1 style="color: white;text-align: center;margin-top: 2rem; margin-bottom: 0;padding: 0;">Registrate y Ganate un premio</h1>
+
+    <form class="user-form" v-if="show" @submit.prevent="submitForm" style="margin-top: 3rem;">
       <!-- Nombre -->
       <div class="form-row">
+
+        
         <h4>Nombre</h4>
         <InputText v-model.trim="user.user_name" placeholder="Nombre completo" required />
       </div>
@@ -36,7 +45,7 @@
 
 
 
-    <div v-else-if="code" style="background-color: white; width: 100%;max-width: 40rem;padding: 2rem;border-radius: .5rem; ">
+    <div v-else-if="code" style="background-color: white; width: 100%;max-width: 40rem;border-radius: .5rem; ">
 
 
 
@@ -54,15 +63,25 @@
     </div>
 
 
-    <div v-else>
+    <div v-else style="display: flex;align-items: center;gap: 0; justify-content: center;flex-direction: column;background-size: cover;width: 100%;;position: relative; " >
 
+      <!-- <h1 style="color: white;font-size: 4rem;">Registrate y ganate un premio</h1> -->
+ 
 
-      <Button label="Ingresar datos" style="height:15rem;font-size: 2rem; aspect-ratio: 1 / 1;"
+      <img style="margin:auto; max-width: 80vw; height: 300px;object-fit: cover;" src="https://cdn.pixabay.com/animation/2023/11/29/03/39/03-39-03-19_512.gif" alt="">
+            <!-- <h1 style="color: white;; top: 2rem;">Registrate y Ganate un premio</h1> -->
+      
+      <Button label="Ingresar datos" style="height:15rem;font-size: 2rem;max-width: 15rem; aspect-ratio: 1 / 1;"
         @click="show = true"></Button>
 
     </div>
+      </div>
+    
 
 
+    </div>
+
+        
 
 
   </div>
@@ -95,11 +114,11 @@ const submitForm = async () => {
 
 <style scoped>
 .wrapper {
-  height: 100vh;
-  display: flex;
+  min-height: 100vh;
+  /* display: flex; */
   align-items: center;
   justify-content: center;
-  position: fixed;
+
   background-position: cover;
   top: 0;
   z-index: 100;
@@ -107,6 +126,7 @@ const submitForm = async () => {
 
 .user-form {
   width: 40rem;
+  margin: auto;
   /* Escritorio */
   max-width: 95vw;
   /* Impide desbordes en móviles */
