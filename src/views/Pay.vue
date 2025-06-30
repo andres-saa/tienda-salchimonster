@@ -88,9 +88,9 @@
               placeholder="METODO DE PAGO"
               :options="
                 siteStore.location?.site?.site_id === 33
-                  ? payment_method_options.filter(option => [9, 8].includes(option.id))
+                  ? payment_method_options.filter(option => [6, 8].includes(option.id))
                   : siteStore.location?.site?.site_id !== 33
-                  ? payment_method_options.filter(option => ![7].includes(option.id))
+                  ? payment_method_options.filter(option => ![7,6].includes(option.id))
                   : payment_method_options
               "
               optionLabel="name"
