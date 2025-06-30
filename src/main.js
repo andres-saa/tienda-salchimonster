@@ -16,7 +16,7 @@ import { randomHoverColor } from './service/randomHoverColor';
 import { randomHoverBorderColor } from './service/randomHoverBorderColor';
 import App from './App.vue'
 import router from './router'
-const app = createApp(App)
+const app = createApp(App) 
 
 const MyPreset = definePreset(Aura, {
   semantic: {

@@ -1,5 +1,5 @@
 <template>
-    <Dialog :closable="store.location?.site?.pe_site_id > 0" style="width: 30rem;max-width: 96%;" v-model:visible="store.visibles.currentSite" header="Selección de sede"
+    <Dialog :closable="store.location?.site?.pe_site_id > 0" style="width: 30rem;max-width: 96%;" v-model:visible="store.visibles.currentSite"   :header="user.lang.name == 'es' ? 'Selección de sede' : 'Select a location'" 
         :modal="true" class="dialog">
         <div class="dialog-content">
             <b class="dialog-title">
@@ -11,29 +11,70 @@
                 <!-- Selección de Ciudad -->
                 <div class="form-group">
                     <div class="label-spinner">
-                        <label for="city-dropdown" class="label">¿En qué ciudad te encuentras?</label>
+                        <label for="city-dropdown" class="label">  {{ user.lang.name == 'es' ? '¿En qué ciudad te encuentras?' : 'Which city are you in?' }}</label>
                         <ProgressSpinner v-if="spinnersView.ciudad" class="spinner" strokeWidth="8" fill="var(--white)"
                             animationDuration=".5s" aria-label="Cargando ciudades" />
                     </div>
                     <Dropdown id="city-dropdown" v-model="currenCity" @click="resetNeighborhood" :options="cities"
-                        optionLabel="city_name" placeholder="SELECCIONA UNA CIUDAD" class="dropdown" required />
+                        optionLabel="city_name"   :placeholder="user.lang.name == 'es' ? 'SELECCIONA UNA CIUDAD' : 'SELECT A CITY'"  class="dropdown" required />
                 </div>
 
 
                 <div class="form-group">
                     <div class="label-spinner">
-                        <label for="neighborhood-dropdown" class="label">¿Cuál es tu barrio?</label>
+                        <label for="neighborhood-dropdown" class="label"> {{ user.lang.name == 'es' ? '¿Cuál es tu barrio?' : 'Which neighborhood?' }}</label>
                         <div v-if="spinnersView.barrio" class="loading-neighborhood">
                             <ProgressSpinner class="spinner" strokeWidth="8" fill="var(--white)" animationDuration=".5s"
                                 aria-label="Buscando barrios" />
-                            <p class="loading-text">Buscando barrios...</p>
+                            <p class="loading-text">  {{ user.lang.name == 'es' ? 'Buscando barrios...' : 'Searching neighborhoods...' }}</p>
                         </div>
                     </div>
-                    <Dropdown id="neighborhood-dropdown" v-model="currenNeigborhood"
-                        :disabled="!possibleNeigborhoods.length" :options="possibleNeigborhoods" optionLabel="name"
-                        placeholder="Selecciona un barrio" filter filterPlaceholder="Escribe el nombre de tu barrio"
-                        class="dropdown" required />
+                    <Dropdown
+                        id="neighborhood-dropdown"
+                        v-model="currenNeigborhood"
+                        :disabled="!possibleNeigborhoods.length"
+                        :options="possibleNeigborhoods"
+                        optionLabel="name"
+                        :placeholder="user.lang.name == 'es' ? 'Selecciona un barrio' : 'Select a neighborhood'"  
+                        filter
+                        :filterPlaceholder="user.lang.name == 'es' ? 'Escribe el nombre de tu barrio' : 'Type your neighborhood name'" 
+                        class="dropdown"
+                        required
+                        />
+
+                         <div class="label-spinner">
+                    <label for="lang-dropdown" class="label" style="margin-top: 1rem;">
+                    {{ user.lang.name == 'es' ? 'Elige tu idioma' : 'Choose your language' }}
+                    </label>
                 </div>
+
+  <!-- Dropdown de idioma con banderas -->
+                <Dropdown
+                    id="lang-dropdown"
+                    v-model="user.lang"                 
+                    :options="languages"                     
+                   
+                    class="dropdown"
+                >
+                    <!-- Plantilla para mostrar bandera + nombre -->
+                    <template #value="slotProps">
+                    <div v-if="slotProps.value" class="flag-option">
+                        <img :src="slotProps.value.flag" class="flag-img" />
+                        <span>{{ slotProps.value.label }}</span>
+                    </div>
+                    </template>
+
+                    <template #option="slotProps">
+                    <div class="flag-option">
+                        <img :src="slotProps.option.flag" class="flag-img" />
+                        <span>{{ slotProps.option.label }}</span>
+                    </div>
+                    </template>
+                </Dropdown>
+
+                </div>
+                
+               
 
                 <!-- Vista Previa de la Sede -->
                 <div class="image-container">
@@ -44,17 +85,24 @@
 
                     <div v-if="currenNeigborhood?.site_id" class="image-overlay">
                         <p class="site-info">
-                            <span class="brand-name">SALCHIMONSTER</span>
+                            <span class="brand-name">SALCHIMONSTER - </span>
                             <span class="site-name">{{ currentSite?.site_name }}</span>
                         </p>
                     </div>
                 </div>
 
+
                 <!-- Botón Guardar -->
                 <div class="button-container">
-                    <Button label="Guardar" @click="setNeigborhood" :disabled="!currenNeigborhood?.name"
-                        class="save-button" />
+                    <Button
+                        :label="user.lang.name == 'es' ? 'Guardar' : 'Save'"  
+                        @click="setNeigborhood"
+                        :disabled="!currenNeigborhood?.name"
+                        class="save-button"
+                        />
                 </div>
+
+                
             </div>
         </div>
     </Dialog>
@@ -71,7 +119,19 @@ import { sitesService } from '@/service/site/sitesService';
 import { useSitesStore } from '@/store/site';
 import { usecartStore } from '@/store/shoping_cart';
 import router from '@/router';
+import { useUserStore } from '@/store/user'  // 🔄
 
+
+const languages = [
+  { name: 'es', label: 'Español', flag: 'https://flagcdn.com/w20/co.png' },
+  { name: 'en', label: 'English',  flag: 'https://flagcdn.com/w20/us.png' }
+]
+
+const selectedLang = ref({ name: 'es', label: 'Español', flag: 'https://flagcdn.com/w20/co.png' })  // v-model del nuevo dropdown 🔄
+
+
+
+const user = useUserStore() 
 const store = useSitesStore();
 const cart = usecartStore();
 
@@ -165,6 +225,19 @@ const getNeighborhoodsByCityId = async (city_Id) => {
         spinnersView.value.barrio = false;
     }
 };
+
+
+
+// Selección automática según el site_id (32 → inglés, otro → español)
+watch(
+  currenNeigborhood,
+  (newval) => {
+    user.lang = newval.site_id === 33 ? { name: 'en', label: 'English',  flag: 'https://flagcdn.com/w20/us.png' } : { name: 'es', label: 'Español', flag: 'https://flagcdn.com/w20/co.png' }
+  },
+  { deep: true }
+)
+
+
 
 onMounted(() => {
     getCities();
@@ -344,5 +417,16 @@ onMounted(() => {
     .site-name {
         font-size: 1rem;
     }
+}
+
+.flag-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.flag-img {
+  width: 20px;
+  height: 14px;
 }
 </style>

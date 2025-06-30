@@ -2,7 +2,7 @@
   <!-- Dialog para cambiar un producto base -->
   <Dialog v-model:visible="showChangeDialog" style="max-width:20rem" :closable="false" :modal="true" class="p-3 change-dialog">
     <template #header>
-      <h3>Elige una alternativa para {{ productBaseToChange.producto_descripcion }}</h3>
+      <h3> {{user.lang.name == 'es'? 'Elige una alternativa para' : 'select alternative for'}}  {{ productBaseToChange.producto_descripcion }}</h3>
     </template>
 
     <div v-if="productBaseToChange" class="change-dialog-content">
@@ -25,7 +25,7 @@
     <template #header>
       <div class="header-container">
         <h3>
-          {{ store.currentProduct.productogeneral_descripcion }}
+          {{ user.lang.name == 'es'?  store.currentProduct.productogeneral_descripcion : store.currentProduct.english_name }}
         </h3>
         <h3>
           {{
@@ -54,8 +54,12 @@
                                                         icon="pi pi-plus"></Button>
                                                 </div>
       <div class="footer-container">
-        <Button class="add-cart-footer-btn" @click="addToCart(store.currentProduct)" label="Agregar al carrito"
-          icon="pi pi-shopping-cart" />
+       <Button
+  class="add-cart-footer-btn"
+  @click="addToCart(store.currentProduct)"
+  :label="user.lang.name == 'es' ? 'Agregar al carrito' : 'Add to cart'"
+  icon="pi pi-shopping-cart"
+/>
       </div>
     </template>
 
@@ -69,9 +73,9 @@
 
 
       <div class="details" style="">
-        <h3 class="text description">DESCRIPCION</h3>
+        <h3 class="text description"> {{user.lang.name == 'es'? 'DESCRIPCION' : 'DESCRIPTION'}} </h3>
         <p class=" " style="margin: 1rem 0;">
-          {{ store.currentProduct.productogeneral_descripcionweb?.toLowerCase() }}
+          {{ user.lang.name == 'es'? store.currentProduct.productogeneral_descripcionweb?.toLowerCase() : store.currentProduct.english_description?.toLowerCase() }}
         </p>
 
         <!-- Agrupadores de modificadores -->
@@ -133,7 +137,7 @@
 
         <!-- Productos base (INCLUYE) -->
         <h3 v-if="store.currentProduct?.lista_productobase?.length > 0" class="includes-title">
-          <strong>INCLUYE</strong>
+          <strong>{{user.lang.name == 'es'? 'INCLUYE' : 'INCLUDE'}} </strong>
         </h3>
 
         <div class="product-base-grid">
@@ -148,10 +152,12 @@
               </h3>
               <img class="product-base-img" :src="`${URI}/get-image?image_url=${product_base.producto_urlimagen}`"
                 alt="" />
-                <Button class="product-base-change-btn" style="" label="Cambiar" v-if="
-                product_base.lista_productoCambio &&
-                product_base.lista_productoCambio.length > 0
-              " @click="changeProduct(product_base)" />
+               <Button
+                  class="product-base-change-btn"
+                  v-if="product_base.lista_productoCambio && product_base.lista_productoCambio.length > 0"
+                  :label="user.lang.name == 'es' ? 'Cambiar' : 'Change'"
+                  @click="changeProduct(product_base)"
+                />
 
             </div>
 
@@ -180,6 +186,10 @@ import { usecartStore } from '@/store/shoping_cart';
 import { Dialog } from 'primevue';
 import { Button } from 'primevue';
 import { URI } from '@/service/conection';
+import { useUserStore } from '@/store/user';
+
+
+const user = useUserStore()
 // import { URI } from '@/service/conection';
 const store = usecartStore();
 const route = useRoute();
@@ -187,6 +197,7 @@ const see = ref(false);
 const seeLeftHand = ref(false);
 const seeRightHand = ref(false);
 const quantity = ref(1)
+
 
 watch(() => store.visibles.currentProduct, (newVal) => {
   if (!newVal&& route.path !== '/kids') {

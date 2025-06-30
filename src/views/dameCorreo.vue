@@ -55,7 +55,7 @@
 
       <RouterLink to="/">
 
-        <Button label="Listo, ya lo guarde'" style="font-size: 2rem;width: 100%;"
+        <Button label="Listo, ya lo guarde'" style="font-size: 2rem;width: 100%;color:white"
         @click="show = true"></Button>
       </RouterLink>
 

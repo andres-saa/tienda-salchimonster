@@ -2,14 +2,14 @@ import { defineStore } from "pinia";
 import { URI } from "../service/conection";
 
 
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore('user-salchi', {
    
     persist: {
        
-                key: 'user', 
+                key: 'user-salchi', 
                 storage: localStorage,
                 paths:[
-                    'user'
+                    'user','lang'
 
                     ]
     },
@@ -22,11 +22,15 @@ export const useUserStore = defineStore('user', {
                 neigborhood:'',
                 address:'',
                 phone_number:'',
-                payment_method_option:'',
                 was_reserva:false,
             },
+            lang: { name: 'es', label: 'Español', flag: 'https://flagcdn.com/w20/co.png' }
+
+
+            
         }
     },
+
 
     getters: {
         fucion: (state) => {

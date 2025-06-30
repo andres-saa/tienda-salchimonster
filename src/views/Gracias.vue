@@ -51,6 +51,16 @@
                         style="font-weight: bold;background-color: #00b66c; border: none; width: 100%;"
                         label="REALIZAR TRANSFERENCIA"></Button>
                 </a>
+
+
+                <a v-if="[5,8].includes(user.user.payment_method_option.id) " :href="whatsappUrlConfirmar" target="_blank"> <Button
+                    icon="pi pi-whatsapp" severity="danger" class="wsp"
+                    style="font-weight: bold;background-color: #00b66c; border: none; width: 100%;"
+                    label="Confirmar mi pedido"></Button>
+                </a>
+
+
+
                 <router-link to="/">
                     <Button icon="pi pi-arrow-left" severity="danger" outlined
                         style="font-weight: bold; border: none; width: 100%;" label="VOLVER AL MENU"></Button>
@@ -78,6 +88,7 @@ import router from '@/router';
 const site = useSitesStore();
 import { formatoPesosColombianos } from '@/service/utils/formatoPesos';
 const text = ref('');
+const textConfirmar = ref('');
 const store = usecartStore();
 const user = useUserStore()
 import { useReportesStore } from '@/store/ventas';
@@ -112,6 +123,9 @@ onMounted(() => {
 
     console.log(text.value);
 
+    
+    textConfirmar.value = `Hola, para validar el pedido 🔥 *#${store.last_order}* 🔥`;
+
 });
 
 
@@ -120,13 +134,30 @@ onMounted(() => {
 const whatsappUrl = computed(() => {
     const baseUrl = 'https://api.whatsapp.com/send';
     let phone = 573053447255
-    last_order.value.spli('-')[0] == 'NEW'?  phone = 13477929350 :  phone = 573053447255
+    store.last_order.split('-')[0] == 'NEW'?  phone = 13477929350 :  phone = 573053447255
     const urlParams = new URLSearchParams({
         phone: phone,
         text: text.value
     });
     return `${baseUrl}?${urlParams.toString()}`;
 });
+
+
+
+
+const whatsappUrlConfirmar = computed(() => {
+    const baseUrl = 'https://api.whatsapp.com/send';
+    let phone = 573053447255
+    store.last_order.split('-')[0] == 'NEW'?  phone = 13477929350 :  phone = 573053447255
+    const urlParams = new URLSearchParams({
+        phone: phone,
+        text: textConfirmar.value
+    });
+    return `${baseUrl}?${urlParams.toString()}`;
+});
+
+
+
 
 
 onUnmounted(() => {

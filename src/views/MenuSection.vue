@@ -11,7 +11,7 @@
     >
       <div class="category-header">
         <span class="category-name" style="margin: 0 1rem;">
-          <b>{{ section.categoria_descripcion }}</b>
+          <b>{{ user.lang.name == 'es'?   section.categoria_descripcion : section.english_name }}</b>
         </span>
       </div>
 
@@ -30,10 +30,12 @@
             />
           </div>
         </div>
-      </div>
+      </div> 
     </div>
   </div>
 </template>
+
+
 
 
 <script setup>
@@ -45,7 +47,9 @@ import { useRoute } from 'vue-router';
 import { URI } from '@/service/conection';
 const route = useRoute()
 import { useSitesStore } from '@/store/site';
+import { useUserStore } from '@/store/user';
 
+const user = useUserStore()
 const siteStore = useSitesStore()
 const store = useReportesStore()
 const cart = usecartStore()

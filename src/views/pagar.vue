@@ -273,11 +273,11 @@
   
   
   
-                <p class="px-2"  style="background-color: black;font-weight: bold;margin-top: 1rem; color: white;">
+                <p class="px-2"  style="background-color: black;font-weight: bold;margin: 1rem 0; color: white;">
                 <b>cliente</b>
                 </p>
   
-                <div style="display: grid;gap:1rem 2rem; grid-template-columns: auto auto; align-items: start;">
+                <div style="display: grid;gap:0rem 2rem; grid-template-columns: auto auto; align-items: start;">
   
   
   
@@ -459,23 +459,11 @@
       <div style="display: flex; flex-direction: column; gap: 1rem;">
 
 
-        <a
-          v-if="!route.query?.ref_payco"
-          :href="whatsappUrl2"
-          target="_blank"
-        >
-          <Button
-            icon="pi pi-whatsapp"
-            severity="danger"
-            class="wsp"
-            style="font-weight: bold; background-color: #00b66c; border: none; width: 100%;"
-            label="CONFIRMAR PEDIDO"
-          ></Button>
-        </a>
+   
 
 
         <a
-          v-else="route.query?.ref_payco"
+         
           :href="whatsappUrl3"
           target="_blank"
         >
@@ -488,7 +476,7 @@
           ></Button>
         </a>
 
-        <router-link to="/">
+        <!-- <router-link to="/">
           <Button
             icon="pi pi-arrow-left"
             severity="danger"
@@ -496,7 +484,7 @@
             style="font-weight: bold; border: none; width: 100%;"
             label="VOLVER AL MENU"
           ></Button>
-        </router-link>
+        </router-link> -->
       </div>
 
 
@@ -579,12 +567,12 @@
       </div>
 
 
-      <a style="display: flex; gap:1rem;text-decoration: none; margin:3rem 0" :href="`https://secure.epayco.co/landingresume?ref_payco=${route.query.ref_payco}`">
+      <div style="display: flex;justify-content: end; gap:1rem;text-decoration: none; margin:1rem 0" :href="`https://secure.epayco.co/landingresume?ref_payco=${route.query.ref_payco}`">
 
 
-        <Button icon="pi pi-print" style="background-color: black;width:50%; border:none;outline:none" label="Imprimir 0 guardar" ></Button>
-        <Button icon="pi pi-send" style="width:50%; border:none;outline:none" label="Enviar a mi correo" ></Button>
-      </a>
+        <!-- <Button icon="pi pi-print" style="background-color: black;width:50%; border:none;outline:none" label="Imprimir 0 guardar" ></Button> -->
+        <Button @click="pay" icon="pi pi-ticket" style="width:50%; border:none;outline:none" label="pagar" ></Button>
+      </div>
 
     </div>
 
@@ -626,10 +614,14 @@ import { fetchService } from "@/service/utils/fetchService";
 import { URI } from "@/service/conection";
 import {Tag} from "primevue";
 import {Dialog} from "primevue";
+import { orderServiceEpayco } from '@/service/order/orderServiceEpayco';
+import { SELF_URI } from "@/service/conection";
 import {ProgressSpinner} from "primevue";
 // Stores
 const store = usecartStore();
 const user = useUserStore();
+const epaycoPublicKey = import.meta.env.VITE_EPAYCO_PUBLIC_KEY;
+console.log(epaycoPublicKey)
 const sitestore = useSitesStore();
 const reportes = useReportesStore();
 const route = useRoute()
@@ -651,7 +643,74 @@ const epayco_data = ref({})
       }
   };
   
-  
+
+
+
+  const getOrder = async () => {
+    store.setLoading(true, "Buscando orden...");
+    try {
+        const response = await fetch(`${URI}/order-by-id/${order_id.value}`);
+        if (!response.ok) throw new Error("Error al obtener la orden");
+        order.value = await response.json();
+    } catch (error) {
+        console.error("Error al obtener la orden:", error);
+        order.value = {};
+    } finally {
+        store.setLoading(false, "Buscando orden...");
+    }
+};
+
+
+
+const pay = async() => {
+
+ payWithEpayco(order.value.order_id)
+
+}
+
+const payWithEpayco = (order_id) => {
+  // Verificamos que el objeto ePayco esté disponible en window
+  if (!window.ePayco) {
+    console.error("Epayco script no se ha cargado o no está disponible");
+    return;
+  }
+
+  // Configuramos el Checkout
+  const handler = window.ePayco.checkout.configure({
+    key: epaycoPublicKey,  // Reemplaza con tu Public Key real
+    test: false,                              // true = pruebas, false = producción
+    response_type: 'redirect',
+    onClosed: function () {
+      console.log("Modal de Epayco cerrado");
+    }
+  });
+
+  // Calcular total a pagar
+  const totalAPagar = order.value.pe_json.delivery.delivery_pagocon 
+
+  const user = order.value.pe_json.cliente;
+
+  // Abrimos el modal con los datos necesarios
+  handler.open({
+    name: order_id,
+    description: order_id,
+    amount: totalAPagar,
+    currency:"cop",
+    invoice: order_id,
+    tax_base: "0",
+    tax: "0",
+    country: "co",
+    lang: "es",
+    external: "false",
+    confirmation: `${URI}/confirmacion-epayco`, 
+    response: `${SELF_URI}/gracias-epayco`,
+    name_billing: `${user.cliente_nombres} ${user.cliente_apellidos }` || '',
+    address_billing: user.cliente_direccion || '',
+    type_doc_billing: "cc",
+    mobilephone_billing: user.cliente_telefono || '',
+    methodsDisable: ["SP","CASH"]
+  });
+};
   
 const order  = ref({
   "order_id":null,
@@ -754,14 +813,12 @@ const obtenerHoraFormateadaAMPM = (fecha) => {
 onMounted(async() => {
 
 
-  const epayco = route.query?.ref_payco
+  const order_id = route.params?.order_id
 
 
-  if (epayco){
-  const response = await fetchService.get(`https://secure.epayco.co/validation/v1/reference/${epayco}`)
-  epayco_data.value = response?.data
-  order.value = await fetchService.get(`${URI}/order/epayco/${epayco_data?.value?.x_ref_payco}`)
-  }
+
+
+  order.value = await fetchService.get(`${URI}/order-by-id/${order_id}`);
 
 
   reportes?.setLoading(false, "enviando tu pedido");
@@ -865,8 +922,7 @@ const whatsappUrl2 = computed(() => {
 const whatsappUrl3 = computed(() => {
   const baseUrl = "https://api.whatsapp.com/send";
   const urlParams = new URLSearchParams({
-    phone: "573053447255",
-    text: text3.value,
+    phone: "573053447255"
   });
   return `${baseUrl}?${urlParams.toString()}`;
 });

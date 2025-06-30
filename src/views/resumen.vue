@@ -22,10 +22,6 @@
                     </h6>
 
 
-
-
-
-
                 </div>
 
 
@@ -157,7 +153,7 @@
 
               <Button
                 :disabled="reportes.loading.visible"
-                v-else-if="route.path == '/pay' && !reportes.loading.visible && siteStore.status?.status !== 'closed' "
+                v-else-if="route.path == '/pay' && !reportes.loading.visible && siteStore.status?.status !== 'closed' && user.user.payment_method_option?.id != 9 "
                 @click="orderService.sendOrder()"
                 iconPos="right"
                 icon="pi pi-arrow-right"
@@ -165,6 +161,18 @@
                 class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
                 severity="help"
               />
+
+                            <Button
+                :disabled="reportes.loading.visible" 
+                v-else-if="route.path == '/pay' && !reportes.loading.visible && siteStore.status?.status !== 'closed' && user.user.payment_method_option?.id == 9 "
+                @click="pay"
+                iconPos="right"
+                icon="pi pi-arrow-right"
+                label="Pagar con tarjeta"
+                class="mt-2 button-common button-black button-fullwidth button-bold button-no-border button-no-outline"
+                severity="help"
+              />
+
 
 
         </div>
@@ -200,21 +208,10 @@ const siteStore = useSitesStore();
 const user = useUserStore();
 
 const agrupados = ref({});
-
-// const update = () => {
-//     agrupados.value = store.cart.additions.reduce((acumulador, elemento) => {
-//         let grupo = elemento.group;
-//         if (!acumulador[grupo]) {
-//             acumulador[grupo] = [];
-//         }
-//         acumulador[grupo].push(elemento);
-//         return acumulador;
-//     }, {});
-// };
+const epaycoPublicKey = import.meta.env.VITE_EPAYCO_PUBLIC_KEY;
+console.log(epaycoPublicKey)
 
 onMounted(() => {
-    // update();
-
     if (user.user.payment_method_option?.id != 7 && !route.path.includes('reservas'))
         siteStore.setNeighborhoodPrice();
     else {
@@ -233,6 +230,13 @@ watch(
 const order_id = ref('')
 const pay = async() => {
  order_id.value =  await orderServiceEpayco.sendOrder()
+
+ if (!order_id.value) {
+    console.error("Error al crear la orden, no se pudo obtener el order_id");
+    return;
+  }
+
+  // Llamamos a la función para iniciar el pago con ePayco
  payWithEpayco(order_id.value)
 
 }
@@ -246,8 +250,8 @@ const payWithEpayco = (order_id) => {
 
   // Configuramos el Checkout
   const handler = window.ePayco.checkout.configure({
-    key: '19f27e6b07849610b188d4f6997541a2',  // Reemplaza con tu Public Key real
-    test: true,                              // true = pruebas, false = producción
+    key: epaycoPublicKey,  // Reemplaza con tu Public Key real
+    test: false,                              // true = pruebas, false = producción
     response_type: 'redirect',
     onClosed: function () {
       console.log("Modal de Epayco cerrado");
@@ -260,18 +264,25 @@ const payWithEpayco = (order_id) => {
 
   // Abrimos el modal con los datos necesarios
   handler.open({
-    name: "Tu pedido",
-    description: "Compra en nuestro restaurante",
+    name: order_id,
+    description: order_id,
     amount: totalAPagar,
     currency:siteStore?.location?.site?.time_zone == 'America/New_York'? "usd" : "cop",
-    invoice: order_id, // ID único (puedes ajustar a tu lógica)
+    invoice: order_id,
     tax_base: "0",
     tax: "0",
     country: "co",
     lang: "es",
     external: "false",
-    confirmation: `${URI}/confirmacion-epayco`, // Ajusta con tu backend
-    response: `${SELF_URI}/gracias-epayco`     // URL de respuesta final
+    confirmation: `${URI}/confirmacion-epayco`, 
+    response: `${SELF_URI}/gracias-epayco`,
+    name_billing: user.user.name || '',
+    address_billing: user.user.address || '',
+    type_doc_billing: "cc",
+    mobilephone_billing: user.user.phone_number || '',
+    email_billing: user.user.email || '',
+    methodsDisable: ["SP","CASH"]
+     
   });
 };
 

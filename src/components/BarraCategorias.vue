@@ -31,7 +31,7 @@
               alt=""
             />
             <span
-              ><b>{{ section.categoria_descripcion }}</b></span
+              ><b>{{ user.lang.name == 'es'? section.categoria_descripcion :  section.english_name}}</b></span
             >
           </Button>
         </a>
@@ -45,7 +45,9 @@ import { onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import { usecartStore } from '../store/shoping_cart'
 import { Button } from 'primevue'
 import { URI } from '@/service/conection'
+import { useUserStore } from '@/store/user'
 
+const user = useUserStore()
 // Store
 const cart = usecartStore()
 

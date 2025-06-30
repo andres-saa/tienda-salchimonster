@@ -9,7 +9,7 @@
 
         <div class="texto">
             <h3>
-                <b>{{ props.product.productogeneral_descripcion }}</b>
+                <b>{{ user.lang.name == 'es'? props.product.productogeneral_descripcion : props.product.english_name }}</b>
             </h3>
 
             <!-- Contenedor interno que agrupa la descripción y el precio -->
@@ -70,7 +70,8 @@ import { useRoute } from 'vue-router';
 import router from '@/router';
 import { URI } from '@/service/conection';
 const route = useRoute()
-
+import { useUserStore } from '@/store/user';
+const user = useUserStore();
 // Acceso al store del carrito
 const store = usecartStore();
 
@@ -109,7 +110,8 @@ const props = defineProps({
 
 // Computed property para truncar la descripción
 const truncatedDescription = computed(() => {
-    const description = props.product?.productogeneral_descripcionweb || '';
+    const theDescription = user.lang.name == 'es' ? props.product?.productogeneral_descripcion : props.product?.english_description;
+    const description = theDescription || '';
     return description.length > 100
         ? description.substring(0, 100) + '...'
         : description || '...';

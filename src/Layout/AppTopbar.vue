@@ -52,12 +52,30 @@
     </div>
 
     <!-- Icono del Carrito de Compras -->
-    <div class="section-men secion">
+    <div class="section-men secion" style="display: flex;align-items: center;">
       <!-- <RouterLink to="/cart">
         <Button text>
           <i class="pi pi-shopping-cart"></i>
         </Button>
       </RouterLink> -->
+
+       <Select
+        v-model="user.lang"
+        :options="languages"
+        optionLabel="label"
+        style="max-width: min-content;padding: 0;"
+        class="lang-dropdown"
+      >
+        <template #value="sp">
+          <img v-if="sp.value" :src="sp.value.flag" class="flag-img" />
+        </template>
+        <template #option="sp">
+          <div class="flag-option">
+            <img :src="sp.option.flag" class="flag-img" />
+            <span style="margin-left: .5rem;">{{ sp.option.label }}</span>
+          </div>
+        </template>
+      </Select>
 
       <Button id="bars" text @click="toggleMobileMenu">
         <b style="pointer-events: none;"><i class="pi pi-bars"></i></b>
@@ -71,12 +89,19 @@
 
     <!-- Menú Móvil (Opcional) -->
     <div id="mobileMenuVisible" style=" transition: all ease 0s;"
-      :style="mobileMenuVisible ? 'right :0rem' : 'right:-15rem'" class="mobile-menu">
-      <RouterLink v-for="button in buttons" :to="button.to" :key="button.name">
-        <Button v-random-hover-color="{ opacity: .9 }" :icon="button.icon"
-          style="color: white;width: 100%;justify-content: start; margin: .5rem 0;" class="button-nav"
-          :class="isButtonActive(button) ? 'active' : ''" :label="button.name" @click="toggleMobileMenu"></Button>
-      </RouterLink>
+      :style="mobileMenuVisible ? 'right :0rem' : 'right:-22.5rem'" class="mobile-menu">
+      
+      <Button id="bars"   @click="toggleMobileMenu" style="position: absolute;width: 2.3rem;font-size: rem; height: 3rem; left: -2.3rem;display: flex;align-items: center;justify-content: center; border-radius: 10rem 0 0 10rem;" >
+        <i class="pi pi-angle-right" style="color: white;"></i>
+      </Button>
+      <div style="height: 100%;display: flex;flex-direction: column;" >
+        <RouterLink v-for="button in buttons" :to="button.to" :key="button.name">
+                <Button v-random-hover-color="{ opacity: .9 }" :icon="button.icon"
+                  style="color: black;width: 100%;justify-content: start; margin: .5rem 0;" class="button-nav"
+                  :class="isButtonActive(button) ? 'active' : ''" :label="button.name" @click="toggleMobileMenu"></Button>
+              </RouterLink>
+      </div>
+     
     </div>
   </div>
 </template>
@@ -84,22 +109,27 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { Button, Tag } from 'primevue';
+import { Button, Tag, Select } from 'primevue';
 import router from '@/router';
 import { useSitesStore } from '@/store/site';
 import { fetchService } from '@/service/utils/fetchService';
 import { URI } from '@/service/conection';
-
-
-
+import { useUserStore } from '@/store/user';
+import { texts } from '@/store/lang';
 import { usecartStore } from '@/store/shoping_cart';
 
 const cart = usecartStore()
 
 const siteStore = useSitesStore()
 
+const user = useUserStore()
 
 const route = useRoute();
+
+const languages = [
+  { name: 'es', label: 'Español', flag: 'https://flagcdn.com/w20/co.png' },
+  { name: 'en', label: 'English',  flag: 'https://flagcdn.com/w20/us.png' }
+]
 
 onMounted(async () => {
   const site_id = siteStore.location.site?.site_id
@@ -133,16 +163,16 @@ const socialLinks = [
 
 // Definir los botones de navegación
 const buttons = [
-  { name: 'Domicilios', to: '/', icon: 'fa-solid fa-bars' },
-  { name: 'Kids', to: '/kids', icon: 'fa-solid fa-bars' },
+  { name: texts[user.lang.name].menus.domicilios, to: '/', icon: 'fa-solid fa-bars' },
+  { name: texts[user.lang.name].menus.kids, to: '/kids', icon: 'fa-solid fa-bars' },
   // { name: 'Reserva Cumples', to: '/cumples', icon: 'fa-solid fa-bars' },
-  { name: 'Sedes', to: '/sedes', icon: 'fa-solid fa-building' },
-  { name: 'Carta', to: '/menu', icon: 'fa-solid fa-list' },
-  { name: 'Rastrear Pedido', to: '/rastrear-pedido', icon: 'fa-solid fa-truck' },
-  { name: 'Franquicias', to: '/franquicias', icon: 'fa-solid fa-store' },
-  { name: 'Ayuda/PQR', to: '/pqrs-user', icon: 'fa-solid fa-question-circle' },
-  { name: 'Colaboraciones', to: '/colaboraciones', icon: 'fa-solid fa-music' },
-  { name: 'Sonando', to: '/sonando', icon: 'fa-solid fa-music' },
+  { name: texts[user.lang.name].menus.sedes, to: '/sedes', icon: 'fa-solid fa-building' },
+  { name: texts[user.lang.name].menus.carta,to: '/menu' , icon: 'fa-solid fa-list' },
+  { name: texts[user.lang.name].menus.rastrear, to: '/rastrear-pedido', icon: 'fa-solid fa-truck' },
+  { name: texts[user.lang.name].menus.franquicias, to: '/franquicias', icon: 'fa-solid fa-store' },
+  { name: texts[user.lang.name].menus.ayuda, to: '/pqrs-user', icon: 'fa-solid fa-question-circle' },
+  { name: texts[user.lang.name].menus.colaboraciones, to: '/colaboraciones', icon: 'fa-solid fa-music' },
+  { name: texts[user.lang.name].menus.sonando, to: '/sonando', icon: 'fa-solid fa-music' },
 
   // Puedes agregar más botones según sea necesario
 ];
@@ -303,19 +333,19 @@ const toggleMobileMenu = () => {
 /* Menú móvil (visualmente oculto por defecto) */
 .mobile-menu {
   position: fixed;
-  top: 3.5rem;
+  top: 0rem;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(255, 255, 255, 0.9);
   width: 100%;
-  max-width: 15rem;
+  max-width: 20rem;
   display: flex;
-  flex-direction: column;
+  flex-direction: column;justify-content: center;
   /* border-radius: 0 0 0rem 1rem; */
   z-index: 999999999999999;
-  padding: 1rem 2rem;
-  /* box-shadow: 0rem 1rem 1rem rgba(0, 0, 0, 0.3); */
+  padding: 0rem 2rem;
+  box-shadow: 0rem 1rem 1rem rgba(0, 0, 0, 0.2);
   /* min-height: 100vh; */
-  max-height: min-content;
+  height: 100vh;
 
   /* pointer-events: hover; */
 }

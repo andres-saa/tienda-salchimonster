@@ -1,58 +1,49 @@
-<!-- CountryMenu.vue -->
+<!-- CountryMenu.vue (versión completa) -->
 <template>
-  <!-- ░░░ Diálogo principal: Selección de país ░░░ -->
+  <!-- ░░░ Diálogos de selección (sin cambios) ░░░ -->
   <Dialog
-    :visible="showCountryDialog"
-    modal
-    style="max-width:90%;"
-    :dismissableMask="false"
-    :closeOnEscape="false"
-    :closable="false"
-  >
+    :visible="showCountryDialog" modal :dismissableMask="false"
+    :closeOnEscape="false" :closable="false" style="max-width:90%">
     <div class="dialog-content">
-      <Button class="p-button-rounded selector-btn" @click="selectCountry(1)">
-        <img src="/images/menu/colombia_flag.jpg" alt="Bandera de Colombia" class="flag-icon" />
+      <Button class="p-button-rounded selector-btn" @click="selectCountry('colombia')">
+        <img src="/images/menu/colombia_flag.jpg" class="flag-icon" alt="Bandera de Colombia" />
         Colombia
       </Button>
-
-      <Button class="p-button-rounded selector-btn" @click="selectCountry(2)">
-        <img src="/images/menu/jersey_flag.png" alt="Bandera de New Jersey" class="flag-icon" />
+      <Button class="p-button-rounded selector-btn" @click="selectCountry('jersey')">
+        <img src="/images/menu/jersey_flag.png" class="flag-icon" alt="Bandera de New Jersey" />
         New Jersey
       </Button>
     </div>
   </Dialog>
 
-  <!-- ░░░ Diálogo secundario: idioma para New Jersey ░░░ -->
   <Dialog
-    :visible="showLanguageDialog"
-    modal
-    style="max-width:90%;"
-    :dismissableMask="false"
-    :closeOnEscape="false"
-    :closable="false"
-  >
+    :visible="showLanguageDialog" modal :dismissableMask="false"
+    :closeOnEscape="false" :closable="false" style="max-width:90%">
     <div class="dialog-content">
       <Button class="p-button-rounded selector-btn" @click="selectLanguage('en')">
-        <img src="/images/menu/jersey_flag.png" alt="Bandera de EE.UU." class="flag-icon" />
+        <img src="/images/menu/jersey_flag.png" class="flag-icon" alt="EE. UU." />
         English
       </Button>
       <Button class="p-button-rounded selector-btn" @click="selectLanguage('es')">
-        <img src="/images/menu/spain_flag.webp" alt="Bandera de España" class="flag-icon" />
+        <img src="/images/menu/spain_flag.webp" class="flag-icon" alt="España" />
         Español
       </Button>
     </div>
   </Dialog>
 
-  <!-- ░░░ Contenedor principal ░░░ -->
+  <!-- ░░░ Galería ░░░ -->
   <div style="background-color:var(--p-primary-color);min-height:120vh;padding:0;">
     <div v-if="activeMenu">
       <div class="image-gallery">
         <img
           v-for="card in activeMenu.cartas"
           :key="card.id"
-          :src="`${URI}/read-photo-product/${card.img_identifier}/1920`"
-          :class="{ 'horizontal-image': !isMobile, 'vertical-image': isMobile }"
+          :src="bigUrl(card.img_identifier)"
           :alt="`Menú ${activeMenu.name}`"
+          :class="{ 'horizontal-image': !isMobile, 'vertical-image': isMobile }"
+
+
+          @error="e => (e.target.src = plainUrl(card.img_identifier))"
         />
       </div>
     </div>
@@ -64,11 +55,14 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import { URI } from '@/service/conection'
+import { useUserStore } from '@/store/user'
 
-/* ───── Estados de selección ───── */
-const carta      = ref(null)   // 'colombia' | 'jersey'
-const jerseyLang = ref(null)   // 'es' | 'en'
+/* ───── Estado global ───── */
+const user = useUserStore()
 
+/* ───── Estados internos ───── */
+const carta      = ref(null)  // 'colombia' | 'jersey'
+const jerseyLang = ref(null)  // 'es' | 'en'
 const showCountryDialog  = ref(true)
 const showLanguageDialog = ref(false)
 
@@ -80,87 +74,91 @@ const windowWidth = ref(window.innerWidth)
 const isMobile    = computed(() => windowWidth.value < 600)
 const updateWidth = () => (windowWidth.value = window.innerWidth)
 
+/* ───── Helpers para URLs de imagen ───── */
+const bigUrl   = id => `${URI}/read-photo-product/${id}/1920`
+const plainUrl = id => `${URI}/read-photo-product/${id}`
+
 /* ───── Fetch menú ───── */
 const fetchMenuData = async () => {
-  try {
-    const res = await fetch(`${URI}/cartas-all`)
-    menuData.value = await res.json()
-  } catch (e) {
-    console.error('Error fetching menu data:', e)
-  }
+  try { menuData.value = await (await fetch(`${URI}/cartas-all`)).json() }
+  catch (e) { console.error('Error fetching menu data:', e) }
 }
 
-/* ───── Selección en diálogos ───── */
-const selectCountry = num => {
-  if (num === 1) {
-    carta.value = 'colombia'
-    showCountryDialog.value = false
+/* ───── Selección de país e idioma (sin cambios) ───── */
+function selectCountry(target) {
+  carta.value = target
+  showCountryDialog.value = false
+
+  if (target === 'colombia') {
+    if (!user.lang?.name) {
+      user.lang = { name: 'es', label: 'Español', flag: 'https://flagcdn.com/w20/co.png' }
+    }
   } else {
-    carta.value = 'jersey'
-    showCountryDialog.value  = false
-    showLanguageDialog.value = true
+    if (user.lang?.name === 'es' || user.lang?.name === 'en') {
+      jerseyLang.value = user.lang.name
+    } else {
+      showLanguageDialog.value = true
+    }
   }
 }
-const selectLanguage = lang => {
+function selectLanguage(lang) {
   jerseyLang.value = lang
+  user.lang = lang === 'es'
+    ? { name: 'es', label: 'Español', flag: 'https://flagcdn.com/w20/co.png' }
+    : { name: 'en', label: 'English',  flag: 'https://flagcdn.com/w20/us.png' }
   showLanguageDialog.value = false
 }
 
-/* ───── Utilidades ───── */
-const hasAll = (name, ...kw) => kw.every(k => name.toLowerCase().includes(k))
+/* ───── Normalización y filtros ───── */
+const normalize = s => s.toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // sin tildes
+  .replace(/_/g, ' ')                               // _ → espacio
+  .replace(/\s+/g, ' ')                             // colapsa dobles espacios
 
-const itemHasImages = item =>
-  Array.isArray(item.cartas) && item.cartas.some(c => c.img_identifier)
+const hasAll = (name, ...kw) =>
+  kw.every(k => normalize(name).includes(normalize(k)))
 
-const firstMatch = combos => {
-  for (const kw of combos) {
-    const found = menuData.value.find(
+const itemHasImages = m =>
+  Array.isArray(m.cartas) && m.cartas.some(c => c.img_identifier)
+
+const firstMatch = patterns => {
+  for (const kw of patterns) {
+    const hit = menuData.value.find(
       m => hasAll(m.name, ...kw) && itemHasImages(m)
     )
-    if (found) return found
+    if (hit) return hit
   }
   return null
 }
 
-/* ───── Menú activo con fallback cruzado ───── */
+/* ───── Menú activo con fallback ───── */
 const activeMenu = computed(() => {
   if (!menuData.value.length || !carta.value) return null
 
   const primary   = isMobile.value ? 'vertical'   : 'horizontal'
   const secondary = isMobile.value ? 'horizontal' : 'vertical'
 
-  // Idiomas en nombres ('español' / 'ingles')
-  const prefLangKey =
-    jerseyLang.value === 'es' ? 'español'
-    : jerseyLang.value === 'en' ? 'ingles'
-    : 'ingles'
-  const otherLangKey = prefLangKey === 'español' ? 'ingles' : 'español'
+  const prefLang  = user.lang?.name === 'es' ? 'espanol' : 'ingles'
+  const otherLang = prefLang === 'espanol' ? 'ingles' : 'espanol'
 
-  /* Reglas por país */
   const rulesCol = [
     [primary,   'colombia'],
     [secondary, 'colombia'],
     ['colombia']
   ]
-
   const rulesNJ = [
-    [primary,   'nj', prefLangKey],
-    [secondary, 'nj', prefLangKey],
-    [primary,   'nj', otherLangKey],
-    [secondary, 'nj', otherLangKey],
+    [primary,   'nj', prefLang],
+    [secondary, 'nj', prefLang],
+    [primary,   'nj', otherLang],
+    [secondary, 'nj', otherLang],
     ['nj']
   ]
-
-  /* Fallback: se añade el otro país al final */
-  const searchOrder =
-    carta.value === 'colombia'
-      ? [...rulesCol, ...rulesNJ]   // primero Colombia, luego NJ
-      : [...rulesNJ, ...rulesCol]   // primero NJ, luego Colombia
-
-  return firstMatch(searchOrder)
+  return firstMatch(carta.value === 'colombia'
+    ? [...rulesCol, ...rulesNJ]
+    : [...rulesNJ, ...rulesCol])
 })
 
-/* ───── Ciclo de vida ───── */
+/* ───── Mounted / Unmounted ───── */
 onMounted(() => {
   fetchMenuData()
   window.addEventListener('resize', updateWidth)
@@ -171,60 +169,15 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.image-gallery {
-  margin: 0 auto;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
+.image-gallery         { display:flex; flex-direction:column; margin:0; padding:0 }
 .horizontal-image,
-.vertical-image {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
+.vertical-image        { width:100%; margin:0; padding:0 }
 
-/* Diálogos */
-.dialog-content {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 0;
-}
-
-/* Botones de selección */
-.selector-btn {
-  width: 140px;
-  height: 140px;
-  font-size: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-button {
-  background-color: transparent;
-  color: black;
-  font-weight: bold;
-  border: none;
-  transition: all ease 0s;
-  padding-top: 1rem;
-}
-button:hover {
-  background-color: yellow;
-  border-radius: 0.3rem;
-}
-
-/* Imagen de bandera en los botones */
-.flag-icon {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: 0.3rem;
-}
+/* diálogos y botones */
+.dialog-content        { display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-around }
+.selector-btn          { width:140px; height:140px; display:flex; flex-direction:column;
+                          justify-content:center; align-items:center; text-align:center; font-size:1rem }
+button                 { background:transparent; color:black; font-weight:bold; border:none; padding-top:1rem }
+button:hover           { background:yellow; border-radius:.3rem }
+.flag-icon             { width:100px; height:100px; object-fit:cover; border-radius:.3rem }
 </style>

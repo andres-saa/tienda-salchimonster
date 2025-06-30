@@ -141,6 +141,31 @@ const router = createRouter({
               meta: { title: 'Muchas gracias' },
 
             },
+
+             {
+              path: '/encuesta',
+              name: 'encuesta',
+              component: () => import('@/views/Encuesta.vue'),
+              meta: { title: 'Muchas gracias' },
+
+            },
+
+                         {
+              path: '/encuesta-satisfaccion',
+              name: 'encuesta-satisfaccion',
+              component: () => import('@/views/encuestas/satisfaccion.vue'),
+              meta: { title: 'Muchas gracias' },
+
+            },
+                   {
+              path: '/pagar/:order_id',
+              name: 'pagar',
+              component: () => import('@/views/pagar.vue'),
+              meta: { title: 'Muchas gracias' },
+
+            },
+
+            
             {
               path: '/gracias-epayco',
               name: 'gracias-epayco',
@@ -182,5 +207,12 @@ router.beforeEach(async (to, from, next) => {
   }
   next()
 })
+
+router.afterEach(() => {
+  if (window.google?.translate?.TranslateElement) {
+    // vuelve a inicializar para que traduzca la vista recién cargada
+    googleTranslateElementInit();
+  }
+});
 
 export default router
