@@ -16,29 +16,12 @@
   </Dialog>
 
   <!-- Dialog principal para mostrar un producto -->
-  <Dialog :closable="false" v-model:visible="store.visibles.currentProduct" :style="dialogStyle"
-    :header="`${store.currentProduct.productogeneral_descripcion}`" :modal="true" class="container product-dialog">
-    <!-- Botón para cerrar el diálogo principal -->
-    <Button class="add-cart-button" @click="store.setVisible('currentProduct', false)" severity="danger"
-      icon="pi pi-times"></Button>
 
-    <template #header>
-      <div class="header-container">
-        <h3>
-          {{ user.lang.name == 'es'?   store.currentProduct.productogeneral_descripcion : store.currentProduct.english_name }}
-        </h3>
-        <h3>
-          {{
-            formatoPesosColombianos((
-              store.currentProduct.productogeneral_precio ||
-              store.currentProduct.lista_presentacion[0].producto_precio) -  store.currentProduct?.discount_amount
-            )
-          }}
-        </h3>
-      </div>
-    </template>
 
-    <template #footer>
+
+
+
+    <!-- <template #footer>
       <div
                                                     class="cart-addition-quantity-control ml-2">
                                                     <Button @click="quantity>1? quantity-=1 : 0"
@@ -61,21 +44,81 @@
   icon="pi pi-shopping-cart"
 />
       </div>
-    </template>
+    </template> -->
 
     <!-- Contenido del diálogo principal -->
     <div class="dialog-main-content">
 
-      <div>
-        <img style="position: sticky;top: 0;" class="product-image"
+      <div style="grid-area: imagen;position: sticky;height: min-content;">
+        <img   style="" class="product-image main-image"
           :src="`${URI}/get-image?image_url=${store.currentProduct.productogeneral_urlimagen}`" alt="" />
+          <div style="display: flex; flex-direction: column;position: absolute;top: 1rem;left: 1rem;color: #fff;
+  text-shadow:
+    3px 3px 2px #000,
+    -3px 3px 2px #000,
+    -3px -3px 0 #000,
+    3px -3px 0 #000;"> 
+            
+            <div style="color: var(--p-primary-color);font-size: 200%;  font-weight: bold;">
+            {{ user.lang.name == 'es'?  store.currentProduct.productogeneral_descripcion : store.currentProduct.english_name }}
+
+            </div>
+            <div style="font-size: 200%;;font-weight: bold;">
+              Ahora  <span style="font-size: 200%;">  {{
+            formatoPesosColombianos(
+              store.currentProduct?.productogeneral_precio ||
+              store.currentProduct?.lista_presentacion?.[0]?.producto_precio
+            )
+          }}</span>
+            </div>
+
+            <div style="font-size: 200%;font-weight: bold;padding: 0;">
+              Antes  <span style="font-size: 150%;">  {{
+            formatoPesosColombianos(
+              store.currentProduct?.productogeneral_precio ||
+              store.currentProduct?.lista_presentacion?.[0]?.producto_precio
+            )
+          }}</span>
+          
+            </div>
+          </div>
+
+
+
+
+          <div class="" style="background-color: transparent;display: flex;padding: 1rem; position: absolute;bottom: 0;gap: 1rem;">
+          <div class="product-base-item" v-for="product_base in store.currentProduct.lista_productobase" style="position: relative;"
+            :key="product_base.producto_id">
+         
+         
+                  <h3 class="m-0 p-0 text-2xl product-base-qty" style="position: absolute;font-size: 100%;background-color: var(--p-primary-color); top: -1rem;right: -1rem;color:white; padding: .5rem;align-self: 1 / 1 ; border-radius: 50%;">
+                {{ Math.round(product_base.productocombo_cantidad) }} x
+              </h3>
+              <img class="product-base-img" :src="`${URI}/get-image?image_url=${product_base.producto_urlimagen}`"
+                alt="" />
+          
+          </div>
+
+        </div>
       </div>
 
 
-      <div class="details" style="">
-        <h3 class="text description"> {{user.lang.name == 'es'? 'DESCRIPCION' : 'DESCRIPTION'}} </h3>
+      <div  class="details" style="grid-area: detail;">
+
+        <h3 class="tittle" style="text-transform: uppercase;">
+          {{ user.lang.name == 'es'?  store.currentProduct.productogeneral_descripcion : store.currentProduct.english_name }}
+        </h3>
+        <h3  class="tittle" style="width: 100%; text-align: end;">
+          {{
+            formatoPesosColombianos(
+              store.currentProduct?.productogeneral_precio ||
+              store.currentProduct?.lista_presentacion?.[0]?.producto_precio
+            )
+          }}
+        </h3>
+
         <p class="text-description" style="margin: 1rem 0;">
-          {{ user.lang.name == 'es'? store.currentProduct?.productogeneral_descripcionadicional?.toLowerCase() || store.currentProduct.productogeneral_descripcionweb?.toLowerCase() : store.currentProduct.english_description?.toLowerCase() }}
+          {{ user.lang.name == 'es'? store.currentProduct.productogeneral_descripcionweb?.toLowerCase() : store.currentProduct.english_description?.toLowerCase() }}
         </p>
 
         <!-- Agrupadores de modificadores -->
@@ -165,7 +208,7 @@
           <strong>{{user.lang.name == 'es'? 'INCLUYE' : 'INCLUDE'}} </strong>
         </h3>
 
-        <div class="product-base-grid">
+        <div class="product-base-grid" style="background-color: transparent;">
           <div class="product-base-item" v-for="product_base in store.currentProduct.lista_productobase"
             :key="product_base.producto_id">
             <h3 class="m-0 p-0 product-base-desc">
@@ -194,8 +237,12 @@
       </div>
 
 
+      <pay style="grid-area: pay;padding: 0;width: 100% ;">
+
+      </pay>
+
     </div>
-  </Dialog>
+
 </template>
 
 <script setup>
@@ -210,6 +257,7 @@ import router from '@/router/index.js';
 import { useRoute } from 'vue-router';
 import { usecartStore } from '@/store/shoping_cart';
 import { Dialog } from 'primevue';
+import Pay from './Pay.vue';
 import { Button } from 'primevue';
 import { URI } from '@/service/conection';
 import { useUserStore } from '@/store/user';
@@ -514,13 +562,23 @@ const dialogStyle = computed(() => {
 // Computed para determinar si la pantalla es menor a 1200px
 const isBelow1200 = computed(() => screenWidth.value < 1200);
 
-onMounted(() => {
+onMounted(async() => {
+
+
   setTimeout(() => {
-    if (route.params.product_id) {
-      store.currentProduct = store.menu.data.find(
-        (p) => p.productogeneral_id == route.params.product_id
-      );
-      store.visibles.currentProduct = true;
+    if (route.query.producto) {
+
+      store.menu?.forEach(category => {
+        const theProduct = category?.products?.find( p =>  p.productogeneral_id == route.query.producto )
+        if (theProduct) {
+          store.currentProduct = theProduct
+          console.log(theProduct)
+           // // store.visibles.currentProduct = true;
+                 store.cart = []
+      addToCart(store.currentProduct)
+        }
+
+      })
     }
   }, 1000);
 
@@ -633,7 +691,7 @@ watch(
 <style scoped>
 /* Diálogo para cambiar un producto base */
 .change-dialog {
-  background-color: white;
+  /* background-color: white; */
   width: max-content;
   max-width: 20rem;
   max-height: 30rem;
@@ -651,7 +709,7 @@ watch(
 /* Opciones de cambio */
 .change-option {
   cursor: pointer;
-  background-color: white;
+  /* background-color: white;q */
   color: black;
   width: 100%;
   display: flex;
@@ -669,6 +727,12 @@ watch(
   /* border:2px solid; */
   box-shadow: 0rem 0rem 1rem #00000030;
 
+}
+
+
+
+.tittle{
+    font-size: 2rem;
 }
 
 /* Botón para cerrar el diálogo de cambio */
@@ -708,7 +772,7 @@ watch(
   display: flex;
   width: 100%;
   justify-content: space-between;
-  background-color: rgb(255, 255, 255);
+  /* background-color: rgb(255, 255, 255); */
   z-index: 99;
   top: 0rem;
   text-transform:uppercase;
@@ -737,26 +801,48 @@ watch(
 /* Contenido principal del diálogo */
 .dialog-main-content {
   position: relative;
-  background-color: white;
+  max-width: 1200px;
+  margin: 3rem auto;
   border-radius: 1rem;
-  padding: 0;
+  padding: 1rem;
   padding-bottom: 0;
+  height: 100%;
+  /* padding-bottom: 4rem; */
   display: grid;
   gap: 2rem;
+  grid-template-areas: "imagen detail" "pay pay";
   grid-template-columns: repeat(2, 1fr);
 }
 
 .details {
-  box-shadow: 0rem 0rem 1rem .5rem #00000010;
-  padding: 1rem;
-  margin-top: 2rem;
+  /* box-shadow: 0rem 0rem 1rem .5rem #00000010; */
+  padding:0 1rem;
+  margin-top: 0rem;
+}
+
+.main-image{
+    top: 6rem;
 }
 
 @media (width<1200px) {
 
   .dialog-main-content {
     grid-template-columns: repeat(1, 1fr);
+    height: max-content;
+    grid-template-areas: "imagen" "detail" "pay";
 
+  }
+
+  .dialog-main-content{
+    margin: 0;
+  }
+
+  .main-image{
+    top: 0rem;
+  }
+
+  .tittle:first-child{
+    font-size: 1.4rem;
   }
 
   .product-dialog {
@@ -775,7 +861,7 @@ watch(
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 0.5rem;
-  background-color: rgb(255, 255, 255);
+  /* background-color: rgb(255, 255, 255); */
   object-fit: cover;
 }
 
@@ -873,7 +959,7 @@ watch(
   display: flex;
   border-radius: 0.5rem;
   /* margin:1rem 0; */
-  background-color: #fff;
+  /* background-color: #fff; */
   flex-direction: column;
   /* box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1); */
   /* padding: 1rem; */
@@ -901,10 +987,11 @@ watch(
   width: 4rem;
   aspect-ratio: 1 / 1;
   object-fit: cover;
-  box-shadow: 0rem 0rem 1rem #00000080;
+  box-shadow: 0rem 0rem .3rem #00000080;
 
   border-radius: 0.5rem;
 }
+
 
 /* Descripción del producto base */
 .product-base-desc {
@@ -934,9 +1021,7 @@ watch(
   display: flex;
   align-items: end;
   justify-content: center;
-  background: linear-gradient(to bottom,
-      rgba(255, 255, 255, 0) 0%,
-      rgb(255, 255, 255) 80%);
+
   height: 5rem;
   bottom: 0rem;
   right: 0;

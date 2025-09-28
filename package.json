@@ -13,6 +13,8 @@
   "dependencies": {
     "@primevue/themes": "^4.2.5",
     "axios": "^1.7.9",
+    "i18n-iso-countries": "^7.14.0",
+    "libphonenumber-js": "^1.12.15",
     "pinia": "^2.3.0",
     "pinia-plugin-persistedstate": "^4.2.0",
     "primeicons": "^7.0.0",

@@ -23,11 +23,29 @@ const preparar_orden = () => {
   const pe_site_id = site.location.site.pe_site_id;
   const payment_method_id = user.user.payment_method_option?.id;
   const order_type_id = user.user.order_type?.id;
+  const address_details = cart.address_details
 
   // Validación: el método de entrega es obligatorio
   if (!order_type_id) {
     alert("Error: Debe seleccionar un método de entrega.");
     return;
+  }
+  function buildPhone()  {
+    const code = (user.user )?.phone_code;
+    const number = user.user.phone_number?.toString().replace(/\s+/g, "") || "";
+
+    let dial = "";
+    if (!code) return null;
+
+    if (typeof code === "string") {
+      dial = code.startsWith("+") ? code : `+${code}`;
+    } else if (typeof code === "object" && "dialCode" in code) {
+      dial = (code.dialCode ) || "";
+      dial = dial.startsWith("+") ? dial : `+${dial}`;
+    }
+
+    if (!dial || !number) return null;
+    return `${dial}${number}`;
   }
 
   const placa = user.user.placa;
@@ -44,10 +62,15 @@ const preparar_orden = () => {
   const baseNotes = cart?.cart?.order_notes ?? "";
   let order_notes = baseNotes;
 
+  const phone = buildPhone()
   const user_data = {
     user_name: user.user.name,
-    user_phone: user.user.phone_number?.split(" ").join(""),
-    user_address: ` ${user.user.address} ${site.location?.neigborhood?.name}` || "",
+    user_phone: phone,
+    user_address:
+      order_type_id === 2
+        ? "recoger / pick up"
+        : user.user.site?.description?.toString() || "",
+    email: user.user.email?.toString().trim() || "",
   };
 
   const order = {
@@ -63,7 +86,9 @@ const preparar_orden = () => {
     user_data: user_data,
     order_aditionals: [],
     pe_json: order_products,
-    total: 0
+    total: 0,
+    address_details:address_details,
+
   };
   return order;
 };

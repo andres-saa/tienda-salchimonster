@@ -29,11 +29,11 @@
 
                 <div class="col-6 my-0 text-right py-2">
                     <h6 v-if="product.modificadorseleccionList.length < 1" class="text-end">
-                        {{ formatoPesosColombianos(product.pedido_precio * product.pedido_cantidad) }}
+                        {{ formatoPesosColombianos((product.pedido_precio ) * product.pedido_cantidad) }}
                     </h6>
 
                     <h6 v-else class="text-end">
-                        {{ formatoPesosColombianos(product.pedido_base_price * product.pedido_cantidad) }}
+                        {{ formatoPesosColombianos((product.pedido_base_price  ) * product.pedido_cantidad) }}
                     </h6>
                 </div>
 
@@ -67,19 +67,28 @@
                 </div>
                 <div class="col-6 my-0 text-right py-0 text-end">
                     <span>
-                        <b>{{ formatoPesosColombianos(store.cartTotal) }}</b>
+                        <b>{{ formatoPesosColombianos(store.cartSubtotal) }}</b>
                     </span>
                 </div>
 
-                <div class="col-6 my-0 py-0" v-if=" siteStore.location.site.site_id  != 33">
+                 <div class="col-6 my-0 py-0">
+                    <span><b>Descuento</b></span>
+                </div>
+                <div class="col-6 my-0 text-right py-0 text-end">
+                    <span>
+                       - <b>{{ formatoPesosColombianos(store.cartTotalDiscount) }}</b>
+                    </span>
+                </div>
+
+                <div class="col-6 my-0 py-0" v-if=" siteStore?.location?.site?.site_id  != 33">
                     <span :style="siteStore.location.neigborhood.delivery_price == 0
                         ? 'text-decoration: line-through;'
                         : ''
                         "><b>Domicilio</b></span>
                 </div>
-                <div v-if=" siteStore.location.site.site_id  != 33" class="col-6 my-0 text-right py-0 text-end">
+                <div v-if=" siteStore.location?.site?.site_id  != 33" class="col-6 my-0 text-right py-0 text-end">
                     <!-- {{ siteStore.location }} -->
-                    <span v-if="siteStore.location.neigborhood.delivery_price === 0 && siteStore.location.site.site_id  != 33" class="primary-color">
+                    <span v-if="siteStore.location.neigborhood.delivery_price === 0 && siteStore.location?.site?.site_id  != 33" class="primary-color">
                         <b>
                             {{
                                 route.path.includes('reservas')
@@ -163,7 +172,7 @@
               />
 
                             <Button
-                :disabled="reportes.loading.visible" 
+                :disabled="reportes.loading.visible"
                 v-else-if="route.path == '/pay' && !reportes.loading.visible && siteStore.status?.status !== 'closed' && user.user.payment_method_option?.id == 9 "
                 @click="pay"
                 iconPos="right"
@@ -186,7 +195,7 @@ import { formatoPesosColombianos } from '@/service/utils/formatoPesos';
 import { usecartStore } from '@/store/shoping_cart';
 import { useSitesStore } from '@/store/site';
 import { useRoute } from 'vue-router';
-import { orderService } from '@/service/order/orderService';
+import { orderService } from '@/service/order/orderService.ts';
 import { onMounted, ref, watch } from 'vue';
 import { useUserStore } from '@/store/user';
 import { Button } from 'primevue';
@@ -274,7 +283,7 @@ const payWithEpayco = (order_id) => {
     country: "co",
     lang: "es",
     external: "false",
-    confirmation: `${URI}/confirmacion-epayco`, 
+    confirmation: `${URI}/confirmacion-epayco`,
     response: `${SELF_URI}/gracias-epayco`,
     name_billing: user.user.name || '',
     address_billing: user.user.address || '',
@@ -282,7 +291,7 @@ const payWithEpayco = (order_id) => {
     mobilephone_billing: user.user.phone_number || '',
     email_billing: user.user.email || '',
     methodsDisable: ["SP","CASH"]
-     
+
   });
 };
 

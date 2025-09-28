@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { URI } from '../service/conection.js'
 import { menu } from './menu.js';
-export const usecarReservastStore = defineStore('salchi_cart_reservas2', {
+export const usecarReservastStore = defineStore('salchi_cartfad_reservas2', {
   persist: {
-    key: 'salchi_cart_reservas2',
+    key: 'salchi_cart_reservas2ssffarrs',
     storage: sessionStorage,
     paths: ['last_order', 'menu'],
   },

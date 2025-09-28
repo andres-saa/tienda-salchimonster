@@ -1,5 +1,5 @@
 <template>
-    <Dialog :closable="store.location?.site?.pe_site_id > 0" style="width: 30rem;max-width: 96%;" v-model:visible="store.visibles.currentSite"   :header="user.lang.name == 'es' ? 'Selección de sede' : 'Select a location'" 
+    <Dialog :closable="store.location?.site?.pe_site_id > 0" style="width: 30rem;max-width: 96%;" v-model:visible="store.visibles.currentSite"   :header="user.lang.name == 'es' ? 'Selección de sede' : 'Select a location'"
         :modal="true" class="dialog">
         <div class="dialog-content">
             <b class="dialog-title">
@@ -15,7 +15,7 @@
                         <ProgressSpinner v-if="spinnersView.ciudad" class="spinner" strokeWidth="8" fill="var(--white)"
                             animationDuration=".5s" aria-label="Cargando ciudades" />
                     </div>
-                    <Dropdown id="city-dropdown" v-model="currenCity" @click="resetNeighborhood" :options="cities"
+                    <Dropdown id="city-dropdown" v-model="currenCity" @click="resetNeighborhood" :options="colombiacities"
                         optionLabel="city_name"   :placeholder="user.lang.name == 'es' ? 'SELECCIONA UNA CIUDAD' : 'SELECT A CITY'"  class="dropdown" required />
                 </div>
 
@@ -35,9 +35,9 @@
                         :disabled="!possibleNeigborhoods.length"
                         :options="possibleNeigborhoods"
                         optionLabel="name"
-                        :placeholder="user.lang.name == 'es' ? 'Selecciona un barrio' : 'Select a neighborhood'"  
+                        :placeholder="user.lang.name == 'es' ? 'Selecciona un barrio' : 'Select a neighborhood'"
                         filter
-                        :filterPlaceholder="user.lang.name == 'es' ? 'Escribe el nombre de tu barrio' : 'Type your neighborhood name'" 
+                        :filterPlaceholder="user.lang.name == 'es' ? 'Escribe el nombre de tu barrio' : 'Type your neighborhood name'"
                         class="dropdown"
                         required
                         />
@@ -51,9 +51,9 @@
   <!-- Dropdown de idioma con banderas -->
                 <Dropdown
                     id="lang-dropdown"
-                    v-model="user.lang"                 
-                    :options="languages"                     
-                   
+                    v-model="user.lang"
+                    :options="languages"
+
                     class="dropdown"
                 >
                     <!-- Plantilla para mostrar bandera + nombre -->
@@ -73,8 +73,8 @@
                 </Dropdown>
 
                 </div>
-                
-               
+
+
 
                 <!-- Vista Previa de la Sede -->
                 <div class="image-container">
@@ -95,21 +95,21 @@
                 <!-- Botón Guardar -->
                 <div class="button-container">
                     <Button
-                        :label="user.lang.name == 'es' ? 'Guardar' : 'Save'"  
+                        :label="user.lang.name == 'es' ? 'Guardar' : 'Save'"
                         @click="setNeigborhood"
                         :disabled="!currenNeigborhood?.name"
                         class="save-button"
                         />
                 </div>
 
-                
+
             </div>
         </div>
     </Dialog>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { Dialog } from 'primevue';
 import { Dropdown } from 'primevue';
 import { Button } from 'primevue';
@@ -131,12 +131,12 @@ const selectedLang = ref({ name: 'es', label: 'Español', flag: 'https://flagcdn
 
 
 
-const user = useUserStore() 
+const user = useUserStore()
 const store = useSitesStore();
 const cart = usecartStore();
 
 watch(
-    () => store.location.site.site_id,
+    () => store.location,
     () => {
         location.reload();
     }
@@ -146,6 +146,7 @@ const spinnersView = ref({ ciudad: false, barrio: false });
 const cities = ref([]);
 const currentSite = ref({});
 const currenCity = ref(null);
+const colombiacities = computed(() => cities.value.filter(c => c.city_id != 15 && c.city_id != 18));
 const currenNeigborhood = ref({
     site: {
         name: 'default',
@@ -187,9 +188,11 @@ const setNeigborhood = async () => {
         site: currentSite.value,
         neigborhood: currenNeigborhood.value,
         city: currenCity.value,
+
+
     };
 
-    store.setLocation(newLocation);
+    store.setLocation(newLocation,currenNeigborhood.value.delivery_price || 0,);
     store.setVisible('currentSite', false);
     router.push('/');
 };

@@ -30,7 +30,7 @@
               :src="`${URI}/get-image?image_url=${section.products?.[0]?.productogeneral_urlimagen}`"
               alt=""
             />
-            <span
+            <span style="text-transform: uppercase;"
               ><b>{{ user.lang.name == 'es'? section.categoria_descripcion :  section.english_name}}</b></span
             >
           </Button>

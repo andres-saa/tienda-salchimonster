@@ -8,7 +8,7 @@
         </div>
 
         <div class="texto">
-            <h3>
+            <h3 style="text-transform: uppercase;">
                 <b>{{ user.lang.name == 'es'? props.product.productogeneral_descripcion : props.product.english_name }}</b>
             </h3>
 
@@ -24,21 +24,56 @@
                     {{ truncatedDescription }}
                 </span>
 
+
+
+                <div>
+
+                    <div style="display: flex;gap: .5rem;flex-wrap: wrap; justify-content: end; width: 100%;" v-if="props.product?.discount_percent && props.product?.discount_amount &&  user.lang.name == 'es' ">
+
+<Tag   style="background-color: black;color: white;font-size: 1.2rem;" >
+{{ props.product?.discount_percent }}%
+    </Tag>
+
+
+<Tag   style="background-color: red;color: white;font-size: 1.2rem;" >
+Ahorras {{ formatoPesosColombianos(props.product?.discount_amount)  }}
+    </Tag>
+
+
+
+
+</div>
+
+
+
+                    <div style="display: flex;gap: .5rem;flex-wrap: wrap; justify-content: end; width: 100%;" v-if="props.product?.discount_percent && props.product?.discount_amount &&  user.lang.name == 'en' ">
+
+<Tag   style="background-color: black;color: white;font-size: 1.2rem;" >
+{{ props.product?.discount_percent }}% Off
+    </Tag>
+
+
+<Tag   style="background-color: red;color: white;font-size: 1.2rem;" >
+Save {{ formatoPesosColombianos(props.product?.discount_amount)  }}
+    </Tag>
+
+
+
+
+</div>
+
+
+                </div>
                 <!-- Fila de acciones (corazón y precio) -->
                 <div class="flex-row-center-space-between">
                     <!-- <Button icon="pi pi-heart text-xl p-0 m-0" text rounded class="heart-button" /> -->
 
+
+
+
+
                     <div class="flex-center-gap">
-                      <h2 class="text-xl p-0 m-0 precio" style="opacity: .5;font-weight: 500;text-decoration:line-through;" v-if="props.product.last_price > 0">
-                            <b>
-                                {{
-                                    formatoPesosColombianos(
-                                        props.product.last_price
-                                    )
-                                }}
-                            </b>
-                        </h2>
-                        <h2 class="text-xl p-0 m-0 precio">
+                      <h2 class="text-xl p-0 m-0 precio" style="opacity: .5;font-weight: 500;text-decoration:line-through;" v-if="product.discount_amount > 0">
                             <b>
                                 {{
                                     formatoPesosColombianos(
@@ -48,12 +83,29 @@
                                 }}
                             </b>
                         </h2>
+                        <h2 class="text-xl p-0 m-0 precio-original" style="font-size: 1.7rem;">
+                            <b>
+                                {{
+                                    formatoPesosColombianos(
+                                        props.product.productogeneral_precio - props.product.discount_amount ||
+                                        props.product.lista_presentacion[0].producto_precio - props.product.discount_amount
+                                    )
+                                }}
+                            </b>
+                        </h2>
                     </div>
 
 
                 </div>
+
+
             </div>
         </div>
+
+
+        <!-- {{props.product}} -->
+
+
 
         <!-- Botón flotante para añadir al carrito -->
         <Button class="add-to-cart-button" @click.stop="addToCart(props.product)" severity="danger" rounded> <i
@@ -66,6 +118,7 @@ import { formatoPesosColombianos } from '@/service/utils/formatoPesos';
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { usecartStore } from '@/store/shoping_cart';
 import { Button } from 'primevue';
+import {Tag} from 'primevue';
 import { useRoute } from 'vue-router';
 import router from '@/router';
 import { URI } from '@/service/conection';
@@ -108,9 +161,31 @@ const props = defineProps({
     },
 });
 
+
+const porcentajeDescuento = computed(() => {
+    const precioAnterior = props.product.last_price;
+    const precioActual = props.product.productogeneral_precio || props.product.lista_presentacion?.[0]?.producto_precio || 0;
+
+    if (precioAnterior > 0 && precioActual > 0 && precioActual < precioAnterior) {
+        const descuento = ((precioAnterior - precioActual) / precioAnterior) * 100;
+        return `${Math.round(descuento)}%`;
+    }
+    return null;
+});
+
+const valorAhorrado = computed(() => {
+    const precioAnterior = props.product.last_price;
+    const precioActual = props.product.productogeneral_precio || props.product.lista_presentacion?.[0]?.producto_precio || 0;
+
+    if (precioAnterior > 0 && precioActual > 0 && precioActual < precioAnterior) {
+        return formatoPesosColombianos(precioAnterior - precioActual);
+    }
+    return null;
+});
+
 // Computed property para truncar la descripción
 const truncatedDescription = computed(() => {
-    const theDescription = user.lang.name == 'es' ? props.product?.productogeneral_descripcion : props.product?.english_description;
+    const theDescription = user.lang.name == 'es' ? props.product?.productogeneral_descripcionadicional ||  props.product?.productogeneral_descripcionweb : props.product?.english_description;
     const description = theDescription || '';
     return description.length > 100
         ? description.substring(0, 100) + '...'

@@ -11,7 +11,7 @@
       </Button>
       <Button class="p-button-rounded selector-btn" @click="selectCountry('jersey')">
         <img src="/images/menu/jersey_flag.png" class="flag-icon" alt="Bandera de New Jersey" />
-        New Jersey
+        Estados Unidos
       </Button>
     </div>
   </Dialog>

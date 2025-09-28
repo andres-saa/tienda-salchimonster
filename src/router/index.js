@@ -30,6 +30,14 @@ const router = createRouter({
             },
 
             {
+              path: '/landing',
+              name: 'landing',
+              component: () => import('@/views/landing.vue'),
+              meta: { title: 'Promo' },
+
+            },
+
+            {
               path: '/cumples',
               name: 'cumples',
               component: () => import('@/views/reservas/Reservas.vue'),
@@ -165,7 +173,7 @@ const router = createRouter({
 
             },
 
-            
+
             {
               path: '/gracias-epayco',
               name: 'gracias-epayco',
@@ -177,6 +185,8 @@ const router = createRouter({
         },
       ],
     },
+    { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
+
   ],
 })
 

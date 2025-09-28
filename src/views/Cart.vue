@@ -30,14 +30,24 @@
                         <div class="cart-product-info">
                             <div class="cart-product-info-inner">
 
+<div style="display: flex;justify-content: end;align-items: center;">
+   <h3 v-if="product.pedido_descuento > 0" class="p-0 m-0 " style="margin-left: 1rem;opacity: .5;text-decoration: line-through;">
+                            <b>{{ formatoPesosColombianos((product.pedido_precio )  * product.pedido_cantidad) }}</b>
+                        </h3>
 
+
+
+                        <h2 class="p-0 m-0 " style="margin-left: 1rem;">
+                            <b>{{ formatoPesosColombianos((product.pedido_precio - product.pedido_descuento)  * product.pedido_cantidad) }}</b>
+                        </h2>
+</div>
                                 <div class="cart-product-quantity-container">
                                     <div class="cart-product-quantity-control p-0">
                                         <Button class="cart-quantity-btn-minus"
                                             @click="store.decrementProduct(product.signature)"
                                             icon="pi pi-minus" severity="danger"></Button>
 
-                                        <span class="cart-product-quantity-label" readonly>{{ product.pedido_cantidad }}</span>
+                                        <h3 class="cart-product-quantity-label" readonly>{{ product.pedido_cantidad }}</h3>
 
                                         <Button class="cart-quantity-btn-plus"
                                             @click=" store.incrementProduct (product.signature)" icon="pi pi-plus"
@@ -45,9 +55,7 @@
                                     </div>
 
 
-                        <h5 class="p-0 m-0 " style="margin-left: 1rem;">
-                            <b>{{ formatoPesosColombianos(product.pedido_precio  * product.pedido_cantidad) }}</b>
-                        </h5>
+
 
                                 </div>
 
@@ -323,6 +331,7 @@ onMounted(async () => {
 .cart-product-quantity-container {
     display: flex;
     align-items: center;
+    justify-content: end;
 }
 
 .cart-product-quantity-control {
@@ -338,7 +347,7 @@ onMounted(async () => {
     border: none;
     outline: none;
     width: 2rem;
-    height: 1.5rem;
+    height: 2rem;
 }
 
 /* Bordes distintos si lo deseas */
@@ -357,7 +366,7 @@ onMounted(async () => {
     text-align: center;
     width: 3rem;
     font-weight: bold;
-    height: 1.5rem;
+    height: 2rem;
     color: black;
     border: none;
     display: flex;
